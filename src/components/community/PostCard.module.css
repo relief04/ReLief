@@ -281,14 +281,15 @@
 .likesSection {
     margin-top: 1rem;
     padding: 1rem;
-    background: var(--color-background-secondary, #1a1a1a);
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
 }
 
 .likesSection h4 {
     font-size: 0.9rem;
     margin: 0 0 0.75rem 0;
-    color: var(--color-text-secondary, #a3a3a3);
+    color: var(--color-text-secondary);
 }
 
 .likesList {
@@ -302,7 +303,8 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.5rem;
-    background: var(--color-surface, #262626);
+    background: var(--color-bg-100);
+    border: 1px solid var(--color-border);
     border-radius: 6px;
 }
 
@@ -319,6 +321,6 @@
 
 .likeName {
     font-size: 0.9rem;
-    color: var(--color-text, #ffffff);
+    color: var(--color-text);
     font-weight: 500;
 }

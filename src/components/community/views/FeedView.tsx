@@ -7,6 +7,7 @@ import { PostCard } from '@/components/community/PostCard';
 import { SkeletonLoader } from '@/components/community/SkeletonLoader';
 import { supabase } from '@/lib/supabaseClient';
 import { useToast } from '@/context/ToastContext';
+import { checkAndAwardBadges } from '@/lib/badges';
 import styles from './FeedView.module.css';
 
 interface Post {
@@ -289,6 +290,10 @@ export function FeedView({ selectedHashtag, onHashtagClick }: FeedViewProps) {
             setImageFile(null);
             setImagePreview(null);
             setShowCreateModal(false);
+
+            // Refresh user badges/points after posting
+            if (user?.id) await checkAndAwardBadges(user.id);
+            toast("Post created successfully! You earned karma points. 🌿", 'success');
         }
 
         setUploading(false);

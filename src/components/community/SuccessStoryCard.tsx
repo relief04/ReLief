@@ -57,7 +57,7 @@ export function SuccessStoryCard({ story, onLike, onDelete }: SuccessStoryCardPr
                                 src={story.before_image_url}
                                 alt="Story Image"
                                 style={{ cursor: 'pointer' }}
-                                onClick={() => setSelectedImage(story.before_image_url)}
+                                onClick={() => { setSelectedImage(story.before_image_url); setIsZoomed(false); }}
                             />
                         </div>
                     ) : null}
@@ -67,7 +67,7 @@ export function SuccessStoryCard({ story, onLike, onDelete }: SuccessStoryCardPr
                                 src={story.after_image_url}
                                 alt="Story Image"
                                 style={{ cursor: 'pointer' }}
-                                onClick={() => setSelectedImage(story.after_image_url)}
+                                onClick={() => { setSelectedImage(story.after_image_url); setIsZoomed(false); }}
                             />
                         </div>
                     ) : null}
@@ -123,28 +123,52 @@ export function SuccessStoryCard({ story, onLike, onDelete }: SuccessStoryCardPr
                         backgroundColor: 'rgba(0,0,0,0.85)',
                         zIndex: 9999,
                         display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: '2rem'
+                        alignItems: isZoomed ? 'flex-start' : 'center',
+                        justifyContent: isZoomed ? 'flex-start' : 'center',
+                        padding: '2rem',
+                        overflow: 'auto',
+                        cursor: 'zoom-out'
                     }}
-                    onClick={() => setSelectedImage(null)}
+                    onClick={() => { setSelectedImage(null); setIsZoomed(false); }}
                 >
                     <div
-                        style={{ position: 'relative', maxWidth: '90%', maxHeight: '90%' }}
-                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                            position: 'relative',
+                            maxWidth: isZoomed ? 'none' : '90%',
+                            maxHeight: isZoomed ? 'none' : '90%',
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                            cursor: isZoomed ? 'zoom-out' : 'zoom-in'
+                        }}
+                        onClick={(e) => {
+                            if (!isZoomed) {
+                                e.stopPropagation();
+                                setIsZoomed(true);
+                            }
+                        }}
                     >
                         <button
-                            onClick={() => setSelectedImage(null)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedImage(null);
+                                setIsZoomed(false);
+                            }}
                             style={{
-                                position: 'absolute',
-                                top: '-40px',
-                                right: '-10px',
-                                background: 'transparent',
+                                position: 'fixed',
+                                top: '20px',
+                                right: '20px',
+                                background: 'rgba(0,0,0,0.5)',
                                 border: 'none',
                                 color: 'white',
-                                fontSize: '2rem',
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '50%',
+                                fontSize: '1.5rem',
                                 cursor: 'pointer',
-                                zIndex: 10000
+                                zIndex: 10001,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backdropFilter: 'blur(4px)'
                             }}
                         >
                             &times;
@@ -153,11 +177,14 @@ export function SuccessStoryCard({ story, onLike, onDelete }: SuccessStoryCardPr
                             src={selectedImage || undefined}
                             alt="Preview"
                             style={{
-                                maxWidth: '100vw',
-                                maxHeight: '100vh',
+                                maxWidth: isZoomed ? '200vw' : '100%',
+                                maxHeight: isZoomed ? 'none' : '100%',
+                                width: isZoomed ? '150%' : 'auto',
+                                transform: isZoomed ? 'scale(1)' : 'scale(1)',
                                 objectFit: 'contain',
                                 borderRadius: '8px',
-                                boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
+                                boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                                transition: 'all 0.3s ease'
                             }}
                         />
                     </div>

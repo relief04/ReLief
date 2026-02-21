@@ -6,6 +6,8 @@ import { SuccessStoryCard } from '@/components/community/SuccessStoryCard';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { supabase } from '@/lib/supabaseClient';
+import { checkAndAwardBadges } from '@/lib/badges';
+import { useToast } from '@/context/ToastContext';
 import styles from './StoriesView.module.css';
 
 interface Story {
@@ -24,6 +26,7 @@ interface Story {
 
 export function StoriesView() {
     const { user } = useUser();
+    const { toast } = useToast();
     const [stories, setStories] = useState<Story[]>([]);
     const [loading, setLoading] = useState(true);
     const [showShareModal, setShowShareModal] = useState(false);
@@ -166,6 +169,10 @@ export function StoriesView() {
             setNewStory({ title: '', story: '', achievement_type: 'lifestyle' });
             setImageFile(null);
             setImagePreview(null);
+
+            // Reward user for sharing story
+            await checkAndAwardBadges(user.id);
+            toast("Success story shared! You're inspiring others. 🌟", 'success');
         } else {
             console.error("Error sharing story:", JSON.stringify(error, null, 2));
             setFormError(`Failed to share story: ${error?.message || 'Unknown error'}`);
