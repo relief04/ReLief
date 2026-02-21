@@ -402,7 +402,7 @@ export function GroupDetailView({ group, onBack, onJoin, onLeave, onEdit, onDele
                             </Button>
                         )}
                         {group.user_role === 'admin' && onDelete && (
-                            <Button variant="outline" size="sm" onClick={() => onDelete(group.id)} style={{ marginRight: '0.5rem', borderColor: 'var(--color-error, #ef4444)', color: 'var(--color-error, #ef4444)' }}>
+                            <Button variant="outline" size="sm" onClick={() => onDelete(group.id)} style={{ marginRight: '0.5rem', borderColor: 'var(--color-danger)', color: 'var(--color-danger)' }}>
                                 Delete Group
                             </Button>
                         )}

@@ -63,7 +63,7 @@ export function DailyChallenge() {
                     </span>
                 </div>
 
-                <p style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1.5rem', color: 'var(--color-text-100)' }}>
+                <p style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1.5rem', color: 'var(--color-text)' }}>
                     "{challenge}"
                 </p>
 
