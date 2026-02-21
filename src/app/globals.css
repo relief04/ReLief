@@ -55,7 +55,7 @@
   --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
 
   /* Theme-aware Glassmorphism */
-  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-bg: rgba(255, 255, 255, 0.8);
   --glass-border: rgba(0, 0, 0, 0.1);
   --glass-shadow: rgba(0, 0, 0, 0.1);
 
@@ -84,7 +84,7 @@
   --color-background-hover: var(--color-bg-300);
   --color-border: var(--color-bg-300);
   --color-text: var(--color-text-100);
-  --color-text-secondary: var(--color-text-300);
+  --color-text-secondary: var(--color-text-200);
 
   --color-primary: #34d399;
   /* Emerald 400 - Bright & Neon for Dark Mode */

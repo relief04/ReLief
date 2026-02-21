@@ -47,3 +47,5 @@ yarn-error.log*
 /public/music/*.mp4
 
 .vercel
+
+.vercel

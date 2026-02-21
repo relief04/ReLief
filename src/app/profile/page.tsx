@@ -222,8 +222,8 @@ export default function ProfilePage() {
                     style={{
                         padding: '0.75rem 1.5rem',
                         borderRadius: '12px',
-                        background: activeTab === 'overview' ? 'var(--color-primary)' : 'rgba(255,255,255,0.05)',
-                        color: activeTab === 'overview' ? '#fff' : '#fff',
+                        background: activeTab === 'overview' ? 'var(--color-primary)' : 'var(--color-bg-200)',
+                        color: activeTab === 'overview' ? '#fff' : 'var(--color-text)',
                         fontWeight: 600,
                         border: 'none',
                         cursor: 'pointer',
@@ -237,8 +237,8 @@ export default function ProfilePage() {
                     style={{
                         padding: '0.75rem 1.5rem',
                         borderRadius: '12px',
-                        background: activeTab === 'notifications' ? 'var(--color-primary)' : 'rgba(255,255,255,0.05)',
-                        color: activeTab === 'notifications' ? '#fff' : '#fff',
+                        background: activeTab === 'notifications' ? 'var(--color-primary)' : 'var(--color-bg-200)',
+                        color: activeTab === 'notifications' ? '#fff' : 'var(--color-text)',
                         fontWeight: 600,
                         border: 'none',
                         cursor: 'pointer',
@@ -309,7 +309,7 @@ export default function ProfilePage() {
                     </div>
 
                     {/* Focus / Ambient Audio Zone - Themed to match (CSS Modules Fix) */}
-                    <Card className={styles.audioZoneCard} style={{ background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <Card className={styles.audioZoneCard} style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(10px)', border: '1px solid var(--glass-border)' }}>
                         <h2 className={`${styles.sectionTitle} font-heading`} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
                             <Music className="text-emerald-400" size={24} />
                             Ambient Focus Zone
@@ -364,12 +364,12 @@ export default function ProfilePage() {
                     </Card>
                 </>
             ) : (
-                <Card style={{ background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', padding: '2rem' }}>
+                <Card style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(10px)', border: '1px solid var(--glass-border)', padding: '2rem' }}>
                     <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <Bell className="text-emerald-400" size={24} />
                         Notifications & Alerts
                     </h2>
-                    <p style={{ color: '#9ca3af', marginBottom: '2rem' }}>
+                    <p style={{ color: 'var(--color-text-secondary)', marginBottom: '2rem' }}>
                         Control what updates you receive in your inbox. We respect your time and only want to send what's valuable.
                     </p>
                     <EmailPreferences />

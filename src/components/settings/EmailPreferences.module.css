@@ -16,7 +16,7 @@
     justify-content: space-between;
     gap: 2rem;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .preferenceItem:last-child {
@@ -32,11 +32,11 @@
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 0.25rem;
-    color: #e5e7eb;
+    color: var(--color-text);
 }
 
 .itemDescription {
-    color: #9ca3af;
+    color: var(--color-text-secondary);
     font-size: 0.9rem;
     line-height: 1.5;
     margin: 0;
@@ -67,10 +67,10 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--color-bg-200);
     transition: .3s;
     border-radius: 34px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-border);
 }
 
 .slider:before {
@@ -80,7 +80,7 @@
     width: 20px;
     left: 3px;
     bottom: 3px;
-    background-color: #9ca3af;
+    background-color: var(--color-text-secondary);
     transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
     border-radius: 50%;
 }
@@ -104,7 +104,7 @@ input:checked+.slider:before {
 .saveActions {
     margin-top: 1rem;
     padding-top: 2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--color-border);
     display: flex;
     justify-content: flex-end;
 }

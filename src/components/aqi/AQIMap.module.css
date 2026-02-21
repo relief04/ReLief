@@ -48,14 +48,13 @@
     bottom: 20px;
     right: 20px;
     z-index: 1000;
-    background: rgba(15, 23, 42, 0.8);
+    background: var(--glass-bg);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
     border-radius: 12px;
     padding: 12px 16px;
-    color: white;
-    font-size: 11px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    color: var(--color-text);
+    box-shadow: 0 8px 32px var(--glass-shadow);
     pointer-events: auto;
 }
 
@@ -64,7 +63,7 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 8px;
-    color: #94a3b8;
+    color: var(--color-text-secondary);
 }
 
 .legendItem {
@@ -94,11 +93,11 @@
 .zoomBtn {
     width: 40px;
     height: 40px;
-    background: rgba(15, 23, 42, 0.8);
+    background: var(--glass-bg);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
     border-radius: 8px;
-    color: white;
+    color: var(--color-text);
     font-size: 20px;
     font-weight: 600;
     display: flex;

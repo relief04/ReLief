@@ -4,6 +4,7 @@ database/
 *.sql
 *.log
 .git/
+public/music/
 node_modules/
 .next/
 src/database/dump/

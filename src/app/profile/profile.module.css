@@ -3,7 +3,7 @@
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 2rem 1rem;
-    color: var(--color-text-main);
+    color: var(--color-text);
 }
 
 /* --- 1. Profile Header Card --- */
