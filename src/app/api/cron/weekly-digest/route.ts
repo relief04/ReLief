@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
 import { sendWeeklyDigestEmail } from '@/lib/email';
 
+export const dynamic = 'force-dynamic';
+
 // This route should ideally be protected by a secure Cron secret in Vercel
 export async function POST(request: Request) {
     try {

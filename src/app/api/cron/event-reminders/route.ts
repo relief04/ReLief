@@ -3,6 +3,8 @@ import { supabase } from '@/lib/supabaseClient';
 import { sendEventReminderEmail } from '@/lib/email';
 import { format, addDays, startOfDay, endOfDay } from 'date-fns';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
     try {
         // Authenticate cron
