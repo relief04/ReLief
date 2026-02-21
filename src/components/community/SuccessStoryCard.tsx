@@ -141,10 +141,8 @@ export function SuccessStoryCard({ story, onLike, onDelete }: SuccessStoryCardPr
                             cursor: isZoomed ? 'zoom-out' : 'zoom-in'
                         }}
                         onClick={(e) => {
-                            if (!isZoomed) {
-                                e.stopPropagation();
-                                setIsZoomed(true);
-                            }
+                            e.stopPropagation();
+                            setIsZoomed(!isZoomed);
                         }}
                     >
                         <button
