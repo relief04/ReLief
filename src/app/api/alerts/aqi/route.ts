@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { sendAQIAlertEmail } from '@/lib/email';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
     try {
         const { email, name, location, aqi } = await request.json();
