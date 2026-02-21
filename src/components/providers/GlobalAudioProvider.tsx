@@ -37,19 +37,22 @@ export function GlobalAudioProvider({ children }: { children: React.ReactNode })
     useEffect(() => {
         if (!audioRef.current) return;
 
+        const trackSrc = currentTrack.src;
+
         // Change source if needed
-        if (!audioRef.current.src.includes(currentTrack.src)) {
-            // Check if src is different (handling absolute/relative differences)
-            // Simple check: if the filename in src doesn't match
-            audioRef.current.src = currentTrack.src;
+        if (audioRef.current.src !== trackSrc && !audioRef.current.src.endsWith(trackSrc)) {
+            audioRef.current.src = trackSrc;
             audioRef.current.load();
         }
 
         if (isPlaying) {
-            audioRef.current.play().catch(e => {
-                console.error("Autoplay/Playback failed:", e);
-                setIsPlaying(false);
-            });
+            const playPromise = audioRef.current.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(e => {
+                    console.error("Autoplay/Playback failed:", e);
+                    setIsPlaying(false);
+                });
+            }
         } else {
             audioRef.current.pause();
         }
