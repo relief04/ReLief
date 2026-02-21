@@ -14,7 +14,7 @@
 }
 
 .modal {
-    background: var(--color-card-background, #1a2332);
+    background: var(--color-card-background);
     width: 100%;
     max-width: 450px;
     border-radius: 16px;
@@ -140,7 +140,7 @@
     border-top: 1px solid var(--color-border);
     display: flex;
     justify-content: flex-end;
-    background: var(--color-card-background, #1a2332);
+    background: var(--color-card-background);
 }
 
 @keyframes fadeIn {
