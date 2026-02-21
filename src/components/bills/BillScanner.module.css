@@ -1,0 +1,375 @@
+.container {
+    width: 100%;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    border: 2px dashed var(--border-color, #3a3a3a);
+    border-radius: 16px;
+    background: var(--card-bg, rgba(30, 30, 30, 0.4));
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.container:hover {
+    border-color: var(--color-primary, #4caf50);
+    background: var(--card-hover-bg, rgba(40, 40, 40, 0.5));
+}
+
+.hasPreview {
+    border-style: solid;
+    padding: 1rem;
+}
+
+.hiddenInput {
+    display: none;
+}
+
+.dropzone {
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+}
+
+.icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 10px rgba(76, 175, 80, 0.3));
+}
+
+.browseBtn {
+    margin-top: 1rem;
+    display: inline-block;
+    padding: 0.6rem 1.5rem;
+    background: var(--color-primary, #4caf50);
+    color: white;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+}
+
+.previewContainer {
+    width: 100%;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.previewImage {
+    width: 100%;
+    max-height: 350px;
+    object-fit: contain;
+    background: #000;
+    border-radius: 12px;
+}
+
+.previewOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.previewContainer:hover .previewOverlay {
+    opacity: 1;
+}
+
+.disabled {
+    filter: grayscale(1);
+    opacity: 0.6;
+    pointer-events: none;
+    user-select: none;
+}
+
+.dropzoneDisabled {
+    cursor: not-allowed !important;
+    background: var(--color-bg-200) !important;
+    border-color: var(--color-bg-300) !important;
+}
+
+.changeBtn {
+    background: white;
+    color: black;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.loading {
+    text-align: center;
+    width: 100%;
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1.5rem;
+    border: 4px solid rgba(76, 175, 80, 0.1);
+    border-top: 4px solid var(--color-primary, #4caf50);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    filter: drop-shadow(0 0 8px rgba(76, 175, 80, 0.5));
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.progressText {
+    font-size: 0.95rem;
+    color: var(--text-color, #e0e0e0);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.progressTrack {
+    width: 250px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    margin: 0.5rem auto;
+    overflow: hidden;
+}
+
+.progressBar {
+    height: 100%;
+    background: var(--color-primary, #4caf50);
+    width: 0%;
+    border-radius: 3px;
+    transition: width 0.5s ease-out;
+    /* Removed infinite animation */
+}
+
+.slowMessage {
+    font-size: 0.8rem;
+    color: var(--text-secondary, #838383);
+    margin-top: 0.8rem;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.verification {
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.successIcon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.dataGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    text-align: left;
+}
+
+.dataItem {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dataItem label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary, #838383);
+    margin-bottom: 0.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.dataItem span {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.emissionsVal {
+    color: var(--color-primary, #4caf50);
+}
+
+.actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.confirmBtn,
+.cancelBtn {
+    padding: 0.8rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.confirmBtn {
+    background: var(--color-primary, #4caf50);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.cancelBtn {
+    background: transparent;
+    color: var(--text-color, #e0e0e0);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.confirmBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+.cancelBtn:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.error {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.retryButton {
+    margin-top: 1rem;
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* ── Bill Type Selector ── */
+.typeSelector {
+    width: 100%;
+    margin-bottom: 1.2rem;
+    text-align: center;
+}
+
+.typeSelectorLabel {
+    font-size: 0.85rem;
+    color: var(--text-secondary, #838383);
+    margin-bottom: 0.6rem;
+}
+
+.optional {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+.typeButtons {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.typeBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 1rem;
+    border-radius: 20px;
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-color, #e0e0e0);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.typeBtn:hover {
+    border-color: rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.typeBtnActive {
+    border-color: var(--btn-color, #4caf50) !important;
+    background: color-mix(in srgb, var(--btn-color, #4caf50) 15%, transparent) !important;
+    color: var(--btn-color, #4caf50) !important;
+    box-shadow: 0 0 12px color-mix(in srgb, var(--btn-color, #4caf50) 30%, transparent);
+}
+
+.typeBtnIcon {
+    font-size: 1rem;
+}
+
+/* ── Detected Badge ── */
+.detectedBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.9rem;
+    border-radius: 20px;
+    border: 1.5px solid var(--badge-color, #4caf50);
+    background: color-mix(in srgb, var(--badge-color, #4caf50) 12%, transparent);
+    color: var(--badge-color, #4caf50);
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    letter-spacing: 0.3px;
+}
+
+/* ── Emissions Highlight ── */
+.emissionsHighlight {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.4rem;
+    margin: 0.5rem 0 1.2rem;
+}
+
+.emissionsVal {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: var(--color-primary, #4caf50);
+    line-height: 1;
+}
+
+.emissionsUnit {
+    font-size: 1rem;
+    color: var(--text-secondary, #838383);
+    font-weight: 500;
+}
+
+/* ── Data item small unit text ── */
+.dataItem small {
+    font-size: 0.72rem;
+    color: var(--text-secondary, #838383);
+    font-weight: 400;
+}

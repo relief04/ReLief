@@ -1,0 +1,244 @@
+.feed {
+    width: 100%;
+    max-width: 700px;
+    /* Constrain width for better reading experience */
+    margin: 0 auto;
+}
+
+.createPostCard {
+    background: linear-gradient(to bottom right, var(--color-card-background), var(--color-bg-50));
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 1.5rem;
+    margin-bottom: 2.5rem;
+    border: 2px solid var(--color-primary-light);
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.createPostCard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--color-primary);
+}
+
+.createPostCard:focus-within {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+}
+
+.createPostLayout {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: var(--color-bg-200);
+    flex-shrink: 0;
+    border: 2px solid white;
+    box-shadow: var(--shadow-sm);
+}
+
+.inputContainer {
+    flex-grow: 1;
+}
+
+.textarea {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 1.1rem;
+    font-family: inherit;
+    color: var(--color-text);
+    outline: none;
+    min-height: 80px;
+    padding: 0.5rem 0;
+    margin-bottom: 0.5rem;
+    resize: vertical;
+}
+
+.textarea::placeholder {
+    color: var(--color-text-300);
+    font-weight: 500;
+}
+
+.divider {
+    height: 1px;
+    background-color: var(--color-border);
+    margin: 0.5rem 0 1rem 0;
+    width: 100%;
+}
+
+.postActions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.imageUploadBtn {
+    cursor: pointer;
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    transition: background-color 0.2s;
+    font-weight: 500;
+}
+
+.imageUploadBtn:hover {
+    background-color: var(--color-background-hover);
+}
+
+.imagePreview {
+    position: relative;
+    margin-bottom: 1rem;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    display: inline-block;
+}
+
+.imagePreview img {
+    max-width: 100%;
+    max-height: 300px;
+    display: block;
+}
+
+.removeImageBtn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    transition: background 0.2s;
+}
+
+.removeImageBtn:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.postsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.header h2 {
+    margin-bottom: 0.25rem;
+    font-size: 1.5rem;
+    color: var(--color-text-100);
+}
+
+.header p {
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.modal {
+    background: var(--color-card-background);
+    color: var(--color-text);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 600px;
+    box-shadow: var(--shadow-xl);
+    animation: slideUp 0.3s ease;
+    border: 1px solid var(--color-border);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 1rem;
+}
+
+.modalHeader h3 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.closeBtn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.userName {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.modalActions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.createPostCard {
+    /* Deprecated - kept for reference if reverted */
+    display: none;
+}

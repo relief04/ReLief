@@ -1,0 +1,154 @@
+.eventCard {
+    border-left: 4px solid var(--color-primary);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.eventCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.eventHeader {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.eventIcon {
+    font-size: 2rem;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-background-secondary);
+    border-radius: 12px;
+}
+
+.eventInfo {
+    flex: 1;
+}
+
+.eventInfo h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 0.25rem 0;
+}
+
+.eventType {
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.eventDescription {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    flex: 1;
+    /* Pushes footer down */
+}
+
+.eventDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: var(--color-background-secondary);
+    border-radius: 8px;
+}
+
+.detail {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--color-text);
+}
+
+/* ... existing styles ... */
+
+.clickableDetail {
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    margin: 0 -0.5rem;
+}
+
+.clickableDetail:hover {
+    background-color: var(--color-bg-200);
+}
+
+.participantStack {
+    display: flex;
+    align-items: center;
+}
+
+.participantAvatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: -8px;
+    border: 2px solid var(--color-card-background);
+    overflow: hidden;
+    background: var(--color-bg-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.participantAvatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.participantCount {
+    margin-left: 12px;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+}
+
+.goingButton {
+    background: linear-gradient(135deg, var(--color-primary) 0%, #059669 100%) !important;
+    color: #fff !important;
+    border-color: transparent !important;
+    box-shadow: 0 3px 12px rgba(16, 185, 129, 0.4) !important;
+    font-weight: 700 !important;
+}
+
+.goingButton:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5) !important;
+    transform: translateY(-1px);
+}
+
+.eventActions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.eventActions button {
+    flex: 1;
+}
+
+.ownerActions {
+    display: flex;
+    gap: 0.25rem;
+    margin-left: auto;
+    flex-shrink: 0;
+}

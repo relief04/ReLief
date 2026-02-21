@@ -1,0 +1,255 @@
+import { supabase } from './supabaseClient';
+import { sendBadgeEmail } from './email';
+
+// Badge System - Type Definitions and Badge Data
+export type BadgeCategory = 'carbon' | 'streak' | 'community' | 'action' | 'milestone';
+export type BadgeRarity = 'common' | 'rare' | 'epic' | 'legendary';
+export type RequirementType =
+    | 'activities_count'
+    | 'carbon_saved'
+    | 'streak_days'
+    | 'teams_joined'
+    | 'teams_created'
+    | 'challenges_completed'
+    | 'shares_count'
+    | 'bike_commutes'
+    | 'transit_uses'
+    | 'zero_waste_days'
+    | 'plant_based_meals'
+    | 'energy_reductions'
+    | 'water_savings'
+    | 'badges_earned'
+    | 'quizzes_completed'
+    | 'items_redeemed'
+    | 'karma_earned'
+    | 'aqi_checks'
+    | 'relax_sessions'
+    | 'user_rank'
+    | 'late_night_log'
+    | 'early_morning_log'
+    | 'countries_logged'
+    | 'perfect_quizzes'
+    | 'helped_friends'
+    | 'bills_count'
+    | 'team_top_rank';
+
+export interface Badge {
+    id: string;
+    name: string;
+    description: string;
+    category: BadgeCategory;
+    icon: string;
+    requirement_type: RequirementType;
+    requirement_value: number;
+    rarity: BadgeRarity;
+    karma_reward: number;
+    created_at?: string;
+}
+
+export interface UserBadge {
+    id: string;
+    user_id: string;
+    badge_id: string;
+    earned_at: string;
+    progress: number;
+    badge?: Badge; // Populated from join
+}
+
+export interface BadgeProgress {
+    badge: Badge;
+    current: number;
+    required: number;
+    percentage: number;
+    isEarned: boolean;
+}
+
+// Badge UI Helpers
+export const RARITY_COLORS: Record<BadgeRarity, { bg: string; border: string; text: string; glow: string }> = {
+    common: {
+        bg: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)',
+        border: '#81c784',
+        text: '#2e7d32',
+        glow: 'rgba(129, 199, 132, 0.3)'
+    },
+    rare: {
+        bg: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+        border: '#64b5f6',
+        text: '#1976d2',
+        glow: 'rgba(100, 181, 246, 0.3)'
+    },
+    epic: {
+        bg: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)',
+        border: '#ba68c8',
+        text: '#7b1fa2',
+        glow: 'rgba(186, 104, 200, 0.3)'
+    },
+    legendary: {
+        bg: 'linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%)',
+        border: '#ffd54f',
+        text: '#f57f17',
+        glow: 'rgba(255, 213, 79, 0.4)'
+    }
+};
+
+export const CATEGORY_INFO: Record<BadgeCategory, { label: string; icon: string; color: string }> = {
+    carbon: { label: 'Carbon Reduction', icon: '🌍', color: '#2e7d32' },
+    streak: { label: 'Consistency', icon: '🔥', color: '#ef6c00' },
+    community: { label: 'Community', icon: '🤝', color: '#1976d2' },
+    action: { label: 'Actions', icon: '⚡', color: '#7b1fa2' },
+    milestone: { label: 'Milestones', icon: '🏆', color: '#f57f17' }
+};
+
+/**
+ * Checks if the user is eligible for any new badges and awards them.
+ */
+export async function checkAndAwardBadges(userId: string) {
+    try {
+        console.log(`Checking badges for user: ${userId}`);
+
+        // 1. Fetch available badges and user's already earned badges
+        const [{ data: allBadges }, { data: userBadges }] = await Promise.all([
+            supabase.from('badges').select('*'),
+            supabase.from('user_badges').select('badge_id').eq('user_id', userId)
+        ]);
+
+        if (!allBadges) return { success: false, error: 'Could not fetch badges' };
+
+        const earnedBadgeIds = new Set(userBadges?.map(ub => ub.badge_id) || []);
+        const unearnedBadges = allBadges.filter(b => !earnedBadgeIds.has(b.id));
+
+        if (unearnedBadges.length === 0) {
+            return { success: true, newBadges: [] };
+        }
+
+        // 2. Gather user stats
+        const [
+            { data: profile },
+            { count: activityCount },
+            { count: billCount },
+            { count: teamCount }
+        ] = await Promise.all([
+            supabase.from('profiles').select('streak, carbon_savings, balance, email, username').eq('id', userId).single(),
+            supabase.from('activities').select('*', { count: 'exact', head: true }).eq('user_id', userId),
+            supabase.from('bills').select('*', { count: 'exact', head: true }).eq('user_id', userId),
+            supabase.from('group_members').select('*', { count: 'exact', head: true }).eq('user_id', userId)
+        ]);
+
+        const stats: Record<string, number> = {
+            activities_count: activityCount || 0,
+            bills_count: billCount || 0,
+            streak_days: profile?.streak || 0,
+            carbon_saved: Number(profile?.carbon_savings || 0),
+            karma_earned: profile?.balance || 0,
+            teams_joined: teamCount || 0,
+            badges_earned: earnedBadgeIds.size
+        };
+
+        // 3. Check eligibility
+        const newEarnedBadges: Badge[] = [];
+
+        for (const badge of unearnedBadges) {
+            const currentVal = stats[badge.requirement_type] || 0;
+            if (currentVal >= badge.requirement_value) {
+                newEarnedBadges.push(badge);
+            }
+        }
+
+        if (newEarnedBadges.length === 0) {
+            return { success: true, newBadges: [] };
+        }
+
+        // 4. Award Badges and KP
+        console.log(`Awarding ${newEarnedBadges.length} new badges!`);
+
+        const badgePromises = newEarnedBadges.map(badge =>
+            supabase.from('user_badges').insert({
+                user_id: userId,
+                badge_id: badge.id
+            })
+        );
+
+        const totalKarma = newEarnedBadges.reduce((sum, b) => sum + (b.karma_reward || 0), 0);
+        const newBalance = (profile?.balance || 0) + totalKarma;
+        const newBadgeCount = (stats.badges_earned || 0) + newEarnedBadges.length;
+
+        await Promise.all([
+            ...badgePromises,
+            supabase.from('profiles').update({
+                balance: newBalance,
+                badge_count: newBadgeCount
+            }).eq('id', userId)
+        ]);
+
+        if (profile?.email) {
+            for (const badge of newEarnedBadges) {
+                sendBadgeEmail(profile.email, profile.username || 'Eco Warrior', badge.name, badge.icon).catch(console.error);
+            }
+        }
+
+        return { success: true, newBadges: newEarnedBadges, totalKarma };
+    } catch (error) {
+        console.error('Error in checkAndAwardBadges:', error);
+        return { success: false, error };
+    }
+}
+
+// Helper functions
+export function calculateBadgeProgress(badge: Badge, userStats: Record<string, number>): BadgeProgress {
+    const current = userStats[badge.requirement_type] || 0;
+    const required = badge.requirement_value;
+    const percentage = Math.min((current / required) * 100, 100);
+    const isEarned = current >= required;
+
+    return { badge, current, required, percentage, isEarned };
+}
+
+export function checkBadgeEligibility(badge: Badge, userStats: Record<string, number>): boolean {
+    const current = userStats[badge.requirement_type] || 0;
+    return current >= badge.requirement_value;
+}
+
+export function formatBadgeProgress(progress: BadgeProgress): string {
+    if (progress.isEarned) return 'Earned!';
+    const { current, required, badge } = progress;
+    switch (badge.requirement_type) {
+        case 'carbon_saved': return `${current.toFixed(1)} / ${required} kg CO₂`;
+        case 'streak_days': return `${current} / ${required} days`;
+        case 'activities_count': return `${current} / ${required} actions`;
+        case 'karma_earned': return `${current} / ${required} KP`;
+        default: return `${current} / ${required}`;
+    }
+}
+
+export interface UserStatsForBadges {
+    activities_count: number;
+    carbon_saved: number;
+    streak_days: number;
+    teams_joined: number;
+    teams_created: number;
+    challenges_completed: number;
+    shares_count: number;
+    badges_earned: number;
+    karma_earned: number;
+    [key: string]: number;
+}
+
+export function sortBadges(badges: Badge[], criterion: 'rarity' | 'name' | 'category' = 'rarity'): Badge[] {
+    const rarityOrder: Record<BadgeRarity, number> = { legendary: 4, epic: 3, rare: 2, common: 1 };
+    switch (criterion) {
+        case 'rarity': return [...badges].sort((a, b) => rarityOrder[b.rarity] - rarityOrder[a.rarity]);
+        case 'name': return [...badges].sort((a, b) => a.name.localeCompare(b.name));
+        case 'category': return [...badges].sort((a, b) => a.category.localeCompare(b.category));
+        default: return badges;
+    }
+}
+
+export function filterBadges(badges: Badge[], filters: { category?: BadgeCategory; rarity?: BadgeRarity; search?: string; }): Badge[] {
+    let filtered = badges;
+    if (filters.category) filtered = filtered.filter(b => b.category === filters.category);
+    if (filters.rarity) filtered = filtered.filter(b => b.rarity === filters.rarity);
+    if (filters.search) {
+        const query = filters.search.toLowerCase();
+        filtered = filtered.filter(b => b.name.toLowerCase().includes(query) || b.description.toLowerCase().includes(query));
+    }
+    return filtered;
+}

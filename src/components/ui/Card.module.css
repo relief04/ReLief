@@ -1,0 +1,37 @@
+.card {
+    background-color: var(--color-card-background);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--color-border);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.hover:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+    border-color: var(--color-primary);
+}
+
+/* Padding variants */
+.none {
+    padding: 0;
+}
+
+.sm {
+    padding: 1rem;
+}
+
+.md {
+    padding: 1.5rem;
+}
+
+.lg {
+    padding: 2.5rem;
+}
+
+/* Dark mode adjustments */
+:global([data-theme='dark']) .card {
+    background-color: var(--color-bg-200);
+    border-color: var(--color-bg-300);
+}

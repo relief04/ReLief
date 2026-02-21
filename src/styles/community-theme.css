@@ -1,0 +1,278 @@
+/* =====================================================
+   COMMUNITY PAGE - GLOBAL THEME VARIABLES
+   Ensures UI consistency across all Community components
+   ===================================================== */
+
+:root {
+    /* Primary Colors */
+    --community-primary: var(--color-primary, #10b981);
+    --community-primary-light: var(--color-primary-light, #34d399);
+    --community-primary-dark: var(--color-primary-dark, #059669);
+
+    --community-secondary: var(--color-secondary, #3b82f6);
+    --community-secondary-light: var(--color-secondary-light, #60a5fa);
+    --community-secondary-dark: var(--color-secondary-dark, #2563eb);
+
+    /* Background Colors */
+    --community-bg: var(--color-background, #0a0a0a);
+    --community-bg-secondary: var(--color-background-secondary, #1a1a1a);
+    --community-surface: var(--color-surface, #262626);
+    --community-card-bg: var(--color-card-background, #1f1f1f);
+
+    /* Text Colors */
+    --community-text: var(--color-text, #ffffff);
+    --community-text-secondary: var(--color-text-secondary, #a3a3a3);
+    --community-text-muted: var(--color-text-muted, #737373);
+
+    /* Border & Divider */
+    --community-border: var(--color-border, #404040);
+    --community-divider: var(--color-divider, #333333);
+
+    /* State Colors */
+    --community-success: var(--color-success, #10b981);
+    --community-warning: var(--color-warning, #f59e0b);
+    --community-error: var(--color-error, #ef4444);
+    --community-info: var(--color-info, #3b82f6);
+
+    /* Interactive States */
+    --community-hover: var(--color-background-hover, #2a2a2a);
+    --community-active: var(--color-background-active, #333333);
+    --community-focus: var(--color-focus, #10b981);
+
+    /* Typography Scale */
+    --community-font-xs: 0.75rem;
+    /* 12px */
+    --community-font-sm: 0.875rem;
+    /* 14px */
+    --community-font-base: 1rem;
+    /* 16px */
+    --community-font-lg: 1.125rem;
+    /* 18px */
+    --community-font-xl: 1.25rem;
+    /* 20px */
+    --community-font-2xl: 1.5rem;
+    /* 24px */
+    --community-font-3xl: 1.875rem;
+    /* 30px */
+    --community-font-4xl: 2.25rem;
+    /* 36px */
+
+    /* Font Weights */
+    --community-font-normal: 400;
+    --community-font-medium: 500;
+    --community-font-semibold: 600;
+    --community-font-bold: 700;
+
+    /* Spacing Scale */
+    --community-space-xs: 0.25rem;
+    /* 4px */
+    --community-space-sm: 0.5rem;
+    /* 8px */
+    --community-space-md: 1rem;
+    /* 16px */
+    --community-space-lg: 1.5rem;
+    /* 24px */
+    --community-space-xl: 2rem;
+    /* 32px */
+    --community-space-2xl: 3rem;
+    /* 48px */
+    --community-space-3xl: 4rem;
+    /* 64px */
+
+    /* Border Radius */
+    --community-radius-sm: 0.375rem;
+    /* 6px */
+    --community-radius-md: 0.5rem;
+    /* 8px */
+    --community-radius-lg: 0.75rem;
+    /* 12px */
+    --community-radius-xl: 1rem;
+    /* 16px */
+    --community-radius-full: 9999px;
+
+    /* Shadows */
+    --community-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --community-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --community-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --community-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+    /* Z-Index Scale */
+    --community-z-base: 0;
+    --community-z-dropdown: 1000;
+    --community-z-sticky: 1020;
+    --community-z-fixed: 1030;
+    --community-z-modal-backdrop: 10000;
+    --community-z-modal: 10001;
+    --community-z-popover: 10002;
+    --community-z-tooltip: 10003;
+
+    /* Transitions */
+    --community-transition-fast: 150ms ease-in-out;
+    --community-transition-base: 200ms ease-in-out;
+    --community-transition-slow: 300ms ease-in-out;
+
+    /* Layout */
+    --community-max-width: 1280px;
+    --community-sidebar-width: 300px;
+    --community-nav-height: 60px;
+}
+
+/* =====================================================
+   SKELETON LOADER STYLES
+   ===================================================== */
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(90deg,
+            var(--community-surface) 0%,
+            var(--community-bg-secondary) 50%,
+            var(--community-surface) 100%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+    border-radius: var(--community-radius-md);
+}
+
+.skeleton-text {
+    height: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-title {
+    height: 1.5rem;
+    width: 60%;
+    margin-bottom: 1rem;
+}
+
+.skeleton-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--community-radius-full);
+}
+
+.skeleton-card {
+    padding: var(--community-space-lg);
+    background: var(--community-card-bg);
+    border-radius: var(--community-radius-lg);
+    margin-bottom: var(--community-space-md);
+}
+
+/* =====================================================
+   UTILITY CLASSES
+   ===================================================== */
+
+.community-container {
+    max-width: var(--community-max-width);
+    margin: 0 auto;
+    padding: 0 var(--community-space-md);
+}
+
+.community-card {
+    background: var(--community-card-bg);
+    border-radius: var(--community-radius-lg);
+    padding: var(--community-space-lg);
+    box-shadow: var(--community-shadow-md);
+    transition: all var(--community-transition-base);
+}
+
+.community-card:hover {
+    box-shadow: var(--community-shadow-lg);
+    transform: translateY(-2px);
+}
+
+.community-button-primary {
+    background: linear-gradient(135deg, var(--community-primary), var(--community-primary-light));
+    color: white;
+    border: none;
+    padding: var(--community-space-sm) var(--community-space-lg);
+    border-radius: var(--community-radius-md);
+    font-weight: var(--community-font-medium);
+    cursor: pointer;
+    transition: all var(--community-transition-base);
+}
+
+.community-button-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--community-shadow-md);
+}
+
+.community-button-secondary {
+    background: transparent;
+    color: var(--community-text);
+    border: 1px solid var(--community-border);
+    padding: var(--community-space-sm) var(--community-space-lg);
+    border-radius: var(--community-radius-md);
+    font-weight: var(--community-font-medium);
+    cursor: pointer;
+    transition: all var(--community-transition-base);
+}
+
+.community-button-secondary:hover {
+    background: var(--community-hover);
+    border-color: var(--community-primary);
+}
+
+.community-input {
+    width: 100%;
+    padding: var(--community-space-sm) var(--community-space-md);
+    background: var(--community-surface);
+    border: 1px solid var(--community-border);
+    border-radius: var(--community-radius-md);
+    color: var(--community-text);
+    font-size: var(--community-font-base);
+    transition: all var(--community-transition-base);
+}
+
+.community-input:focus {
+    outline: none;
+    border-color: var(--community-primary);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.community-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--community-space-xs) var(--community-space-sm);
+    background: var(--community-primary);
+    color: white;
+    border-radius: var(--community-radius-full);
+    font-size: var(--community-font-xs);
+    font-weight: var(--community-font-medium);
+}
+
+.community-divider {
+    height: 1px;
+    background: var(--community-divider);
+    margin: var(--community-space-lg) 0;
+}
+
+/* =====================================================
+   RESPONSIVE BREAKPOINTS
+   ===================================================== */
+
+@media (max-width: 768px) {
+    :root {
+        --community-sidebar-width: 0px;
+        --community-space-lg: 1rem;
+        --community-space-xl: 1.5rem;
+    }
+
+    .community-container {
+        padding: 0 var(--community-space-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --community-font-3xl: 1.5rem;
+        --community-font-2xl: 1.25rem;
+    }
+}

@@ -1,0 +1,31 @@
+.logoContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.iconWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brandText {
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #06b6d4 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    position: relative;
+    filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.1));
+}
+
+.logoContainer:hover .brandText {
+    filter: brightness(1.1);
+}

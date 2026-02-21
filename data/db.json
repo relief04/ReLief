@@ -1,0 +1,328 @@
+{
+  "users": [
+    {
+      "id": "01e2e352-16c7-48e3-a8d6-442fdfcb1da0",
+      "name": "athrva",
+      "email": "rautathrva5@gmail.com",
+      "passwordHash": "raut80110455713",
+      "joinedDate": "2026-01-13T07:06:48.113Z",
+      "carbonSaved": 0,
+      "streak": 0,
+      "points": 0
+    },
+    {
+      "id": "158958b6-9095-4f28-9ad2-2de1f931c43a",
+      "name": "Yash",
+      "email": "yash@gmail.com",
+      "passwordHash": "yash1809",
+      "joinedDate": "2026-01-14T14:03:45.921Z",
+      "carbonSaved": 0,
+      "streak": 0,
+      "points": 0
+    },
+    {
+      "id": "7bdbada9-41f7-441e-982e-e539fbc1f887",
+      "name": "Yash",
+      "email": "yashthakur.1808@gmail.com",
+      "passwordHash": "yash2818",
+      "joinedDate": "2026-01-14T15:42:04.670Z",
+      "carbonSaved": 0,
+      "streak": 0,
+      "points": 0
+    },
+    {
+      "id": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "name": "Yash",
+      "email": "yasht@gmail.com",
+      "passwordHash": "yash123",
+      "joinedDate": "2026-01-16T13:49:15.701Z",
+      "carbonSaved": 0,
+      "streak": 0,
+      "points": 0
+    }
+  ],
+  "sessions": [
+    {
+      "id": "773af774-75ca-44bd-90a3-76358496cf08",
+      "userId": "01e2e352-16c7-48e3-a8d6-442fdfcb1da0",
+      "expiresAt": "2026-01-14T07:06:56.143Z"
+    },
+    {
+      "id": "d709002a-6667-4fec-bf43-4585aeb29e02",
+      "userId": "01e2e352-16c7-48e3-a8d6-442fdfcb1da0",
+      "expiresAt": "2026-01-14T07:17:24.640Z"
+    },
+    {
+      "id": "b6f46357-f20e-4364-9701-c002710f0252",
+      "userId": "01e2e352-16c7-48e3-a8d6-442fdfcb1da0",
+      "expiresAt": "2026-01-14T10:07:23.453Z"
+    },
+    {
+      "id": "b2ed5a60-0ca0-4fe4-b07c-fae6d1ac5a5c",
+      "userId": "01e2e352-16c7-48e3-a8d6-442fdfcb1da0",
+      "expiresAt": "2026-01-14T10:11:18.515Z"
+    },
+    {
+      "id": "914680e4-66a0-4dcb-9f5c-45afb5f979f7",
+      "userId": "158958b6-9095-4f28-9ad2-2de1f931c43a",
+      "expiresAt": "2026-01-15T14:04:14.099Z"
+    },
+    {
+      "id": "abd73de8-522a-4c11-a597-ef154120bde8",
+      "userId": "7bdbada9-41f7-441e-982e-e539fbc1f887",
+      "expiresAt": "2026-01-15T15:42:28.743Z"
+    },
+    {
+      "id": "1f8d7f98-f8e9-4633-b5a8-dff65b0a0102",
+      "userId": "01e2e352-16c7-48e3-a8d6-442fdfcb1da0",
+      "expiresAt": "2026-01-17T03:59:09.983Z"
+    },
+    {
+      "id": "3fec2b0a-b3ad-4293-b70e-a7ffd62e3b4b",
+      "userId": "01e2e352-16c7-48e3-a8d6-442fdfcb1da0",
+      "expiresAt": "2026-01-17T03:59:17.505Z"
+    },
+    {
+      "id": "cad4e28b-8935-4b7b-a680-912e2ad3d369",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-17T13:49:33.941Z"
+    },
+    {
+      "id": "5ad8146d-2a92-4b7c-89c4-ec4f4f80ef7d",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-17T14:07:16.936Z"
+    },
+    {
+      "id": "110107b1-3173-4e84-8446-7f223558b44c",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:22:00.016Z"
+    },
+    {
+      "id": "7513f1ac-e7c8-4635-8d43-96b7a8855d65",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:22:03.880Z"
+    },
+    {
+      "id": "ab01fff5-56f0-4bd5-965d-f18e38e33fb0",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:22:07.669Z"
+    },
+    {
+      "id": "b78c8c15-d831-41d4-bffc-e3a43a881c4c",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:22:08.589Z"
+    },
+    {
+      "id": "ee83f220-0745-466d-8500-e0bd91592acc",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:22:08.946Z"
+    },
+    {
+      "id": "47bb9205-c179-4cf0-bb0e-e960ce536702",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:22:09.709Z"
+    },
+    {
+      "id": "30c97175-10f5-4a59-a583-a6e76d2dc25d",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:22:09.830Z"
+    },
+    {
+      "id": "2cb1c5e1-b755-4dac-9140-06b2d4d5a830",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:22:09.977Z"
+    },
+    {
+      "id": "50541584-5a5b-489d-8271-a8c618c41175",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:22:10.576Z"
+    },
+    {
+      "id": "f7659d3b-c6c1-40c2-b83d-ba5b4473f653",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:22:22.719Z"
+    },
+    {
+      "id": "e14005b7-55c9-42aa-aa27-e41a3474c1ea",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:24:21.292Z"
+    },
+    {
+      "id": "e0cf9786-137d-499b-a452-352f2170761b",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:24:24.441Z"
+    },
+    {
+      "id": "10599a2d-9dc5-41a4-96f0-6712f9a2cbc8",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:24:25.989Z"
+    },
+    {
+      "id": "c39c9176-d06b-469c-a359-7d1fd1ee434d",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:24:27.077Z"
+    },
+    {
+      "id": "721d9bba-63b4-4856-bf76-58cd73e11e00",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:24:27.540Z"
+    },
+    {
+      "id": "3316b01d-90e5-4408-9f2c-f1d63cb02ef6",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:35:29.092Z"
+    },
+    {
+      "id": "8f31f5c0-17b6-4a5f-b662-e4b656f1a381",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:49:22.863Z"
+    },
+    {
+      "id": "e80a7b2a-6946-42ba-ab1f-04aac6f89845",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:49:27.762Z"
+    },
+    {
+      "id": "b1318dd9-441e-4e34-ad6f-b98fdeda5925",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:49:28.652Z"
+    },
+    {
+      "id": "fc59d67f-e650-48f6-a356-9aa1caab9b6c",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:49:29.519Z"
+    },
+    {
+      "id": "68904fa0-c2bc-4d46-8740-db78ba05ea61",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:49:30.796Z"
+    },
+    {
+      "id": "d78c112e-128e-4bd6-8a71-5971a9794112",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:49:31.037Z"
+    },
+    {
+      "id": "f0631473-6ebc-463f-8592-e8b1b5d3dc88",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:49:46.175Z"
+    },
+    {
+      "id": "c5b44e49-46ad-4568-8829-e2d9bbdcfea2",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:49:48.837Z"
+    },
+    {
+      "id": "a3a725dc-c8f8-4776-a241-f97658f5d486",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:49:49.275Z"
+    },
+    {
+      "id": "563734e1-c232-4508-889a-a52a7a1e54ff",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-18T08:54:21.391Z"
+    },
+    {
+      "id": "e5d65a0c-1829-4897-9647-fd2c1f0f51aa",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "expiresAt": "2026-01-19T11:39:06.277Z"
+    }
+  ],
+  "carbonRecords": [],
+  "challenges": [],
+  "posts": [],
+  "rewards": [
+    {
+      "id": "r_badge_starter",
+      "name": "Eco Starter Badge",
+      "description": "Awarded for joining the ReLief community.",
+      "cost": 0,
+      "type": "Badge",
+      "rarity": "Common",
+      "isPurchasable": false,
+      "unlockCondition": "join"
+    },
+    {
+      "id": "r_border_green",
+      "name": "Green Thumb Border",
+      "description": "Unlocked by planting your first tree.",
+      "cost": 0,
+      "type": "Profile Border",
+      "rarity": "Rare",
+      "isPurchasable": false,
+      "unlockCondition": "plant_1_tree"
+    },
+    {
+      "id": "r_cert_donation",
+      "name": "Tree Donation Certificate",
+      "description": "Official certificate for donating 5 trees.",
+      "cost": 0,
+      "type": "Certificate",
+      "rarity": "Epic",
+      "isPurchasable": false,
+      "unlockCondition": "donate_5_trees"
+    },
+    {
+      "id": "s_plant_tree",
+      "name": "Plant 1 Tree",
+      "description": "We will donate ₹10 to our partner NGO \"Green Earth\" to plant a tree on your behalf.",
+      "cost": 500,
+      "type": "Tree Donation",
+      "rarity": "Epic",
+      "isPurchasable": true,
+      "partnerInfo": {
+        "name": "Green Earth NGO"
+      }
+    },
+    {
+      "id": "s_border_gold",
+      "name": "Golden Halo Border",
+      "description": "Premium profile border to show off your elite status.",
+      "cost": 200,
+      "type": "Profile Border",
+      "rarity": "Legendary",
+      "isPurchasable": true
+    },
+    {
+      "id": "s_streak_revive",
+      "name": "Streak Revive Token",
+      "description": "Restore a broken streak. Can only be used once per week.",
+      "cost": 300,
+      "type": "Streak Revive",
+      "rarity": "Rare",
+      "isPurchasable": true,
+      "validityDays": 30
+    },
+    {
+      "id": "s_event_ticket",
+      "name": "Climate Summit Ticket",
+      "description": "Virtual access ticket to the upcoming Global Climate Webinar.",
+      "cost": 1000,
+      "type": "Event Access",
+      "rarity": "Legendary",
+      "isPurchasable": true,
+      "validityDays": 90
+    }
+  ],
+  "userRewards": [
+    {
+      "id": "b91092dc-64cf-4a27-8713-4e0555d8c548",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "rewardId": "r_badge_starter",
+      "status": "Claimed",
+      "earnedDate": "2026-01-17T15:22:12.054Z",
+      "source": "Achievement"
+    }
+  ],
+  "rewardTransactions": [
+    {
+      "id": "8bf91950-90b1-4c53-9a71-e6e2d8438459",
+      "userId": "110718f9-40cf-4981-bd4f-f9e11cc96275",
+      "rewardId": "r_badge_starter",
+      "action": "Claim",
+      "cost": 0,
+      "timestamp": "2026-01-17T15:22:12.054Z"
+    }
+  ],
+  "karmaLedger": []
+}

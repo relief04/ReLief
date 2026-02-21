@@ -1,0 +1,255 @@
+/* Carbon Savings Card Styles */
+
+.card {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Header */
+.header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.icon {
+    font-size: 32px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.headerText h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #2e7d32;
+}
+
+.headerText p {
+    margin: 4px 0 0 0;
+    font-size: 13px;
+    color: #558b2f;
+    opacity: 0.8;
+}
+
+/* Main Stat */
+.mainStat {
+    text-align: center;
+    margin: 24px 0;
+}
+
+.savingsValue {
+    font-size: 48px;
+    font-weight: 700;
+    color: #1b5e20;
+    line-height: 1;
+}
+
+.unit {
+    font-size: 20px;
+    font-weight: 500;
+    color: #388e3c;
+    margin-left: 8px;
+}
+
+.savingsLabel {
+    font-size: 14px;
+    color: #558b2f;
+    margin-top: 8px;
+}
+
+/* Equivalence */
+.equivalence {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    margin: 16px 0;
+}
+
+.equivalenceIcon {
+    font-size: 24px;
+}
+
+.equivalenceText {
+    font-size: 13px;
+    color: #2e7d32;
+    font-weight: 500;
+}
+
+/* Stats Row */
+.stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    margin: 20px 0;
+    padding: 16px 0;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+}
+
+.statItem {
+    text-align: center;
+    flex: 1;
+}
+
+.statLabel {
+    font-size: 12px;
+    color: #558b2f;
+    margin-bottom: 6px;
+}
+
+.statValue {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.statValue.positive {
+    color: #2e7d32;
+}
+
+.statValue.negative {
+    color: #d32f2f;
+}
+
+.statDivider {
+    width: 1px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Progress Bar */
+.progressBar {
+    margin: 20px 0;
+}
+
+.progressLabel {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #2e7d32;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.progressTrack {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, #66bb6a 0%, #43a047 100%);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+/* Footer */
+.footer {
+    margin-top: 20px;
+}
+
+.detailsButton {
+    width: 100%;
+    padding: 12px;
+    background: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.detailsButton:hover {
+    background: #1b5e20;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+
+.detailsButton:active {
+    transform: translateY(0);
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .card {
+        background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+    }
+
+    .headerText h3,
+    .savingsValue,
+    .equivalenceText,
+    .statLabel,
+    .progressLabel {
+        color: #e8f5e9;
+    }
+
+    .headerText p,
+    .savingsLabel {
+        color: #c8e6c9;
+    }
+
+    .unit {
+        color: #a5d6a7;
+    }
+
+    .equivalence,
+    .stats {
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    .progressTrack {
+        background: rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .card {
+        padding: 20px;
+    }
+
+    .savingsValue {
+        font-size: 40px;
+    }
+
+    .unit {
+        font-size: 18px;
+    }
+
+    .stats {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .statDivider {
+        display: none;
+    }
+}

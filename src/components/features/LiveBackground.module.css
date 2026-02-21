@@ -1,0 +1,106 @@
+.backgroundContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+    background-color: var(--color-bg-100);
+    background-image: radial-gradient(circle at 20% 30%, rgba(5, 150, 105, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(8, 145, 178, 0.05) 0%, transparent 50%);
+    transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gradientOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%,
+            rgba(5, 150, 105, 0.08),
+            transparent 80%);
+    pointer-events: none;
+    mix-blend-mode: screen;
+}
+
+.particlesContainer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+/* ── Base leaf ── */
+.leaf {
+    position: absolute;
+    width: 22px;
+    height: 28px;
+    opacity: 0.22;
+    filter: blur(1.5px);
+    animation: floatLeaf linear infinite;
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+/* ── Leaf shape variants ── */
+.leafVariant0 {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.7), rgba(5, 150, 105, 0.5));
+    clip-path: ellipse(40% 50% at 50% 50%);
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+}
+
+.leafVariant1 {
+    background: linear-gradient(160deg, rgba(34, 197, 94, 0.65), rgba(21, 128, 61, 0.45));
+    clip-path: polygon(50% 0%, 100% 40%, 80% 100%, 20% 100%, 0% 40%);
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.25);
+    width: 18px;
+    height: 24px;
+}
+
+.leafVariant2 {
+    background: linear-gradient(140deg, rgba(52, 211, 153, 0.6), rgba(6, 95, 70, 0.4));
+    clip-path: polygon(50% 0%, 95% 35%, 75% 100%, 50% 85%, 25% 100%, 5% 35%);
+    box-shadow: 0 0 10px rgba(52, 211, 153, 0.3);
+    width: 20px;
+    height: 26px;
+}
+
+@keyframes floatLeaf {
+    0% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+
+    25% {
+        transform: translate(40px, -60px) rotate(90deg) scale(1.08);
+    }
+
+    50% {
+        transform: translate(80px, -30px) rotate(180deg) scale(1.15);
+    }
+
+    75% {
+        transform: translate(30px, 40px) rotate(270deg) scale(1.05);
+    }
+
+    100% {
+        transform: translate(0, 0) rotate(360deg) scale(1);
+    }
+}
+
+/* ── Dark mode adjustments ── */
+:global([data-theme='dark']) .leaf {
+    opacity: 0.18;
+}
+
+:global([data-theme='dark']) .leafVariant0 {
+    box-shadow: 0 0 14px rgba(16, 185, 129, 0.35);
+}
+
+:global([data-theme='dark']) .leafVariant1 {
+    box-shadow: 0 0 14px rgba(34, 197, 94, 0.3);
+}
+
+:global([data-theme='dark']) .leafVariant2 {
+    box-shadow: 0 0 14px rgba(52, 211, 153, 0.35);
+}

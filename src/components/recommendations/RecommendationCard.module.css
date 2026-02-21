@@ -1,0 +1,93 @@
+.card {
+    position: relative;
+    overflow: visible;
+}
+
+.categoryBadge {
+    position: absolute;
+    top: -10px;
+    right: 15px;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-md);
+}
+
+.content {
+    padding: 1.5rem;
+    padding-top: 1rem;
+}
+
+.title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-text-100);
+    margin-bottom: 0.75rem;
+}
+
+.description {
+    font-size: 0.95rem;
+    color: var(--color-text-200);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.metadata {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.impact {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(var(--color-primary-rgb), 0.1);
+    border-radius: var(--radius-md);
+}
+
+.impactIcon {
+    font-size: 1.1rem;
+}
+
+.impactText {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.priority {
+    font-size: 1rem;
+}
+
+.actions {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0 1.5rem 1.5rem;
+}
+
+.actions button {
+    flex: 1;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .title {
+        font-size: 1.1rem;
+    }
+
+    .description {
+        font-size: 0.9rem;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+}

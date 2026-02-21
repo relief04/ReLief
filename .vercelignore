@@ -1,0 +1,9 @@
+# Vercel Ignore
+ml-service/
+database/
+*.sql
+*.log
+.git/
+node_modules/
+.next/
+src/database/dump/

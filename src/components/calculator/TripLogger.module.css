@@ -1,0 +1,161 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.mainLabel {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text-100);
+}
+
+.tripsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.tripCard {
+    padding: 1rem !important;
+    background: var(--color-bg-100) !important;
+    border: 1px solid var(--color-bg-300) !important;
+    border-radius: 16px !important;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tripHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.tripTitle {
+    font-weight: 600;
+    color: var(--color-text-200);
+}
+
+.removeBtn {
+    background: none;
+    border: none;
+    color: var(--color-error, #ff4444);
+    cursor: pointer;
+    font-size: 1.2rem;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.removeBtn:hover {
+    opacity: 1;
+}
+
+.modeGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    padding: 0.2rem;
+}
+
+.modeGrid::-webkit-scrollbar {
+    height: 6px;
+}
+
+.modeGrid::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.modeGrid::-webkit-scrollbar-thumb {
+    background: var(--color-bg-300);
+    border-radius: 10px;
+}
+
+.modeButton {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--color-bg-200);
+    border: 1.5px solid var(--color-bg-300);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--color-text-200);
+    flex: 1 1 140px;
+    /* Allow items to grow and wrap at ~140px */
+}
+
+.activeMode {
+    background: rgba(var(--color-primary-rgb), 0.1);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.modeIcon {
+    font-size: 1.1rem;
+}
+
+.modeLabel {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.inputGroup {
+    width: 100%;
+}
+
+.distanceInput {
+    width: 100%;
+    padding: 0.875rem;
+    background: var(--color-bg-200);
+    border: 1px solid var(--color-bg-300);
+    border-radius: 10px;
+    color: var(--color-text-100);
+    font-size: 1rem;
+    outline: none;
+}
+
+.distanceInput:focus {
+    border-color: var(--color-primary);
+}
+
+.addBtn {
+    width: 100%;
+    padding: 1rem;
+    background: rgba(var(--color-primary-rgb), 0.05);
+    border: 2px dashed var(--color-bg-300);
+    border-radius: 12px;
+    color: var(--color-primary);
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.addBtn:hover {
+    background: rgba(var(--color-primary-rgb), 0.1);
+    border-color: var(--color-primary);
+}
+
+.plus {
+    font-size: 1.4rem;
+    line-height: 1;
+}

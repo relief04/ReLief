@@ -1,0 +1,106 @@
+.container {
+    padding: 2rem 1.5rem;
+    max-width: var(--max-width);
+    margin: 0 auto;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem 0;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.header p {
+    color: var(--color-text-secondary);
+    font-size: 1.1rem;
+}
+
+.navTabs {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+    background: var(--color-card-background);
+    padding: 0.5rem;
+    border-radius: 9999px;
+    box-shadow: var(--shadow-md);
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid var(--color-border);
+}
+
+.navTabs button {
+    background: transparent;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    border-radius: 9999px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.navTabs button:hover {
+    color: var(--color-primary);
+    background: var(--color-background-hover);
+}
+
+.navTabs button.activeTab {
+    background: var(--color-primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+}
+
+.navTabs button.activeTab:hover {
+    background: var(--color-primary-dark);
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2.5rem;
+}
+
+/* When sidebar exists, it takes 300px */
+.layout:has(.sidebar) {
+    grid-template-columns: 1fr 300px;
+}
+
+.mainContent {
+    min-width: 0;
+    /* Prevent overflow */
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    width: 300px;
+}
+
+@media (max-width: 900px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        display: none;
+        /* Hide sidebar on small screens or move to bottom if preferred */
+    }
+}

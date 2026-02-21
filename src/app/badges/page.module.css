@@ -1,0 +1,188 @@
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.topNav {
+    margin-bottom: 2rem;
+}
+
+.backLink {
+    color: var(--color-text-200);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+.backLink:hover {
+    color: var(--color-primary);
+}
+
+
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--color-text-100);
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: var(--color-text-200);
+    margin-bottom: 2rem;
+}
+
+.overallProgress {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background: var(--color-bg-100);
+    border: 1px solid var(--color-bg-300);
+    border-radius: var(--radius-lg);
+}
+
+.progressInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.progressLabel {
+    font-size: 0.9rem;
+    color: var(--color-text-200);
+    font-weight: 500;
+}
+
+.progressValue {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.progressBarLarge {
+    height: 12px;
+    background: var(--color-bg-300);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progressFillLarge {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+    border-radius: 999px;
+    transition: width 0.8s ease;
+}
+
+.progressPercentage {
+    display: block;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--color-text-200);
+    font-weight: 600;
+}
+
+.filters {
+    margin-bottom: 2rem;
+}
+
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--color-bg-300);
+}
+
+.tab {
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-100);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+}
+
+.tab:hover {
+    color: var(--color-primary);
+}
+
+.tabActive {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+}
+
+.filterSelects {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.select {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-bg-300);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-100);
+    color: var(--color-text-100);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 180px;
+}
+
+.select:hover {
+    border-color: var(--color-primary);
+}
+
+.select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 1.5rem 1rem;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tab {
+        white-space: nowrap;
+        font-size: 0.9rem;
+        padding: 0.65rem 1rem;
+    }
+
+    .filterSelects {
+        flex-direction: column;
+    }
+
+    .select {
+        width: 100%;
+    }
+}

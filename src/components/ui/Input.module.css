@@ -1,0 +1,61 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text-200);
+}
+
+.input {
+    padding: 0.8rem 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-bg-300);
+    background-color: var(--color-bg-100);
+    color: var(--color-text-100);
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    width: 100%;
+    box-shadow: var(--shadow-sm);
+}
+
+.input::placeholder {
+    color: var(--color-text-300);
+    opacity: 0.7;
+}
+
+.input:hover:not(:disabled) {
+    border-color: var(--color-text-300);
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    /* Emerald glow */
+}
+
+.input:disabled {
+    background-color: var(--color-bg-200);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.input.error {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 1px var(--color-danger);
+}
+
+.input.error:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.errorMessage {
+    font-size: 0.8rem;
+    color: var(--color-danger);
+    font-weight: 500;
+}

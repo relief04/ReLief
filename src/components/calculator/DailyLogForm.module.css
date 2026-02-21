@@ -1,0 +1,205 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.mealTypeGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-text-200);
+}
+
+.mealTypeSelector {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.mealTypeBtn {
+    padding: 0.5rem 1rem;
+    background: var(--color-bg-100);
+    border: 1px solid var(--color-bg-300);
+    border-radius: 12px;
+    color: var(--color-text-200);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.activeMealType {
+    background: rgba(var(--color-primary-rgb), 0.1);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(var(--color-primary-rgb), 0.1);
+    color: var(--color-primary);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.sectionTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-100);
+}
+
+.description {
+    font-size: 0.95rem;
+    color: var(--color-text-200);
+}
+
+.addDetails {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    margin-top: 0.5rem;
+    background: var(--color-bg-100);
+    border: 1px solid var(--color-bg-300);
+    border-radius: 12px;
+    color: var(--color-text-200);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.detailsActive {
+    border-color: var(--color-primary);
+    background: rgba(var(--color-primary-rgb), 0.05);
+}
+
+.chevron {
+    font-size: 0.75rem;
+    opacity: 0.6;
+    transition: transform 0.3s ease;
+}
+
+.chevronRotated {
+    transform: rotate(180deg);
+}
+
+.applianceGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--color-bg-100);
+    border: 1px solid var(--color-bg-300);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    margin-top: -0.5rem;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.applianceBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--color-bg-200);
+    border: 1px solid var(--color-bg-300);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--color-text-200);
+    font-size: 0.9rem;
+}
+
+.appIcon {
+    font-size: 1.1rem;
+}
+
+.activeAppliance {
+    background: rgba(var(--color-primary-rgb), 0.1);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.checkboxGroup {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    color: var(--color-text-200);
+    font-size: 0.95rem;
+}
+
+.checkboxGroup input {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.submitBtn {
+    width: 100% !important;
+    background: var(--color-primary) !important;
+    color: black !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+    padding: 1.25rem !important;
+    border-radius: 100px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    border: none !important;
+}
+
+.checkIcon {
+    font-size: 1.25rem;
+    border: 2px solid black;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .form {
+        gap: 2rem;
+    }
+}

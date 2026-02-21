@@ -1,0 +1,167 @@
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import styles from './DailyLogForm.module.css';
+import { TripLogger } from './TripLogger';
+import { UsageSelector } from './UsageSelector';
+import { CounterInput } from './CounterInput';
+import { DailyLogInput, Trip, UsageLevel, DietType, calculateDailyLogEmissions, CalculationResult } from '@/lib/calculator';
+import { Button } from '@/components/ui/Button';
+
+interface DailyLogFormProps {
+    onCalculate: (result: CalculationResult) => void;
+    baseDiet?: any;
+}
+
+export const DailyLogForm: React.FC<DailyLogFormProps> = ({ onCalculate, baseDiet }) => {
+    const [trips, setTrips] = useState<Trip[]>([
+        { id: '1', mode: 'car', distance: 0 }
+    ]);
+    const [electricity, setElectricity] = useState<UsageLevel>('typical');
+    const [water, setWater] = useState<UsageLevel>('typical');
+    const [meals, setMeals] = useState(3);
+    const [mealType, setMealType] = useState<DietType>('omnivore');
+    const [dietDifferent, setDietDifferent] = useState(false);
+    const [showDetails, setShowDetails] = useState(false);
+    const [selectedAppliances, setSelectedAppliances] = useState<string[]>([]);
+
+    const handleAddTrip = () => {
+        const newTrip: Trip = {
+            id: Math.random().toString(36).substr(2, 9),
+            mode: 'car',
+            distance: 0
+        };
+        setTrips([...trips, newTrip]);
+    };
+
+    const handleRemoveTrip = (id: string) => {
+        setTrips(trips.filter(t => t.id !== id));
+    };
+
+    const handleUpdateTrip = (id: string, updates: Partial<Trip>) => {
+        setTrips(trips.map(t => t.id === id ? { ...t, ...updates } : t));
+    };
+
+    const toggleAppliance = (id: string) => {
+        if (selectedAppliances.includes(id)) {
+            setSelectedAppliances(selectedAppliances.filter(a => a !== id));
+        } else {
+            setSelectedAppliances([...selectedAppliances, id]);
+        }
+    };
+
+    const handleCalculate = () => {
+        const input: DailyLogInput = {
+            trips,
+            electricityUsage: electricity,
+            waterUsage: water,
+            meals,
+            mealType,
+            dietDifferent,
+            appliances: selectedAppliances,
+            flights: [], // Option for future expansion
+            hotelStays: [] // Option for future expansion
+        };
+
+        const result = calculateDailyLogEmissions(input, baseDiet || 'omnivore');
+        onCalculate(result);
+    };
+
+    return (
+        <div className={styles.form}>
+            <TripLogger
+                trips={trips}
+                onAddTrip={handleAddTrip}
+                onRemoveTrip={handleRemoveTrip}
+                onUpdateTrip={handleUpdateTrip}
+            />
+
+            <div className={styles.section}>
+                <div className={styles.sectionHeader}>
+                    <span className={styles.icon}>⚡</span>
+                    <span className={styles.sectionTitle}>Home Electricity</span>
+                </div>
+                <p className={styles.description}>Overall usage today</p>
+                <UsageSelector value={electricity} onChange={setElectricity} />
+
+                <div
+                    className={`${styles.addDetails} ${showDetails ? styles.detailsActive : ''}`}
+                    onClick={() => setShowDetails(!showDetails)}
+                >
+                    <span>Add details (AC, appliances)</span>
+                    <span className={`${styles.chevron} ${showDetails ? styles.chevronRotated : ''}`}>▼</span>
+                </div>
+
+                {showDetails && (
+                    <div className={styles.applianceGrid}>
+                        {[
+                            { id: 'ac', label: 'Air Conditioner', icon: '❄️' },
+                            { id: 'heater', label: 'Water Heater', icon: '🚿' },
+                            { id: 'oven', label: 'Electric Oven', icon: '🍞' },
+                            { id: 'ev_charge', label: 'EV Charging', icon: '⚡' }
+                        ].map(app => (
+                            <button
+                                key={app.id}
+                                type="button"
+                                className={`${styles.applianceBtn} ${selectedAppliances.includes(app.id) ? styles.activeAppliance : ''}`}
+                                onClick={() => toggleAppliance(app.id)}
+                            >
+                                <span className={styles.appIcon}>{app.icon}</span>
+                                <span className={styles.appLabel}>{app.label}</span>
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            <div className={styles.section}>
+                <CounterInput
+                    label="🍴 Meals"
+                    value={meals}
+                    onChange={setMeals}
+                />
+
+                <div className={styles.mealTypeGroup}>
+                    <label className={styles.label}>Meal Type</label>
+                    <div className={styles.mealTypeSelector}>
+                        {(['meat', 'omnivore', 'vegetarian', 'vegan'] as DietType[]).map((type) => (
+                            <button
+                                key={type}
+                                type="button"
+                                className={`${styles.mealTypeBtn} ${mealType === type ? styles.activeMealType : ''}`}
+                                onClick={() => setMealType(type)}
+                            >
+                                {type.charAt(0).toUpperCase() + type.slice(1)}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className={styles.checkboxGroup}>
+                    <input
+                        type="checkbox"
+                        id="dietDifferent"
+                        checked={dietDifferent}
+                        onChange={(e) => setDietDifferent(e.target.checked)}
+                    />
+                    <label htmlFor="dietDifferent">Diet different from usual today?</label>
+                </div>
+            </div>
+
+            <div className={styles.section}>
+                <div className={styles.sectionHeader}>
+                    <span className={styles.icon}>💧</span>
+                    <span className={styles.sectionTitle}>Water Usage</span>
+                </div>
+                <p className={styles.description}>Water usage today</p>
+                <UsageSelector value={water} onChange={setWater} />
+            </div>
+
+            <div className={styles.actions}>
+                <Button onClick={handleCalculate} variant="primary" size="lg" className={styles.submitBtn}>
+                    <span className={styles.checkIcon}>✓</span> Submit Daily Log
+                </Button>
+            </div>
+        </div>
+    );
+};

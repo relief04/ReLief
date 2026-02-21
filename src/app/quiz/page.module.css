@@ -1,0 +1,510 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    color: var(--color-text-100);
+}
+
+.levelGrid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.levelCard {
+    padding: 2rem;
+    border-left: 5px solid var(--color-primary);
+    transition: transform 0.2s;
+}
+
+.levelCard:hover {
+    transform: translateY(-2px);
+}
+
+.levelCard.locked {
+    border-left-color: var(--color-text-300);
+    opacity: 0.7;
+    filter: grayscale(0.8);
+}
+
+.levelHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.levelBadge {
+    background: var(--color-bg-300);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.startBtn {
+    margin-top: 1rem;
+}
+
+/* Quiz View */
+.quizHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.progressBar {
+    height: 6px;
+    background: var(--color-bg-300);
+    border-radius: 3px;
+    margin-bottom: 2rem;
+}
+
+.progressFill {
+    height: 100%;
+    background: var(--color-primary);
+    transition: width 0.3s ease;
+}
+
+.questionCard {
+    padding: 2rem;
+}
+
+.questionText {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    line-height: 1.4;
+}
+
+.optionsGrid {
+    display: grid;
+    gap: 1rem;
+}
+
+.optionBtn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: var(--color-bg-100);
+    border: 2px solid var(--color-bg-300);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    text-align: left;
+    transition: all 0.2s;
+    color: var(--color-text-100);
+}
+
+.optionBtn:hover {
+    border-color: var(--color-primary);
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.optLabel {
+    background: var(--color-bg-300);
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.warning {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--color-warning);
+    text-align: center;
+}
+
+/* Result View */
+.resultCard {
+    text-align: center;
+    padding: 3rem;
+}
+
+.resultIcon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.success h1 {
+    color: var(--color-primary);
+}
+
+.fail h1 {
+    color: #EF4444;
+}
+
+.actionRow {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* Certificate View */
+.certBanner {
+    margin-top: 2rem;
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    color: white;
+}
+
+.certToolbar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.certificatePaper {
+    background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+    color: #000;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(16, 185, 129, 0.3);
+    margin: 0 auto;
+    max-width: 800px;
+    aspect-ratio: 0.707;
+    border-radius: 12px;
+}
+
+.certBorder {
+    border: 8px solid transparent;
+    background: linear-gradient(white, white) padding-box,
+        linear-gradient(135deg, #10B981, #059669, #10B981) border-box;
+    border-radius: 8px;
+    padding: 3rem;
+    position: relative;
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Decorative corners */
+.cornerTopLeft,
+.cornerTopRight,
+.cornerBottomLeft,
+.cornerBottomRight {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border: 3px solid #10B981;
+}
+
+.cornerTopLeft {
+    top: 20px;
+    left: 20px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.cornerTopRight {
+    top: 20px;
+    right: 20px;
+    border-left: none;
+    border-bottom: none;
+}
+
+.cornerBottomLeft {
+    bottom: 20px;
+    left: 20px;
+    border-right: none;
+    border-top: none;
+}
+
+.cornerBottomRight {
+    bottom: 20px;
+    right: 20px;
+    border-left: none;
+    border-top: none;
+}
+
+/* Header */
+.certHeader {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.certLogo {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.certHeader h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #10B981, #059669);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0.5rem 0;
+    letter-spacing: 1px;
+}
+
+.certSubtitle {
+    font-size: 1.1rem;
+    color: #6B7280;
+    font-weight: 500;
+    margin-top: 0.5rem;
+}
+
+/* Body */
+.certBody {
+    text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.certIntro {
+    font-size: 1.1rem;
+    color: #6B7280;
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+.certName {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 1.5rem 0;
+    border-bottom: 3px solid #10B981;
+    padding-bottom: 1rem;
+    display: inline-block;
+}
+
+.certText {
+    font-size: 1.1rem;
+    color: #4B5563;
+    margin: 1rem 0;
+}
+
+.certProgram {
+    font-size: 2rem;
+    color: #059669;
+    font-weight: 700;
+    margin: 1.5rem 0;
+}
+
+.certAchievement {
+    font-size: 1rem;
+    color: #6B7280;
+    margin: 1.5rem 0 1rem 0;
+}
+
+.certLevels {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+.levelBadgeGreen {
+    background: linear-gradient(135deg, #10B981, #059669);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Footer */
+.certFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid #E5E7EB;
+}
+
+.certInfo {
+    display: flex;
+    gap: 3rem;
+    flex: 1;
+}
+
+.certId,
+.certDate {
+    text-align: left;
+}
+
+.certId small,
+.certDate small {
+    display: block;
+    font-size: 0.75rem;
+    color: #9CA3AF;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.25rem;
+}
+
+.certId strong,
+.certDate strong {
+    display: block;
+    font-size: 0.95rem;
+    color: #111827;
+    font-weight: 600;
+}
+
+.certSeal {
+    width: 120px;
+    height: 120px;
+    position: relative;
+}
+
+.sealInner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FCD34D, #F59E0B);
+    border: 5px dashed #D97706;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-15deg);
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+}
+
+.sealIcon {
+    font-size: 2.5rem;
+}
+
+.sealText {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #92400E;
+    letter-spacing: 1px;
+}
+
+/* Print styles */
+@media print {
+    @page {
+        size: A4 landscape;
+        margin: 0.5cm;
+    }
+
+    /* Global print reset handled in globals.css if needed, or scoped specific classes here */
+    /* :global(html), :global(body) removed to fix purity error */
+
+    .certToolbar {
+        display: none !important;
+    }
+
+    .container {
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+
+    .certificatePaper {
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%) !important;
+        page-break-inside: avoid;
+        page-break-after: avoid;
+        page-break-before: avoid;
+    }
+
+    .certBorder {
+        padding: 2cm !important;
+        min-height: auto !important;
+        page-break-inside: avoid;
+    }
+
+    .certLogo {
+        animation: none !important;
+    }
+
+    .certHeader h1 {
+        background: linear-gradient(135deg, #10B981, #059669) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+    }
+
+    .levelBadgeGreen {
+        background: linear-gradient(135deg, #10B981, #059669) !important;
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+    }
+
+    .sealInner {
+        background: linear-gradient(135deg, #FCD34D, #F59E0B) !important;
+        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4) !important;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .certificatePaper {
+        padding: 1.5rem;
+    }
+
+    .certBorder {
+        padding: 2rem 1.5rem;
+    }
+
+    .certName {
+        font-size: 2.5rem;
+    }
+
+    .certProgram {
+        font-size: 1.5rem;
+    }
+
+    .certLevels {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .certFooter {
+        flex-direction: column;
+        gap: 2rem;
+        align-items: center;
+    }
+
+    .certInfo {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+    }
+
+    .certId,
+    .certDate {
+        text-align: center;
+    }
+}

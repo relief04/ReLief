@@ -1,0 +1,324 @@
+.postCard {
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.postCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.postHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.author {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0;
+}
+
+.timestamp {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+}
+
+.content {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-text);
+    margin-bottom: 1rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.hashtag {
+    color: var(--color-primary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.hashtag:hover {
+    color: var(--color-secondary);
+    text-decoration: underline;
+}
+
+.postImage {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    max-height: 500px;
+}
+
+.postImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.hashtagList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.hashtagBadge {
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    padding: 0.25rem 0.75rem;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.hashtagBadge:hover {
+    background: var(--color-primary);
+    color: white;
+}
+
+.postFooter {
+    display: flex;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.actionBtn {
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.actionBtn:hover {
+    background: var(--color-background-secondary);
+    color: var(--color-text);
+}
+
+.actionBtn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.actionBtn.liked {
+    color: #e74c3c;
+    font-weight: 600;
+}
+
+.commentsSection {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.commentsList {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+}
+
+.loadingText {
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    padding: 1rem;
+}
+
+.noComments {
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    padding: 1rem;
+    font-style: italic;
+}
+
+.comment {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: var(--color-background-secondary);
+}
+
+.commentAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.commentContent {
+    flex: 1;
+}
+
+.commentContent strong {
+    font-size: 0.9rem;
+    color: var(--color-text);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.commentContent p {
+    font-size: 0.9rem;
+    color: var(--color-text);
+    margin: 0.25rem 0;
+    line-height: 1.5;
+}
+
+.commentTime {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+}
+
+.commentForm {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.commentInput {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 24px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+    background: var(--color-background);
+    color: var(--color-text);
+}
+
+.commentInput:focus {
+    border-color: var(--color-primary);
+}
+
+.commentInput::placeholder {
+    color: var(--color-text-secondary);
+}
+
+/* Scrollbar styling for comments */
+.commentsList::-webkit-scrollbar {
+    width: 6px;
+}
+
+.commentsList::-webkit-scrollbar-track {
+    background: var(--color-background-secondary);
+    border-radius: 3px;
+}
+
+.commentsList::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 3px;
+}
+
+.commentsList::-webkit-scrollbar-thumb:hover {
+    background: var(--color-secondary);
+}
+
+.menuActions {
+    margin-left: auto;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.editForm {
+    margin: 1rem 0;
+}
+
+.editTextarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.editActions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+/* Likes Section Styles */
+.likesSection {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--color-background-secondary, #1a1a1a);
+    border-radius: 8px;
+}
+
+.likesSection h4 {
+    font-size: 0.9rem;
+    margin: 0 0 0.75rem 0;
+    color: var(--color-text-secondary, #a3a3a3);
+}
+
+.likesList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.likeUser {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    background: var(--color-surface, #262626);
+    border-radius: 6px;
+}
+
+.likeAvatar {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, var(--color-primary, #10b981), var(--color-secondary, #3b82f6));
+    border-radius: 50%;
+}
+
+.likeName {
+    font-size: 0.9rem;
+    color: var(--color-text, #ffffff);
+    font-weight: 500;
+}

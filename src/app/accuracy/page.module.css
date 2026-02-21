@@ -1,0 +1,142 @@
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.header h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    letter-spacing: -1.5px;
+    background: linear-gradient(135deg, var(--text-color), var(--color-primary, #4caf50));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.header p {
+    font-size: 1.2rem;
+    color: var(--text-secondary, #838383);
+}
+
+.section {
+    margin-bottom: 4rem;
+}
+
+.section h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.section p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--text-secondary, #e0e0e0);
+}
+
+.sourceGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.methodCard {
+    padding: 2.5rem;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.icon {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.methodCard h3 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+}
+
+.methodCard p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-secondary, #838383);
+    white-space: pre-line;
+}
+
+.factorsTable h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.tableWrapper {
+    overflow-x: auto;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    text-align: left;
+    padding: 1.2rem;
+    background: rgba(255, 255, 255, 0.03);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary, #838383);
+}
+
+.table td {
+    padding: 1.2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.disclaimerCard {
+    margin-top: 4rem;
+    padding: 2.5rem;
+    background: rgba(76, 175, 80, 0.05);
+    border: 1px solid rgba(76, 175, 80, 0.15);
+}
+
+.disclaimerCard h3 {
+    margin-bottom: 1rem;
+    color: var(--color-primary, #4caf50);
+}
+
+.disclaimerCard p {
+    line-height: 1.6;
+    color: var(--text-secondary, #e0e0e0);
+}
+
+.footer {
+    margin-top: 5rem;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 3rem;
+}
+
+.footer a {
+    color: var(--color-primary, #4caf50);
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .sourceGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .header h1 {
+        font-size: 2.25rem;
+    }
+}

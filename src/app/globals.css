@@ -1,0 +1,178 @@
+:root {
+  /* Core Brand Colors - Premium Nature Inspired */
+  --color-primary: #059669;
+  /* Emerald 600 - Deeper, richer green */
+  --color-primary-dark: #047857;
+  /* Emerald 700 */
+  --color-secondary: #0891b2;
+  /* Cyan 600 - Ocean teal */
+  --color-accent: #fbbf24;
+  /* Amber 400 - Warm sunlight */
+  --color-danger: #ef4444;
+  --color-success: #10b981;
+
+  /* Neutral scale - clean and crisp */
+  --color-bg-50: #f9fafb;
+  /* Cool Gray 50 */
+  --color-bg-100: #ffffff;
+  --color-bg-200: #f3f4f6;
+  /* Cool slight gray */
+  --color-bg-300: #e5e7eb;
+  --color-text-100: #111827;
+  /* Nearly black */
+  --color-text-200: #374151;
+  --color-text-300: #6b7280;
+
+  /* Component Mappings (Light Mode) */
+  --color-card-background: var(--color-bg-100);
+  --color-input-background: #ffffff;
+  --color-background-secondary: var(--color-bg-200);
+  --color-background-hover: var(--color-bg-300);
+  --color-border: var(--color-bg-300);
+  --color-text: var(--color-text-100);
+  --color-text-secondary: var(--color-text-200);
+
+
+  /* Gamification Colors */
+  --streak-fire: #f59e0b;
+  --forest-leaf: #10b981;
+
+  /* Design Tokens */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 3rem;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-glow: 0 0 25px rgba(5, 150, 105, 0.4);
+  --shadow-premium: 0 0 40px -10px rgba(16, 185, 129, 0.3);
+
+  /* Premium Gradients */
+  --gradient-emerald: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  --gradient-premium: linear-gradient(135deg, #10b981 0%, #0891b2 100%);
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+
+  /* Theme-aware Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-shadow: rgba(0, 0, 0, 0.1);
+
+  --max-width: 1240px;
+  --nav-height: 80px;
+}
+
+[data-theme='dark'] {
+  --color-bg-50: #020617;
+  /* Slate 950 - Very dark for contrast */
+  --color-bg-100: #0f172a;
+  /* Slate 900 */
+  --color-bg-200: #1e293b;
+  /* Slate 800 */
+  --color-bg-300: #334155;
+  /* Slate 700 */
+  --color-text-100: #f3f4f6;
+  --color-text-200: #e5e7eb;
+  --color-text-300: #9ca3af;
+
+  /* Component Mappings (Dark Mode) */
+  --color-card-background: var(--color-bg-200);
+  --color-input-background: var(--color-bg-300);
+  --color-background-secondary: #0f172a;
+  /* Darker than card */
+  --color-background-hover: var(--color-bg-300);
+  --color-border: var(--color-bg-300);
+  --color-text: var(--color-text-100);
+  --color-text-secondary: var(--color-text-300);
+
+  --color-primary: #34d399;
+  /* Emerald 400 - Bright & Neon for Dark Mode */
+  --color-primary-dark: #10b981;
+
+  /* Theme-aware Glassmorphism */
+  --glass-bg: rgba(15, 23, 42, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: rgba(0, 0, 0, 0.4);
+}
+
+
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-bg-100);
+  color: var(--color-text-100);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+  line-height: 1.6;
+  font-family: var(--font-body), sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Typography Defaults */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading), sans-serif;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  /* Tightens heaings for modern look */
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Utilities */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.vis-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+/* Global Print Styles */
+@media print {
+
+  /* Hide UI elements */
+  nav,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Ensure backgrounds print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    background: white;
+  }
+}

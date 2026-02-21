@@ -1,0 +1,72 @@
+/* Quick Actions Chips */
+
+.quickActions {
+    padding: 0 20px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding-top: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .quickActions {
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+}
+
+.actionChip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: rgba(102, 187, 106, 0.1);
+    border: 1px solid rgba(102, 187, 106, 0.3);
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--color-text-primary, #333);
+}
+
+.actionChip:hover {
+    background: rgba(102, 187, 106, 0.2);
+    border-color: rgba(102, 187, 106, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(102, 187, 106, 0.2);
+}
+
+.actionChip:active {
+    transform: translateY(0);
+}
+
+.actionIcon {
+    font-size: 16px;
+}
+
+.actionLabel {
+    font-weight: 500;
+}
+
+@media (prefers-color-scheme: dark) {
+    .actionChip {
+        background: rgba(102, 187, 106, 0.15);
+        color: white;
+    }
+
+    .actionChip:hover {
+        background: rgba(102, 187, 106, 0.25);
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .actionChip {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    .actionIcon {
+        font-size: 14px;
+    }
+}
