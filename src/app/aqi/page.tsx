@@ -222,9 +222,9 @@ export default function AQIPage() {
 
                     {/* Map Section */}
                     {coords && (
-                        <div className={styles.mapSection}>
+                        <div className={styles.mapSection} data-status={data.status}>
                             <div className={styles.mapWrapper}>
-                                <AQIMap lat={coords.lat} lon={coords.lon} />
+                                <AQIMap lat={coords.lat} lon={coords.lon} status={data.status} />
                             </div>
                         </div>
                     )}

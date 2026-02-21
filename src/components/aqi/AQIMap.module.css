@@ -1,0 +1,119 @@
+/* AQIMap.module.css */
+
+.markerContainer {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.markerCenter {
+    width: 12px;
+    height: 12px;
+    background-color: white;
+    border-radius: 50%;
+    border: 2px solid var(--marker-color, #10b981);
+    z-index: 2;
+    box-shadow: 0 0 10px var(--marker-color, rgba(16, 185, 129, 0.5));
+}
+
+.markerPulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: var(--marker-color, #10b981);
+    opacity: 0.6;
+    animation: pulseMarker 2s ease-out infinite;
+    z-index: 1;
+}
+
+@keyframes pulseMarker {
+    0% {
+        transform: scale(0.5);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(3);
+        opacity: 0;
+    }
+}
+
+/* Custom Map Overlay Controls */
+.legend {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: white;
+    font-size: 11px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    pointer-events: auto;
+}
+
+.legendTitle {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    color: #94a3b8;
+}
+
+.legendItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.colorBar {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+/* Custom Zoom Buttons */
+.controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.zoomBtn {
+    width: 40px;
+    height: 40px;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.zoomBtn:hover {
+    background: rgba(30, 41, 59, 0.9);
+    border-color: #10b981;
+    transform: translateY(-2px);
+}
+
+.zoomBtn:active {
+    transform: translateY(0);
+}

@@ -162,6 +162,27 @@
     box-shadow: 0 12px 40px 0 var(--glass-shadow);
     padding: 1rem;
     position: relative;
+    transition: all 0.5s ease;
+}
+
+.mapSection[data-status="Good"] {
+    box-shadow: 0 0 30px rgba(46, 204, 113, 0.15), 0 12px 40px var(--glass-shadow);
+    border-color: rgba(46, 204, 113, 0.3);
+}
+
+.mapSection[data-status="Moderate"] {
+    box-shadow: 0 0 30px rgba(241, 196, 15, 0.15), 0 12px 40px var(--glass-shadow);
+    border-color: rgba(241, 196, 15, 0.3);
+}
+
+.mapSection[data-status="Unhealthy"] {
+    box-shadow: 0 0 30px rgba(230, 126, 34, 0.15), 0 12px 40px var(--glass-shadow);
+    border-color: rgba(230, 126, 34, 0.3);
+}
+
+.mapSection[data-status="Hazardous"] {
+    box-shadow: 0 0 30px rgba(231, 76, 60, 0.15), 0 12px 40px var(--glass-shadow);
+    border-color: rgba(231, 76, 60, 0.3);
 }
 
 .mapSection::before {
