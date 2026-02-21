@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabaseClient";
 import {
     ArrowRight, ArrowLeft, Leaf, Zap, Droplets, Flame,
     Car, Plane, Utensils, Smartphone, Shirt, Hotel, CheckCircle,
@@ -13,12 +13,6 @@ import { Button } from "@/components/ui/Button";
 import styles from "./page.module.css";
 import { INITIAL_DATA, OnboardingData, FuelType, TravelMode, FlightHaul, FlightClass, DietType } from "./types";
 import { calculateFootprint } from "./calculations";
-
-// Supabase Init
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 const TOTAL_STEPS = 14;
 
