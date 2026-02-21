@@ -25,6 +25,7 @@ interface SuccessStoryCardProps {
 export function SuccessStoryCard({ story, onLike, onDelete }: SuccessStoryCardProps) {
     const [liking, setLiking] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [isZoomed, setIsZoomed] = useState(false);
 
     const handleLikeClick = async () => {
         setLiking(true);
@@ -71,7 +72,7 @@ export function SuccessStoryCard({ story, onLike, onDelete }: SuccessStoryCardPr
                             />
                         </div>
                     ) : null}
-                    {!story.before_image_url && !story.after_image_url ? (
+                    {(!story.before_image_url && !story.after_image_url) ? (
                         <div className={styles.imageWrapper} style={{ backgroundColor: '#e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'center' }} key="placeholder">
                             <span style={{ fontSize: '3rem' }}>🌟</span>
                         </div>
