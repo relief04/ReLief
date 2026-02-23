@@ -30,6 +30,7 @@ export function TrendingTopics({ onHashtagClick }: TrendingTopicsProps) {
         const { data: posts, error } = await supabase
             .from('posts')
             .select('hashtags')
+            .is('group_id', null)
             .gte('created_at', sevenDaysAgo.toISOString())
             .not('hashtags', 'is', null);
 

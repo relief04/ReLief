@@ -168,9 +168,9 @@ export default function OnboardingPage() {
                         <h2>How many people live in your household?</h2>
                         <p>Including yourself.</p>
                         <div className={styles.counterLarge}>
-                            <button onClick={() => updateHousehold('size', Math.max(1, data.household.size - 1))}><Minus /></button>
-                            <div className={styles.bigNumber}>{data.household.size}</div>
-                            <button onClick={() => updateHousehold('size', data.household.size + 1)}><Plus /></button>
+                            <button onClick={() => updateHousehold('size', Math.max(1, (data.household.size || 1) - 1))}><Minus /></button>
+                            <div className={styles.bigNumber}>{data.household.size || '?'}</div>
+                            <button onClick={() => updateHousehold('size', (data.household.size || 0) + 1)}><Plus /></button>
                         </div>
                     </div>
                 );
@@ -184,7 +184,8 @@ export default function OnboardingPage() {
                         <div className={styles.inputGroup}>
                             <input
                                 type="number"
-                                value={data.household.electricity.kwh}
+                                placeholder="0"
+                                value={data.household.electricity.kwh ?? ''}
                                 onChange={(e) => updateNestedHousehold('electricity', 'kwh', parseInt(e.target.value) || 0)}
                                 className={styles.mainInput}
                             />
@@ -207,7 +208,8 @@ export default function OnboardingPage() {
                         <div className={styles.inputGroup}>
                             <input
                                 type="number"
-                                value={data.household.water.usage}
+                                placeholder="0"
+                                value={data.household.water.usage ?? ''}
                                 onChange={(e) => updateNestedHousehold('water', 'usage', parseInt(e.target.value) || 0)}
                                 className={styles.mainInput}
                             />
@@ -345,7 +347,7 @@ export default function OnboardingPage() {
                     <div className={styles.cardContent}>
                         <h2>How do you travel most days?</h2>
                         <div className={styles.selectionList}>
-                            {['car', 'two_wheeler', 'bus', 'metro', 'bicycle', 'walking', 'wfh'].map(mode => (
+                            {['car', 'two_wheeler', 'bus', 'metro', 'bicycle', 'walking', 'train'].map(mode => (
                                 <button
                                     key={mode}
                                     className={data.transport.mainMode === mode ? styles.selectedRow : styles.row}
@@ -378,9 +380,10 @@ export default function OnboardingPage() {
                             <div className={styles.inputGroup} style={{ marginBottom: 0, marginTop: '1rem' }}>
                                 <input
                                     type="number"
+                                    placeholder="0"
                                     className={styles.mainInput}
                                     style={{ fontSize: '2rem', width: '120px' }}
-                                    value={data.transport.dailyDistanceKm}
+                                    value={data.transport.dailyDistanceKm ?? ''}
                                     onChange={(e) => updateTransport('dailyDistanceKm', parseInt(e.target.value) || 0)}
                                 />
                                 <span style={{ fontSize: '1.2rem' }}>km</span>
@@ -580,10 +583,15 @@ export default function OnboardingPage() {
     // --- Validation ---
     const isStepValid = () => {
         switch (step) {
+            case 1: return data.household.size !== null && data.household.size > 0;
+            case 2: return data.household.electricity.kwh !== null && data.household.electricity.kwh > 0;
+            case 3: return data.household.water.usage !== null;
             case 4: return data.household.fuels.useNonElectric !== null;
             case 5: return !data.household.fuels.useNonElectric || data.household.fuels.types.length > 0;
             case 7: return data.transport.mainMode !== null;
+            case 8: return data.transport.dailyDistanceKm !== null && data.transport.dailyDistanceKm > 0;
             case 10: return data.food.diet !== null;
+            case 11: return data.food.mealsPerDay !== null && data.food.mealsPerDay > 0;
             default: return true;
         }
     };

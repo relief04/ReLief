@@ -14,9 +14,7 @@ interface DailyLogFormProps {
 }
 
 export const DailyLogForm: React.FC<DailyLogFormProps> = ({ onCalculate, baseDiet }) => {
-    const [trips, setTrips] = useState<Trip[]>([
-        { id: '1', mode: 'car', distance: 0 }
-    ]);
+    const [trips, setTrips] = useState<Trip[]>([]);
     const [electricity, setElectricity] = useState<UsageLevel>('typical');
     const [water, setWater] = useState<UsageLevel>('typical');
     const [meals, setMeals] = useState(3);

@@ -57,6 +57,7 @@ export function FeedView({ selectedHashtag, onHashtagClick }: FeedViewProps) {
                 const { data: postsData, error: postsError } = await supabase
                     .from('posts')
                     .select('*')
+                    .is('group_id', null)
                     .order('created_at', { ascending: false });
 
                 if (postsError) {

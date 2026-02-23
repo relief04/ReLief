@@ -80,16 +80,17 @@ export function calculateFootprint(data: OnboardingData) {
 
     // 1. Household Energy (divided by household size)
     // Electricity
-    const monthlyElec = data.household.electricity.kwh * ELECTRICITY_FACTOR;
-    breakdown.electricity = (monthlyElec * 12) / 365 / data.household.size;
+    const hhSize = data.household.size || 1;
+    const monthlyElec = (data.household.electricity.kwh || 0) * ELECTRICITY_FACTOR;
+    breakdown.electricity = (monthlyElec * 12) / 365 / hhSize;
 
     // Water
-    let monthlyWaterLitres = data.household.water.usage;
+    let monthlyWaterLitres = data.household.water.usage || 0;
     if (data.household.water.unit === 'm3') monthlyWaterLitres *= 1000;
     if (data.household.water.unit === 'gallons') monthlyWaterLitres *= 3.785;
     const waterCarbon = monthlyWaterLitres * WATER_FACTOR_PER_LITRE;
     // Water is usually grouped with home or lifestyle, putting in homeFuels for now as "Home Utilities"
-    breakdown.homeFuels += (waterCarbon * 12) / 365 / data.household.size;
+    breakdown.homeFuels += (waterCarbon * 12) / 365 / hhSize;
 
     // Heating/Cooking Fuels
     if (data.household.fuels.useNonElectric) {
@@ -105,14 +106,14 @@ export function calculateFootprint(data: OnboardingData) {
         if (data.household.fuels.lpgUsage.unit === 'kg' && mainFuel === 'lpg') factor = 2.96; // LPG kg factor
         if (data.household.fuels.lpgUsage.unit === 'kwh') factor = 0.2; // Generic kWh factor
 
-        monthlyFuelCarbon = amount * factor;
-        breakdown.homeFuels += (monthlyFuelCarbon * 12) / 365 / data.household.size;
+        monthlyFuelCarbon = (amount || 0) * factor;
+        breakdown.homeFuels += (monthlyFuelCarbon * 12) / 365 / hhSize;
     }
 
     // 2. Transport
     // Daily commute
     const mode = data.transport.mainMode || 'car'; // Safety default
-    const dailyCommute = data.transport.dailyDistanceKm * TRANSPORT_FACTORS[mode];
+    const dailyCommute = (data.transport.dailyDistanceKm || 0) * TRANSPORT_FACTORS[mode];
     breakdown.transport = dailyCommute;
 
     // Flights (Annual)
@@ -129,9 +130,10 @@ export function calculateFootprint(data: OnboardingData) {
     const diet = data.food.diet || 'meat_no_beef'; // Safety default
     let dailyFood = DIET_FACTORS_DAILY[diet];
     // Adjust for meals per day (assuming standard is 3)
-    if (data.food.mealsPerDay <= 1) dailyFood *= 0.6;
-    if (data.food.mealsPerDay === 2) dailyFood *= 0.85;
-    if (data.food.mealsPerDay >= 4) dailyFood *= 1.15;
+    const meals = data.food.mealsPerDay || 3;
+    if (meals <= 1) dailyFood *= 0.6;
+    if (meals === 2) dailyFood *= 0.85;
+    if (meals >= 4) dailyFood *= 1.15;
     breakdown.food = dailyFood;
 
     // 4. Lifestyle

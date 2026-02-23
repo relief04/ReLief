@@ -55,9 +55,9 @@ export default function RootLayout({
                 <AIAssistant />
                 <Toaster position="bottom-right" toastOptions={{
                   style: {
-                    background: '#1f2937',
-                    color: '#fff',
-                    border: '1px solid #374151',
+                    background: 'var(--color-bg-200)',
+                    color: 'var(--color-text-100)',
+                    border: '1px solid var(--color-border)',
                   }
                 }} />
               </ProfileSyncWrapper>

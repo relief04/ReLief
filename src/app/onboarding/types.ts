@@ -7,17 +7,17 @@ export type DietType = 'vegan' | 'vegetarian' | 'pescatarian' | 'meat_no_beef' |
 
 export interface TransportData {
     mainMode: TravelMode | null;
-    dailyDistanceKm: number; // 0-5, 6-15, etc. converted to avg or custom
+    dailyDistanceKm: number | null; // null forces user to input
     flights: Record<FlightHaul, Record<FlightClass, number>>;
 }
 
 export interface HouseholdData {
-    size: number;
+    size: number | null; // Forces user to choose
     electricity: {
-        kwh: number;
+        kwh: number | null;
     };
     water: {
-        usage: number;
+        usage: number | null;
         unit: 'm3' | 'litres' | 'gallons';
     };
     fuels: {
@@ -47,7 +47,7 @@ export interface LifestyleData {
 
 export interface FoodData {
     diet: DietType | null;
-    mealsPerDay: number;
+    mealsPerDay: number | null;
 }
 
 export interface OnboardingData {
@@ -59,9 +59,9 @@ export interface OnboardingData {
 
 export const INITIAL_DATA: OnboardingData = {
     household: {
-        size: 1,
-        electricity: { kwh: 150 },
-        water: { usage: 0, unit: 'litres' },
+        size: null,
+        electricity: { kwh: null },
+        water: { usage: null, unit: 'litres' },
         fuels: {
             useNonElectric: null, // Forces user to choose Yes/No
             types: [],
@@ -70,7 +70,7 @@ export const INITIAL_DATA: OnboardingData = {
     },
     transport: {
         mainMode: null, // Forces selection
-        dailyDistanceKm: 10,
+        dailyDistanceKm: null,
         flights: {
             short: { economy: 0, premium: 0, business: 0, first: 0 },
             medium: { economy: 0, premium: 0, business: 0, first: 0 },
@@ -79,7 +79,7 @@ export const INITIAL_DATA: OnboardingData = {
     },
     food: {
         diet: null, // Forces selection
-        mealsPerDay: 3
+        mealsPerDay: null
     },
     lifestyle: {
         hotelNights: 0,
@@ -90,8 +90,8 @@ export const INITIAL_DATA: OnboardingData = {
             period: 'yearly'
         },
         devices: {
-            smartphone: 1,
-            laptop: 1,
+            smartphone: 0,
+            laptop: 0,
             tv: 0
         }
     }

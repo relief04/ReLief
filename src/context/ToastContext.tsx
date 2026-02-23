@@ -73,11 +73,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 {toasts.map(t => (
                     <div key={t.id} style={{
                         display: 'flex', alignItems: 'center', gap: '0.75rem',
-                        background: '#1a2332', color: '#fff',
+                        background: 'var(--color-bg-100)', color: 'var(--color-text-100)',
                         padding: '0.875rem 1.25rem',
                         borderRadius: '12px',
                         borderLeft: `4px solid ${colors[t.type]}`,
-                        boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                        border: '1px solid var(--color-border)',
+                        boxShadow: 'var(--shadow-lg)',
                         fontSize: '0.95rem', fontFamily: 'inherit',
                         minWidth: '280px', maxWidth: '420px',
                         animation: 'toastIn 0.3s cubic-bezier(0.16,1,0.3,1)',
@@ -104,26 +105,26 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                     zIndex: 99999,
                 }}>
                     <div style={{
-                        background: '#1a2332', borderRadius: '16px',
+                        background: 'var(--color-bg-100)', borderRadius: '16px',
                         padding: '2rem', width: '100%', maxWidth: '400px',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
+                        border: '1px solid var(--color-border)',
+                        boxShadow: 'var(--shadow-lg)',
                         animation: 'toastIn 0.25s cubic-bezier(0.16,1,0.3,1)',
                         fontFamily: 'inherit',
                     }}>
                         {confirmState.title && (
-                            <h3 style={{ margin: '0 0 0.75rem', fontSize: '1.15rem', fontWeight: 700, color: '#fff' }}>
+                            <h3 style={{ margin: '0 0 0.75rem', fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text-100)' }}>
                                 {confirmState.title}
                             </h3>
                         )}
-                        <p style={{ margin: '0 0 1.75rem', color: 'rgba(255,255,255,0.75)', fontSize: '0.95rem', lineHeight: 1.5 }}>
+                        <p style={{ margin: '0 0 1.75rem', color: 'var(--color-text-200)', fontSize: '0.95rem', lineHeight: 1.5 }}>
                             {confirmState.message}
                         </p>
                         <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
                             <button onClick={() => handleConfirm(false)} style={{
                                 padding: '0.6rem 1.25rem', borderRadius: '8px',
-                                border: '1px solid rgba(255,255,255,0.15)',
-                                background: 'transparent', color: 'rgba(255,255,255,0.7)',
+                                border: '1px solid var(--color-border)',
+                                background: 'transparent', color: 'var(--color-text-200)',
                                 cursor: 'pointer', fontSize: '0.9rem', fontFamily: 'inherit', fontWeight: 500,
                             }}>
                                 {confirmState.cancelLabel ?? 'Cancel'}
