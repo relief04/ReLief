@@ -38,7 +38,7 @@ export function GroupChat({ groupId }: GroupChatProps) {
     useEffect(() => {
         const fetchMessages = async () => {
             const { data, error } = await supabase
-                .from('posts') // Utilizing posts table as chat storage for now
+                .from('group_messages') // Dedicated table for group chat
                 .select('*')
                 .eq('group_id', groupId)
                 .order('created_at', { ascending: true });
@@ -56,9 +56,9 @@ export function GroupChat({ groupId }: GroupChatProps) {
             .on('postgres_changes', {
                 event: 'INSERT',
                 schema: 'public',
-                table: 'posts',
+                table: 'group_messages',
                 filter: `group_id=eq.${groupId}`
-            }, (payload) => {
+            }, (payload: { new: ChatMessage }) => {
                 const newMsg = payload.new as ChatMessage;
                 setMessages(prev => [...prev, newMsg]);
             })
@@ -79,15 +79,13 @@ export function GroupChat({ groupId }: GroupChatProps) {
         const avatarUrl = user.imageUrl || '👤';
 
         const { error } = await supabase
-            .from('posts')
+            .from('group_messages')
             .insert({
                 content: newMessage.trim(),
                 group_id: groupId,
                 user_id: user.id,
                 author_name: safeAuthorName,
                 avatar_url: avatarUrl,
-                // We mark these as 'chat' type if we had a type column, 
-                // but for now relying on group_id is enough distinction from main feed
             });
 
         if (!error) {
