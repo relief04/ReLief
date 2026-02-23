@@ -70,7 +70,7 @@ export async function getCarbonByCategory(
     // Aggregate by category
     const categoryMap = new Map<string, { total: number; count: number }>();
 
-    data?.forEach((log) => {
+    data?.forEach((log: any) => {
         const existing = categoryMap.get(log.category) || { total: 0, count: 0 };
         categoryMap.set(log.category, {
             total: existing.total + log.co2_amount,

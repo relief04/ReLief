@@ -72,7 +72,7 @@ export function EventsView() {
 
         if (eventsData && !error) {
 
-            const eventIds = eventsData.map(e => e.id);
+            const eventIds = eventsData.map((e: { id: number }) => e.id);
 
             const { data: rsvpsData } = await supabase
                 .from('event_rsvps')
@@ -82,17 +82,17 @@ export function EventsView() {
             let eventsWithData: Event[] = [];
 
             if (rsvpsData && rsvpsData.length > 0) {
-                const userIds = [...new Set(rsvpsData.map(r => r.user_id))];
+                const userIds = [...new Set(rsvpsData.map((r: { user_id: string }) => r.user_id))];
                 const { data: profilesData } = await supabase
                     .from('profiles')
                     .select('id, username, avatar_url')
                     .in('id', userIds);
 
-                const profilesMap = new Map((profilesData || []).map(p => [p.id, p]));
+                const profilesMap = new Map<string, { id: string; username?: string; avatar_url?: string }>((profilesData || []).map((p: { id: string; username?: string; avatar_url?: string }) => [p.id, p]));
 
                 eventsWithData = eventsData.map((event: Partial<Event>) => {
-                    const eventRsvps = rsvpsData.filter(r => r.event_id === event.id);
-                    const participantList = eventRsvps.map(r => {
+                    const eventRsvps = rsvpsData.filter((r: { event_id: number; user_id: string; status: string }) => r.event_id === event.id);
+                    const participantList = eventRsvps.map((r: { user_id: string; status: string }) => {
                         const profile = profilesMap.get(r.user_id);
                         return {
                             user_id: r.user_id,
@@ -102,11 +102,11 @@ export function EventsView() {
                         };
                     });
 
-                    const currentUserRsvp = eventRsvps.find(r => r.user_id === user?.id);
+                    const currentUserRsvp = eventRsvps.find((r: { user_id: string }) => r.user_id === user?.id);
 
                     return {
                         ...event,
-                        participants: eventRsvps.filter(r => r.status === 'going').length,
+                        participants: eventRsvps.filter((r: { status: string }) => r.status === 'going').length,
                         participant_list: participantList,
                         user_rsvp: currentUserRsvp?.status || null
                     } as Event;

@@ -35,7 +35,7 @@ export async function detectAndAwardBadges(
             return [];
         }
 
-        const earnedBadgeIds = new Set(earnedBadges?.map(b => b.badge_id) || []);
+        const earnedBadgeIds = new Set(earnedBadges?.map((b: any) => b.badge_id) || []);
 
         // 3. Check which badges the user is now eligible for
         const newlyEarnedBadges: Badge[] = [];
@@ -118,7 +118,7 @@ export async function updateBadgeProgress(
             .select('badge_id')
             .eq('user_id', userId);
 
-        const earnedBadgeIds = new Set(earnedBadges?.map(b => b.badge_id) || []);
+        const earnedBadgeIds = new Set(earnedBadges?.map((b: any) => b.badge_id) || []);
 
         // Update progress for unearned badges
         for (const badge of allBadges) {

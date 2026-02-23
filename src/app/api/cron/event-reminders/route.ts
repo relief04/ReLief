@@ -50,7 +50,7 @@ export async function POST(request: Request) {
             if (!attendees || attendees.length === 0) continue;
 
             // Fetch the profiles of all attendees to get their emails
-            const attendeeIds = attendees.map(a => a.user_id);
+            const attendeeIds = attendees.map((a: { user_id: string }) => a.user_id);
             const { data: profiles, error: profileError } = await supabase
                 .from('profiles')
                 .select('id, email, username')
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
             const formattedTime = format(new Date(event.date), "MMM d, h:mm a");
 
             // Dispatch emails asynchronously
-            const emailPromises = profiles.map(async (profile) => {
+            const emailPromises = profiles.map(async (profile: { email?: string; username?: string }) => {
                 if (!profile.email) return;
 
                 await sendEventReminderEmail(

@@ -114,8 +114,8 @@ export async function checkAndAwardBadges(userId: string) {
 
         if (!allBadges) return { success: false, error: 'Could not fetch badges' };
 
-        const earnedBadgeIds = new Set(userBadges?.map(ub => ub.badge_id) || []);
-        const unearnedBadges = allBadges.filter(b => !earnedBadgeIds.has(b.id));
+        const earnedBadgeIds = new Set(userBadges?.map((ub: any) => ub.badge_id) || []);
+        const unearnedBadges = allBadges.filter((b: any) => !earnedBadgeIds.has(b.id));
 
         if (unearnedBadges.length === 0) {
             return { success: true, newBadges: [] };

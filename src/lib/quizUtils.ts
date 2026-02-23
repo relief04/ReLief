@@ -227,7 +227,7 @@ export async function getCompletedLevels(userId: string): Promise<number[]> {
         return [];
     }
 
-    return data?.map(item => item.level_id) || [];
+    return data?.map((item: any) => item.level_id) || [];
 }
 
 /**
