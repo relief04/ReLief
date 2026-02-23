@@ -44,9 +44,9 @@ export default function BadgesPage() {
                 if (userBadgesError) throw userBadgesError;
 
                 // Create sets and maps
-                const earnedIds = new Set(userBadges?.map(ub => ub.badge_id) || []);
-                const progressMap = new Map(
-                    userBadges?.map(ub => [ub.badge_id, ub.progress || 0]) || []
+                const earnedIds: Set<string> = new Set(userBadges?.map((ub: { badge_id: number }) => String(ub.badge_id)) || []);
+                const progressMap: Map<string, number> = new Map(
+                    userBadges?.map((ub: { badge_id: number; progress?: number }) => [String(ub.badge_id), ub.progress || 0]) || []
                 );
 
                 setBadges(allBadges || []);

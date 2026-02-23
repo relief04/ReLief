@@ -69,7 +69,7 @@ export default function RewardsPage() {
             let redeemed = 0;
 
             const mergedRewards = allRewards.map((r: any) => {
-                const userEntry = userRewards?.find(ur => ur.reward_id === r.id);
+                const userEntry = userRewards?.find((ur: { reward_id: number }) => ur.reward_id === r.id);
 
                 let status = 'Locked';
                 // Logic:

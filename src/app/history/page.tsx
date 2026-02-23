@@ -60,8 +60,8 @@ export default function HistoryPage() {
                 // Extract all unique categories for the filter pills if not already set
                 if (data && availableCategories.length === 0) {
                     const cats = Array.from(new Set(data.map((l: LogItem) => l.category)))
-                        .filter((c: string) => !['daily_login', 'bill_upload', 'calculator'].includes(c)); // Exclude technical types
-                    setAvailableCategories(cats);
+                        .filter((c) => !['daily_login', 'bill_upload', 'calculator'].includes(c as string)); // Exclude technical types
+                    setAvailableCategories(cats as string[]);
                 }
             } catch (err) {
                 console.error('Error fetching history:', err);

@@ -182,7 +182,7 @@ export function PostCard({ post, currentUserId, currentUserName, onLikeToggle, o
 
             if (commentsData && commentsData.length > 0) {
                 // 2. Fetch profiles for authors
-                const userIds = [...new Set(commentsData.map(c => c.user_id))];
+                const userIds = [...new Set(commentsData.map((c: { user_id: string }) => c.user_id))];
                 const { data: profilesData } = await supabase
                     .from('profiles')
                     .select('id, username, avatar_url')
@@ -206,7 +206,7 @@ export function PostCard({ post, currentUserId, currentUserName, onLikeToggle, o
                 };
 
                 // 3. Map to Comment interface
-                const formattedComments: Comment[] = commentsData.map(c => ({
+                const formattedComments: Comment[] = commentsData.map((c: { id: number; user_id: string; content: string; created_at: string }) => ({
                     id: c.id,
                     user_id: c.user_id,
                     author_name: getAuthorName(c.user_id),

@@ -46,11 +46,11 @@ export default function RewardsWallet({ isOpen, onClose, userId }: RewardsWallet
             if (myError) throw myError;
 
             if (myRewards && myRewards.length > 0) {
-                const rewardIds = myRewards.map(mr => mr.reward_id);
+                const rewardIds = myRewards.map((mr: any) => mr.reward_id);
                 const { data: rewardDetails } = await supabase.from('rewards').select('*').in('id', rewardIds);
 
-                const combined = myRewards.map(mr => {
-                    const detail = rewardDetails?.find(r => r.id === mr.reward_id);
+                const combined = myRewards.map((mr: any) => {
+                    const detail = rewardDetails?.find((r: any) => r.id === mr.reward_id);
                     if (!detail) return null;
                     return {
                         ...detail,

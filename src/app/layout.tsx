@@ -12,6 +12,7 @@ import { ProfileSyncWrapper } from "@/components/providers/ProfileSyncWrapper";
 import { Footer } from "@/components/layout/Footer";
 import { ToastProvider } from "@/context/ToastContext";
 import { Toaster } from "react-hot-toast";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 
 const outfit = Outfit({
@@ -64,6 +65,7 @@ export default function RootLayout({
             </ToastProvider>
           </GlobalAudioProvider>
         </ClerkProvider>
+        <SpeedInsights />
       </body>
     </html>
   );

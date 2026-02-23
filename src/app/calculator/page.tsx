@@ -57,16 +57,16 @@ export default function CalculatorPage() {
 
             if (fetchError) throw fetchError;
 
-            const todayLog = activities?.find(a =>
+            const todayLog = activities?.find((a: { type: string; created_at: string }) =>
                 a.type === 'calculator' && a.created_at >= startOfDay
             );
 
             setLimits({
                 dailyLogged: !!todayLog,
-                electricityScanned: activities?.some(a =>
+                electricityScanned: activities?.some((a: { type: string; description: string }) =>
                     a.type === 'bill_upload' && a.description.toLowerCase().includes('electricity')
                 ) || false,
-                lpgScanned: activities?.some(a =>
+                lpgScanned: activities?.some((a: { type: string; description: string }) =>
                     a.type === 'bill_upload' && a.description.toLowerCase().includes('lpg')
                 ) || false,
                 loading: false,

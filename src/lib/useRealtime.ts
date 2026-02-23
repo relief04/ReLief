@@ -59,7 +59,7 @@ export function useRealtimeSubscription<T>(
                     table: table,
                     filter: filter
                 },
-                (payload) => {
+                (payload: any) => {
                     console.log(`Real-time update on ${table}:`, payload);
 
                     // Update local state based on event type
@@ -170,7 +170,7 @@ export function useRealtimeBadges(userId: string) {
                     table: 'user_badges',
                     filter: `user_id=eq.${userId}`
                 },
-                async (payload) => {
+                async (payload: any) => {
                     // Fetch badge details
                     const { data: badge } = await supabase
                         .from('badges')

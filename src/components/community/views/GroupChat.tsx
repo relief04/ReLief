@@ -58,7 +58,7 @@ export function GroupChat({ groupId }: GroupChatProps) {
                 schema: 'public',
                 table: 'posts',
                 filter: `group_id=eq.${groupId}`
-            }, (payload) => {
+            }, (payload: { new: any }) => {
                 const newMsg = payload.new as ChatMessage;
                 setMessages(prev => [...prev, newMsg]);
             })
