@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -8,6 +8,7 @@ import { SkeletonLoader } from '@/components/community/SkeletonLoader';
 import { supabase } from '@/lib/supabaseClient';
 import { useToast } from '@/context/ToastContext';
 import { checkAndAwardBadges } from '@/lib/badges';
+import { useRefresh } from '@/context/RefreshContext';
 import styles from './FeedView.module.css';
 
 interface Post {
@@ -38,6 +39,7 @@ interface FeedViewProps {
 export function FeedView({ selectedHashtag, onHashtagClick }: FeedViewProps) {
     const { user } = useUser();
     const { toast } = useToast();
+    const { refreshKey, triggerRefresh } = useRefresh();
     const [posts, setPosts] = useState<Post[]>([]);
     const [newPost, setNewPost] = useState('');
     const [imageFile, setImageFile] = useState<File | null>(null);
@@ -46,141 +48,133 @@ export function FeedView({ selectedHashtag, onHashtagClick }: FeedViewProps) {
     const [loading, setLoading] = useState(true);
     const [showCreateModal, setShowCreateModal] = useState(false);
 
+    const mountedRef = useRef(true);
     useEffect(() => {
-        let mounted = true;
+        mountedRef.current = true;
+        return () => { mountedRef.current = false; };
+    }, []);
 
-        async function fetchPosts() {
-            setLoading(true);
+    const fetchPosts = useCallback(async (silent = false) => {
+        if (!silent) setLoading(true);
 
-            if (user) {
-                // Fetch posts
-                const { data: postsData, error: postsError } = await supabase
-                    .from('posts')
-                    .select('*')
-                    .is('group_id', null)
-                    .order('created_at', { ascending: false });
+        if (user) {
+            const { data: postsData, error: postsError } = await supabase
+                .from('posts')
+                .select('*')
+                .is('group_id', null)
+                .order('created_at', { ascending: false });
 
-                if (postsError) {
-                    console.error('Error fetching posts:', postsError);
-                    setLoading(false);
-                    return;
-                }
-
-                if (postsData && mounted) {
-                    // Get all unique user IDs from posts
-                    const userIds = [...new Set(postsData.map((p: { user_id: string }) => p.user_id))];
-
-                    // Fetch profiles for all users
-                    const { data: profilesData } = await supabase
-                        .from('profiles')
-                        .select('id, username, avatar_url')
-                        .in('id', userIds);
-
-                    // Create a map of user_id to profile
-                    const profileMap = new Map<string, Profile>();
-                    if (profilesData) {
-                        profilesData.forEach((profile: Profile) => {
-                            profileMap.set(profile.id, profile);
-                        });
-                    }
-
-                    // Fetch user's likes
-                    const { data: likesData } = await supabase
-                        .from('post_likes')
-                        .select('post_id')
-                        .eq('user_id', user.id);
-
-                    const userLikes = likesData?.map((like: { post_id: number }) => like.post_id) || [];
-
-                    // Fetch actual like counts for all posts
-                    const { data: allLikesData } = await supabase
-                        .from('post_likes')
-                        .select('post_id');
-
-                    // Count likes per post
-                    const likeCounts = new Map<number, number>();
-                    if (allLikesData) {
-                        allLikesData.forEach((like: { post_id: number }) => {
-                            const count = likeCounts.get(like.post_id) || 0;
-                            likeCounts.set(like.post_id, count + 1);
-                        });
-                    }
-
-                    const formattedPosts = postsData.map((p: {
-                        id: number;
-                        user_id: string;
-                        author_name: string;
-                        avatar_url: string | null;
-                        content: string;
-                        image_url?: string;
-                        hashtags?: string[];
-                        comments_count: number;
-                        created_at: string;
-                    }) => {
-                        const profile = profileMap.get(p.user_id);
-
-                        // Determine display name - NEVER show user IDs
-                        let displayName: string = 'Community Member';
-                        let displayAvatar: string = '👤';
-
-                        // Helper to sanitize name
-                        const isSafeName = (name: string | null | undefined) => {
-                            if (!name) return false;
-                            const lower = name.toLowerCase();
-                            return !lower.startsWith('user_') &&
-                                !lower.includes('http') &&
-                                name.length < 50 &&
-                                !name.match(/^[0-9a-f]{8}-[0-9a-f]{4}/); // UUID check
-                        };
-
-                        // 1. Try Profile Data
-                        if (profile) {
-                            if (isSafeName(profile.username)) displayName = profile.username;
-                            // Add check for full names if available in profile later
-                            if (profile.avatar_url) displayAvatar = profile.avatar_url;
-                        }
-
-                        // 2. Try Current User (if it's their post)
-                        if (p.user_id === user.id) {
-                            // strictly check user data
-                            if (isSafeName(user.fullName)) displayName = user.fullName!;
-                            else if (isSafeName(user.username)) displayName = user.username!;
-                            else displayName = "You";
-
-                            displayAvatar = user.imageUrl || '👤';
-                        }
-                        // 3. Try Author Name from Post (fallback, but sanitize)
-                        else if (isSafeName(p.author_name)) {
-                            displayName = p.author_name;
-                            if (p.avatar_url) displayAvatar = p.avatar_url;
-                        }
-
-                        return {
-                            id: p.id,
-                            author: displayName,
-                            avatar: displayAvatar,
-                            content: p.content,
-                            image_url: p.image_url,
-                            hashtags: p.hashtags,
-                            likes: likeCounts.get(p.id) || 0,
-                            comments: p.comments_count || 0,
-                            timestamp: new Date(p.created_at).toLocaleDateString(),
-                            liked_by_user: userLikes.includes(p.id),
-                            user_id: p.user_id
-                        };
-                    });
-                    setPosts(formattedPosts);
-                }
+            if (postsError) {
+                console.error('Error fetching posts:', postsError);
+                if (!silent) setLoading(false);
+                return;
             }
-            setLoading(false);
+
+            if (postsData && mountedRef.current) {
+                const userIds = [...new Set(postsData.map((p: { user_id: string }) => p.user_id))];
+
+                const { data: profilesData } = await supabase
+                    .from('profiles')
+                    .select('id, username, avatar_url')
+                    .in('id', userIds);
+
+                const profileMap = new Map<string, Profile>();
+                if (profilesData) {
+                    profilesData.forEach((profile: Profile) => {
+                        profileMap.set(profile.id, profile);
+                    });
+                }
+
+                const { data: likesData } = await supabase
+                    .from('post_likes')
+                    .select('post_id')
+                    .eq('user_id', user.id);
+
+                const userLikes = likesData?.map((like: { post_id: number }) => like.post_id) || [];
+
+                const { data: allLikesData } = await supabase
+                    .from('post_likes')
+                    .select('post_id');
+
+                const likeCounts = new Map<number, number>();
+                if (allLikesData) {
+                    allLikesData.forEach((like: { post_id: number }) => {
+                        const count = likeCounts.get(like.post_id) || 0;
+                        likeCounts.set(like.post_id, count + 1);
+                    });
+                }
+
+                const formattedPosts = postsData.map((p: {
+                    id: number;
+                    user_id: string;
+                    author_name: string;
+                    avatar_url: string | null;
+                    content: string;
+                    image_url?: string;
+                    hashtags?: string[];
+                    comments_count: number;
+                    created_at: string;
+                }) => {
+                    const profile = profileMap.get(p.user_id);
+
+                    let displayName: string = 'Community Member';
+                    let displayAvatar: string = '👤';
+
+                    const isSafeName = (name: string | null | undefined) => {
+                        if (!name) return false;
+                        const lower = name.toLowerCase();
+                        return !lower.startsWith('user_') &&
+                            !lower.includes('http') &&
+                            name.length < 50 &&
+                            !name.match(/^[0-9a-f]{8}-[0-9a-f]{4}/);
+                    };
+
+                    if (profile) {
+                        if (isSafeName(profile.username)) displayName = profile.username;
+                        if (profile.avatar_url) displayAvatar = profile.avatar_url;
+                    }
+
+                    if (p.user_id === user.id) {
+                        if (isSafeName(user.fullName)) displayName = user.fullName!;
+                        else if (isSafeName(user.username)) displayName = user.username!;
+                        else displayName = "You";
+                        displayAvatar = user.imageUrl || '👤';
+                    } else if (isSafeName(p.author_name)) {
+                        displayName = p.author_name;
+                        if (p.avatar_url) displayAvatar = p.avatar_url;
+                    }
+
+                    return {
+                        id: p.id,
+                        author: displayName,
+                        avatar: displayAvatar,
+                        content: p.content,
+                        image_url: p.image_url,
+                        hashtags: p.hashtags,
+                        likes: likeCounts.get(p.id) || 0,
+                        comments: p.comments_count || 0,
+                        timestamp: new Date(p.created_at).toLocaleDateString(),
+                        liked_by_user: userLikes.includes(p.id),
+                        user_id: p.user_id
+                    };
+                });
+
+                if (mountedRef.current) setPosts(formattedPosts);
+            }
         }
-
-        fetchPosts();
-
-        return () => {
-            mounted = false;
-        };
+        if (mountedRef.current) setLoading(false);
     }, [user]);
+
+    // Initial load + forced refresh via refreshKey
+    useEffect(() => {
+        fetchPosts(false);
+    }, [user, refreshKey, fetchPosts]);
+
+    // Silent polling every 30 s to pick up posts from other users
+    useEffect(() => {
+        const poll = setInterval(() => fetchPosts(true), 30_000);
+        return () => clearInterval(poll);
+    }, [fetchPosts]);
 
     const extractHashtags = (text: string): string[] => {
         const hashtagRegex = /#\w+/g;
@@ -267,34 +261,23 @@ export function FeedView({ selectedHashtag, onHashtagClick }: FeedViewProps) {
                 body: JSON.stringify({
                     userId: user?.id,
                     actionType: 'new_post',
-                    metadata: {
-                        contentPreview: newPost
-                    }
+                    metadata: { contentPreview: newPost }
                 })
             }).catch(err => console.error("Failed to trigger post email:", err));
 
-            const newPostObj: Post = {
-                id: data[0].id,
-                author: data[0].author_name,
-                avatar: data[0].avatar_url,
-                content: data[0].content,
-                image_url: data[0].image_url,
-                hashtags: data[0].hashtags,
-                likes: 0,
-                comments: 0,
-                timestamp: 'Just now',
-                liked_by_user: false,
-                user_id: user?.id
-            };
-            setPosts([newPostObj, ...posts]);
             setNewPost('');
             setImageFile(null);
             setImagePreview(null);
             setShowCreateModal(false);
 
+            // Silent refresh — replaces optimistic entry with accurate DB data
+            await fetchPosts(true);
+
             // Refresh user badges/points after posting
             if (user?.id) await checkAndAwardBadges(user.id);
             toast("Post created successfully! You earned karma points. 🌿", 'success');
+            // Trigger global refresh for other pages
+            triggerRefresh('post');
         }
 
         setUploading(false);
@@ -390,6 +373,9 @@ export function FeedView({ selectedHashtag, onHashtagClick }: FeedViewProps) {
             if (error) {
                 throw error;
             }
+
+            // Refresh trending topics (a deleted post may have had unique hashtags)
+            triggerRefresh('post');
         } catch (error) {
             console.error('Error deleting post:', error);
             // Revert on error

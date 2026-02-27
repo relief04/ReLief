@@ -142,7 +142,6 @@ export default function OnboardingPage() {
                 .upsert({
                     user_id: user.id,
                     monthly_limit: Math.round(monthlyBudget),
-                    week_start_date: new Date().toISOString() // Reset week on new budget
                 }, { onConflict: 'user_id' });
 
             if (budgetError) {
@@ -236,20 +235,17 @@ export default function OnboardingPage() {
                         <p>For heating, cooking, or hot water.</p>
                         <div className={styles.selectionList}>
                             <button
-                                className={!data.household.fuels.useNonElectric ? styles.selectedRow : styles.row}
-                                onClick={() => {
-                                    updateNestedHousehold('fuels', 'useNonElectric', false);
-                                    nextStep();
-                                }}
+                                className={data.household.fuels.useNonElectric === false ? styles.selectedRow : styles.row}
+                                onClick={() => updateNestedHousehold('fuels', 'useNonElectric', false)}
                             >
-                                <span className={styles.radio}>{!data.household.fuels.useNonElectric ? '◉' : '◯'}</span>
+                                <span className={styles.radio}>{data.household.fuels.useNonElectric === false ? '◉' : '◯'}</span>
                                 No, electricity only
                             </button>
                             <button
-                                className={data.household.fuels.useNonElectric ? styles.selectedRow : styles.row}
+                                className={data.household.fuels.useNonElectric === true ? styles.selectedRow : styles.row}
                                 onClick={() => updateNestedHousehold('fuels', 'useNonElectric', true)}
                             >
-                                <span className={styles.radio}>{data.household.fuels.useNonElectric ? '◉' : '◯'}</span>
+                                <span className={styles.radio}>{data.household.fuels.useNonElectric === true ? '◉' : '◯'}</span>
                                 Yes, I use other fuels
                             </button>
                         </div>

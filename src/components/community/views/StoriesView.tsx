@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/Card';
 import { supabase } from '@/lib/supabaseClient';
 import { checkAndAwardBadges } from '@/lib/badges';
 import { useToast } from '@/context/ToastContext';
+import { useRefresh } from '@/context/RefreshContext';
 import styles from './StoriesView.module.css';
 
 interface Story {
@@ -27,6 +28,7 @@ interface Story {
 export function StoriesView() {
     const { user } = useUser();
     const { toast } = useToast();
+    const { refreshKey, triggerRefresh } = useRefresh();
     const [stories, setStories] = useState<Story[]>([]);
     const [loading, setLoading] = useState(true);
     const [showShareModal, setShowShareModal] = useState(false);
@@ -76,7 +78,7 @@ export function StoriesView() {
             setStories(storiesWithMeta);
         }
         setLoading(false);
-    }, [user]);
+    }, [user, refreshKey]);
 
     useEffect(() => {
         fetchStories();
@@ -173,6 +175,7 @@ export function StoriesView() {
             // Reward user for sharing story
             await checkAndAwardBadges(user.id);
             toast("Success story shared! You're inspiring others. 🌟", 'success');
+            triggerRefresh('story');
         } else {
             console.error("Error sharing story:", JSON.stringify(error, null, 2));
             setFormError(`Failed to share story: ${error?.message || 'Unknown error'}`);

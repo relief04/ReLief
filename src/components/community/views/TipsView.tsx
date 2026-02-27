@@ -5,6 +5,7 @@ import { EcoTipCard } from '@/components/community/EcoTipCard';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { supabase } from '@/lib/supabaseClient';
+import { useRefresh } from '@/context/RefreshContext';
 import styles from './TipsView.module.css';
 
 interface EcoTip {
@@ -21,6 +22,7 @@ interface EcoTip {
 
 export function TipsView() {
     const { user } = useUser();
+    const { refreshKey, triggerRefresh } = useRefresh();
     const [tips, setTips] = useState<EcoTip[]>([]);
     const [loading, setLoading] = useState(true);
     const [category, setCategory] = useState<string>('all');
@@ -66,7 +68,7 @@ export function TipsView() {
         }
 
         setLoading(false);
-    }, [user]);
+    }, [user, refreshKey]);
 
     useEffect(() => {
         fetchTips();
@@ -99,6 +101,7 @@ export function TipsView() {
             setTips([newTipObj, ...tips]);
             setShowShareModal(false);
             setNewTip({ title: '', content: '', category: 'general' });
+            triggerRefresh('tip');
         }
         setSubmitting(false);
     };

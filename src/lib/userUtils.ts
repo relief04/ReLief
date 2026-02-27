@@ -1,17 +1,25 @@
 import { supabase } from '@/lib/supabaseClient';
 
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 /**
  * Fetches the user's profile from the 'profiles' table.
+ * Retries once on network failure (Failed to fetch).
  */
-export async function getUserProfile(userId: string) {
+export async function getUserProfile(userId: string, retries = 1): Promise<any> {
     const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
     if (error) {
-        console.error('Error fetching profile:', error);
+        const msg = error.message || JSON.stringify(error);
+        if (msg.includes('Failed to fetch') && retries > 0) {
+            await sleep(1000);
+            return getUserProfile(userId, retries - 1);
+        }
+        console.error('Error fetching profile:', msg);
         return null;
     }
     return data;
@@ -45,7 +53,7 @@ export async function ensureUserProfile(userId: string, email?: string, username
         .single();
 
     if (error) {
-        console.error('Error creating profile:', error);
+        console.error('Error creating profile:', error.message || JSON.stringify(error));
         return { data: null, error };
     }
 

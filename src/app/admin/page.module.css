@@ -1,0 +1,337 @@
+.adminContainer {
+    min-height: 100vh;
+    background: var(--color-bg-50);
+    padding: 2rem;
+    color: var(--color-text);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.headerIcon {
+    font-size: 2.5rem;
+}
+
+.headerTitle {
+    font-size: 2rem;
+    font-weight: 800;
+    background: var(--gradient-premium);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+}
+
+.headerSub {
+    font-size: 0.85rem;
+    color: var(--color-text-300);
+    margin: 0.2rem 0 0;
+}
+
+/* ── Stats ── */
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.statCard {
+    background: var(--color-card-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: var(--shadow-sm);
+}
+
+.statCard:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.statIcon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.statValue {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: var(--gradient-premium);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.statLabel {
+    font-size: 0.82rem;
+    color: var(--color-text-300);
+    margin-top: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ── Create Section ── */
+.createSection {
+    margin-bottom: 2rem;
+}
+
+.createBtn {
+    background: var(--gradient-emerald);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0.6rem 1.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+    box-shadow: var(--shadow-glow);
+}
+
+.createBtn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.createForm {
+    background: var(--color-card-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    background: var(--color-input-background);
+    color: var(--color-text);
+    font-size: 0.9rem;
+    resize: vertical;
+    margin: 0.75rem 0;
+    font-family: inherit;
+}
+
+.textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.formActions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+/* ── Tables ── */
+.tablesGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+    .tablesGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.tableCard {
+    background: var(--color-card-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.tableTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin: 0 0 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tableScroll {
+    overflow-x: auto;
+}
+
+.tableCard table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    min-width: 360px;
+}
+
+.tableCard th {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    color: var(--color-text-300);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+}
+
+.tableCard td {
+    padding: 0.6rem 0.75rem;
+    color: var(--color-text-secondary);
+    border-bottom: 1px solid var(--color-border);
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tableCard tr:last-child td {
+    border-bottom: none;
+}
+
+.tableCard tr:hover td {
+    background: var(--color-background-hover);
+}
+
+.empty {
+    text-align: center;
+    color: var(--color-text-300);
+    padding: 1.5rem 0 !important;
+}
+
+/* ── Action controls ── */
+.actionGroup {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+.editBtn,
+.deleteBtn,
+.saveBtn,
+.cancelBtn {
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: opacity 0.15s;
+    white-space: nowrap;
+}
+
+.editBtn {
+    background: var(--color-bg-200);
+    color: var(--color-text);
+}
+
+.editBtn:hover {
+    opacity: 0.75;
+}
+
+.deleteBtn {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.deleteBtn:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+.saveBtn {
+    background: var(--color-primary);
+    color: white;
+}
+
+.saveBtn:hover {
+    opacity: 0.85;
+}
+
+.saveBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.cancelBtn {
+    background: var(--color-bg-200);
+    color: var(--color-text-300);
+}
+
+.cancelBtn:hover {
+    opacity: 0.75;
+}
+
+.inlineInput {
+    width: 100%;
+    padding: 0.3rem 0.5rem;
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-sm);
+    background: var(--color-input-background);
+    color: var(--color-text);
+    font-size: 0.82rem;
+}
+
+/* ── Util ── */
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 1rem;
+    color: var(--color-text-300);
+    font-size: 1.1rem;
+}
+
+.denied {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+    gap: 1rem;
+}
+
+.deniedIcon {
+    font-size: 4rem;
+}
+
+.deniedTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-danger);
+    margin: 0;
+}
+
+.deniedSub {
+    color: var(--color-text-300);
+    margin: 0;
+}
+
+.refreshBtn {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+    border-radius: var(--radius-sm);
+    padding: 0.4rem 1rem;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.refreshBtn:hover {
+    background: rgba(5, 150, 105, 0.1);
+}

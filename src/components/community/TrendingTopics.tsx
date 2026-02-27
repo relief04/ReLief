@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { supabase } from '@/lib/supabaseClient';
+import { useRefresh } from '@/context/RefreshContext';
 import styles from './TrendingTopics.module.css';
 
 interface TrendingTopic {
@@ -15,10 +16,11 @@ interface TrendingTopicsProps {
 export function TrendingTopics({ onHashtagClick }: TrendingTopicsProps) {
     const [trending, setTrending] = useState<TrendingTopic[]>([]);
     const [loading, setLoading] = useState(true);
+    const { refreshKey } = useRefresh();
 
     useEffect(() => {
         fetchTrendingTopics();
-    }, []);
+    }, [refreshKey]); // re-fetch silently on every new post
 
     const fetchTrendingTopics = async () => {
         setLoading(true);

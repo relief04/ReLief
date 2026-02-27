@@ -52,6 +52,18 @@ interface GroupMemberDb {
     role: string;
 }
 
+interface Profile {
+    id: string;
+    username: string;
+    avatar_url: string | null;
+}
+
+interface RsvpRow {
+    event_id: number;
+    user_id: string;
+    status: string;
+}
+
 interface EventWithDetails {
     id: number;
     title: string;
@@ -211,7 +223,7 @@ export function GroupDetailView({ group, onBack, onJoin, onLeave, onEdit, onDele
                     .in('id', userIds);
 
                 if (profiles) {
-                    const merged = profiles.map((p) => ({
+                    const merged = (profiles as Profile[]).map((p: Profile) => ({
                         ...p,
                         role: groupMembers.find((m) => m.user_id === p.id)?.role || 'member'
                     }));
@@ -234,7 +246,7 @@ export function GroupDetailView({ group, onBack, onJoin, onLeave, onEdit, onDele
             .order('event_date', { ascending: true });
 
         if (eventsData && !eventsError) {
-            const eventIds = eventsData.map(e => e.id);
+            const eventIds = eventsData.map((e: { id: number }) => e.id);
 
             const { data: rsvpsData } = await supabase
                 .from('event_rsvps')
@@ -244,17 +256,18 @@ export function GroupDetailView({ group, onBack, onJoin, onLeave, onEdit, onDele
             let formattedEvents: EventWithDetails[] = [];
 
             if (rsvpsData && rsvpsData.length > 0) {
-                const userIds = [...new Set(rsvpsData.map(r => r.user_id))];
+                const typedRsvps = rsvpsData as RsvpRow[];
+                const userIds = [...new Set(typedRsvps.map((r: RsvpRow) => r.user_id))];
                 const { data: profilesData } = await supabase
                     .from('profiles')
                     .select('id, username, avatar_url')
                     .in('id', userIds);
 
-                const profilesMap = new Map(profilesData?.map(p => [p.id, p]));
+                const profilesMap = new Map((profilesData as Profile[] | null)?.map((p: Profile) => [p.id, p]));
 
-                formattedEvents = eventsData.map(event => {
-                    const eventRsvps = rsvpsData.filter(r => r.event_id === event.id);
-                    const participantList = eventRsvps.map(r => {
+                formattedEvents = eventsData.map((event: { id: number;[key: string]: unknown }) => {
+                    const eventRsvps = typedRsvps.filter((r: RsvpRow) => r.event_id === event.id);
+                    const participantList = eventRsvps.map((r: RsvpRow) => {
                         const profile = profilesMap.get(r.user_id);
                         return {
                             user_id: r.user_id,
@@ -264,17 +277,17 @@ export function GroupDetailView({ group, onBack, onJoin, onLeave, onEdit, onDele
                         };
                     });
 
-                    const currentUserRsvp = eventRsvps.find(r => r.user_id === user?.id);
+                    const currentUserRsvp = eventRsvps.find((r: RsvpRow) => r.user_id === user?.id);
 
                     return {
                         ...event,
-                        participants: eventRsvps.filter(r => r.status === 'going').length,
+                        participants: eventRsvps.filter((r: RsvpRow) => r.status === 'going').length,
                         user_rsvp: currentUserRsvp?.status || null,
                         participant_list: participantList
                     };
                 });
             } else {
-                formattedEvents = eventsData.map(e => ({
+                formattedEvents = eventsData.map((e: { id: number;[key: string]: unknown }) => ({
                     ...e,
                     participants: 0,
                     user_rsvp: null,

@@ -6,12 +6,14 @@ import Link from 'next/link';
 import { Badge, BadgeCategory, BadgeRarity, CATEGORY_INFO } from '@/lib/badges';
 import { BadgeGrid } from '@/components/badges/BadgeGrid';
 import { supabase } from '@/lib/supabaseClient';
+import { useRefresh } from '@/context/RefreshContext';
 import styles from './page.module.css';
 
 type FilterTab = 'all' | 'earned' | 'locked';
 
 export default function BadgesPage() {
     const { user, isLoaded } = useUser();
+    const { refreshKey } = useRefresh();
     const [badges, setBadges] = useState<Badge[]>([]);
     const [earnedBadgeIds, setEarnedBadgeIds] = useState<Set<string>>(new Set());
     const [badgeProgress, setBadgeProgress] = useState<Map<string, number>>(new Map());
@@ -44,9 +46,9 @@ export default function BadgesPage() {
                 if (userBadgesError) throw userBadgesError;
 
                 // Create sets and maps
-                const earnedIds = new Set(userBadges?.map(ub => ub.badge_id) || []);
-                const progressMap = new Map(
-                    userBadges?.map(ub => [ub.badge_id, ub.progress || 0]) || []
+                const earnedIds = new Set<string>((userBadges?.map((ub: { badge_id: string; progress: number }) => ub.badge_id) || []));
+                const progressMap = new Map<string, number>(
+                    userBadges?.map((ub: { badge_id: string; progress: number }) => [ub.badge_id, ub.progress || 0] as [string, number]) || []
                 );
 
                 setBadges(allBadges || []);
@@ -62,7 +64,7 @@ export default function BadgesPage() {
         if (isLoaded) {
             fetchBadges();
         }
-    }, [user, isLoaded]);
+    }, [user, isLoaded, refreshKey]);
 
     if (!isLoaded || loading) {
         return (

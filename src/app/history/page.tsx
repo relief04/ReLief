@@ -5,6 +5,7 @@ import { useUser } from '@clerk/nextjs';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useToast } from '@/context/ToastContext';
+import { useRefresh } from '@/context/RefreshContext';
 import styles from './page.module.css';
 import { supabase } from '@/lib/supabaseClient';
 import { exportCarbonLogsToCSV } from '@/lib/csvExportUtils';
@@ -23,6 +24,7 @@ interface LogItem {
 export default function HistoryPage() {
     const { user, isLoaded } = useUser();
     const { toast } = useToast();
+    const { refreshKey } = useRefresh();
     const [logs, setLogs] = useState<LogItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<'all' | 'activity' | 'bill'>('all');
@@ -59,7 +61,7 @@ export default function HistoryPage() {
 
                 // Extract all unique categories for the filter pills if not already set
                 if (data && availableCategories.length === 0) {
-                    const cats = Array.from(new Set(data.map((l: LogItem) => l.category)))
+                    const cats = (Array.from(new Set(data.map((l: LogItem) => l.category))) as string[])
                         .filter((c: string) => !['daily_login', 'bill_upload', 'calculator'].includes(c)); // Exclude technical types
                     setAvailableCategories(cats);
                 }
@@ -71,7 +73,7 @@ export default function HistoryPage() {
         }
 
         fetchHistory();
-    }, [user, filter, selectedCategories]);
+    }, [user, filter, selectedCategories, refreshKey]);
 
     const toggleCategory = (cat: string) => {
         setSelectedCategories(prev =>
@@ -105,22 +107,12 @@ export default function HistoryPage() {
 
     const handleExportPDF = async () => {
         if (!user) return;
-
         const totalEmissions = logs.reduce((sum, l) => sum + l.emissions, 0);
-        const topCategory = logs.length > 0 ?
-            Object.entries(logs.reduce((acc, l) => {
-                acc[l.category] = (acc[l.category] || 0) + l.emissions;
-                return acc;
-            }, {} as Record<string, number>)).sort((a, b) => b[1] - a[1])[0][0] : 'N/A';
-
         await generateCarbonSummaryPDF(
             { name: user?.firstName || 'User', email: user?.emailAddresses[0]?.emailAddress },
-            {
-                totalEmissions,
-                savedCarbon: 0, // Placeholder
-                topCategory,
-                weeklyChange: 0
-            }
+            { totalEmissions },
+            undefined,
+            logs
         );
     };
 

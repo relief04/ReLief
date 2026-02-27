@@ -9,6 +9,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { SkeletonLoader } from '@/components/community/SkeletonLoader';
 import { checkAndAwardBadges } from '@/lib/badges';
 import { useToast } from '@/context/ToastContext';
+import { useRefresh } from '@/context/RefreshContext';
 import styles from './GroupsView.module.css';
 
 interface Group {
@@ -26,6 +27,7 @@ interface Group {
 
 export function GroupsView() {
     const { user } = useUser();
+    const { refreshKey, triggerRefresh } = useRefresh();
     const [groups, setGroups] = useState<Group[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<string>('all');
@@ -74,7 +76,7 @@ export function GroupsView() {
         }
 
         setLoading(false);
-    }, [user]);
+    }, [user, refreshKey]);
 
     useEffect(() => {
         fetchGroups();
@@ -161,6 +163,7 @@ export function GroupsView() {
 
                     // Check for badges
                     await checkAndAwardBadges(user.id);
+                    triggerRefresh('group');
                 } else {
                     setFormError("Group created, but failed to join as admin.");
                 }
@@ -213,6 +216,7 @@ export function GroupsView() {
             if (selectedGroup?.id === groupId) {
                 setSelectedGroup(null);
             }
+            triggerRefresh('group');
         }
     };
 
@@ -231,15 +235,23 @@ export function GroupsView() {
             });
 
         if (!error) {
+            const updatedGroup = {
+                ...groupToJoin!,
+                is_member: true,
+                member_count: (groupToJoin?.member_count || 0) + 1,
+                user_role: roleToAssign
+            };
             setGroups(groups.map(g =>
-                g.id === groupId
-                    ? { ...g, is_member: true, member_count: g.member_count + 1, user_role: roleToAssign }
-                    : g
+                g.id === groupId ? updatedGroup : g
             ));
             await supabase.rpc('increment_group_member_count', { group_id_param: groupId });
 
+            // Auto-open the group after joining
+            setSelectedGroup(updatedGroup);
+
             // Check for badges
             await checkAndAwardBadges(user.id);
+            triggerRefresh('group');
         }
     };
 
@@ -279,6 +291,9 @@ export function GroupsView() {
                     ? { ...g, is_member: false, member_count: g.member_count - 1, user_role: undefined }
                     : g
             ));
+            // Close the group detail view and return to groups list
+            setSelectedGroup(null);
+            triggerRefresh('group');
         }
     };
 

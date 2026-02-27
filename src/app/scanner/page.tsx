@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { BillScanner } from '@/components/bills/BillScanner';
 import { BillScanResult } from '@/lib/billScanningAPI';
@@ -9,11 +9,36 @@ import { Card } from '@/components/ui/Card';
 import styles from './page.module.css';
 import Link from 'next/link';
 
+type BillType = 'electricity' | 'lpg' | 'shopping';
+
 export default function ScannerPage() {
     const { user } = useUser();
     const [lastScan, setLastScan] = useState<BillScanResult | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
+    const [disabledTypes, setDisabledTypes] = useState<BillType[]>([]);
+
+    // Fetch already-uploaded bill types for this month
+    useEffect(() => {
+        if (!user) return;
+        const startOfMonth = new Date();
+        startOfMonth.setDate(1);
+        startOfMonth.setHours(0, 0, 0, 0);
+
+        supabase
+            .from('activities')
+            .select('description')
+            .eq('user_id', user.id)
+            .eq('type', 'bill_upload')
+            .gte('created_at', startOfMonth.toISOString())
+            .then(({ data }: { data: { description: string | null }[] | null }) => {
+                if (!data) return;
+                const done: BillType[] = [];
+                if (data.some((a: { description: string | null }) => a.description?.toLowerCase().includes('electricity'))) done.push('electricity');
+                if (data.some((a: { description: string | null }) => a.description?.toLowerCase().includes('lpg'))) done.push('lpg');
+                setDisabledTypes(done);
+            });
+    }, [user]);
 
     const handleScanComplete = async (result: BillScanResult) => {
         if (!user) {
@@ -35,6 +60,11 @@ export default function ScannerPage() {
                 });
 
             if (error) throw error;
+
+            // Mark as done locally so the UI updates immediately
+            if (result.bill_type === 'electricity' || result.bill_type === 'lpg') {
+                setDisabledTypes(prev => [...new Set([...prev, result.bill_type as BillType])]);
+            }
 
             // Success!
             setLastScan(result);
@@ -65,7 +95,10 @@ export default function ScannerPage() {
                 {!saveSuccess ? (
                     <div className={styles.scannerInspiration}>
                         <Card className={styles.scanCard}>
-                            <BillScanner onScanComplete={handleScanComplete} />
+                            <BillScanner
+                                onScanComplete={handleScanComplete}
+                                disabledTypes={disabledTypes}
+                            />
                         </Card>
 
                         <div className={styles.tips}>

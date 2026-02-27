@@ -325,6 +325,22 @@
     box-shadow: 0 0 12px color-mix(in srgb, var(--btn-color, #4caf50) 30%, transparent);
 }
 
+.typeBtnDisabled {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+    border-color: rgba(34, 197, 94, 0.3) !important;
+    background: rgba(34, 197, 94, 0.04) !important;
+    color: var(--text-secondary, #838383) !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+}
+
+.typeBtnDisabled:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
 .typeBtnIcon {
     font-size: 1rem;
 }

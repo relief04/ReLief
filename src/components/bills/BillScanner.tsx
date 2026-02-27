@@ -10,6 +10,7 @@ interface BillScannerProps {
     onScanComplete: (result: BillScanResult) => void;
     billType?: BillType;
     disabled?: boolean;
+    disabledTypes?: BillType[];
 }
 
 const BILL_TYPES: { value: BillType; label: string; icon: string; color: string }[] = [
@@ -46,8 +47,10 @@ function getPrimaryMetric(result: BillScanResult): { value: string; unit: string
     return { value: '—', unit: '', label: 'Value' };
 }
 
-export function BillScanner({ onScanComplete, billType: propBillType, disabled = false }: BillScannerProps) {
-    const [selectedBillType, setSelectedBillType] = useState<BillType | undefined>(propBillType);
+export function BillScanner({ onScanComplete, billType: propBillType, disabled = false, disabledTypes = [] }: BillScannerProps) {
+    const [selectedBillType, setSelectedBillType] = useState<BillType | undefined>(
+        propBillType && !disabledTypes.includes(propBillType) ? propBillType : undefined
+    );
     const [uploading, setUploading] = useState(false);
     const [progressStep, setProgressStep] = useState(0);
     const [preview, setPreview] = useState<string | null>(null);
@@ -165,34 +168,56 @@ export function BillScanner({ onScanComplete, billType: propBillType, disabled =
             {/* ── Bill Type Selector ── */}
             {!uploading && !verificationData && (
                 <div className={styles.typeSelector}>
-                    <p className={styles.typeSelectorLabel}>Select bill type <span className={styles.optional}>(optional — AI will auto-detect)</span></p>
+                    <p className={styles.typeSelectorLabel}>Select bill type <span style={{ color: 'var(--color-danger, #ef4444)', fontWeight: 600 }}>*</span> <span style={{ fontSize: '0.8rem', opacity: 0.7 }}>(required)</span></p>
                     <div className={styles.typeButtons}>
-                        {BILL_TYPES.map(bt => (
-                            <button
-                                key={bt.value}
-                                className={`${styles.typeBtn} ${selectedBillType === bt.value ? styles.typeBtnActive : ''}`}
-                                style={selectedBillType === bt.value ? { '--btn-color': bt.color } as React.CSSProperties : {}}
-                                onClick={() => setSelectedBillType(prev => prev === bt.value ? undefined : bt.value)}
-                                type="button"
-                            >
-                                <span className={styles.typeBtnIcon}>{bt.icon}</span>
-                                <span>{bt.label}</span>
-                            </button>
-                        ))}
+                        {BILL_TYPES.map(bt => {
+                            const isDisabled = disabledTypes.includes(bt.value);
+                            return (
+                                <button
+                                    key={bt.value}
+                                    className={`${styles.typeBtn} ${selectedBillType === bt.value ? styles.typeBtnActive : ''} ${isDisabled ? styles.typeBtnDisabled : ''}`}
+                                    style={selectedBillType === bt.value && !isDisabled ? { '--btn-color': bt.color } as React.CSSProperties : {}}
+                                    onClick={() => !isDisabled && setSelectedBillType(bt.value)}
+                                    type="button"
+                                    disabled={isDisabled}
+                                    title={isDisabled ? 'Already uploaded this month' : ''}
+                                >
+                                    <span className={styles.typeBtnIcon}>{bt.icon}</span>
+                                    <span>{bt.label}</span>
+                                    {isDisabled && (
+                                        <span style={{
+                                            display: 'block',
+                                            fontSize: '0.65rem',
+                                            color: '#22c55e',
+                                            fontWeight: 600,
+                                            marginTop: '2px'
+                                        }}>✓ Done this month</span>
+                                    )}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             )}
 
             {/* ── Drop Zone ── */}
             {!preview && !uploading && !verificationData && (
-                <div
-                    className={`${styles.dropzone} ${disabled ? styles.dropzoneDisabled : ''}`}
-                    onClick={disabled ? undefined : triggerFileInput}
-                >
-                    <div className={styles.icon}>📄</div>
-                    <p>Click or drag bill here</p>
-                    <span className={styles.browseBtn}>Browse Files</span>
-                </div>
+                !selectedBillType ? (
+                    <div className={styles.dropzone} style={{ opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' }}>
+                        <div className={styles.icon}>📄</div>
+                        <p style={{ color: 'var(--color-danger, #ef4444)', fontWeight: 600 }}>Please select a bill type above first</p>
+                        <span className={styles.browseBtn} style={{ opacity: 0.4 }}>Browse Files</span>
+                    </div>
+                ) : (
+                    <div
+                        className={`${styles.dropzone} ${disabled ? styles.dropzoneDisabled : ''}`}
+                        onClick={disabled ? undefined : triggerFileInput}
+                    >
+                        <div className={styles.icon}>📄</div>
+                        <p>Click or drag bill here</p>
+                        <span className={styles.browseBtn}>Browse Files</span>
+                    </div>
+                )
             )}
 
             {/* ── Image Preview ── */}
@@ -310,8 +335,8 @@ export function BillScanner({ onScanComplete, billType: propBillType, disabled =
             {/* ── Error ── */}
             {error && (
                 <div className={styles.error}>
-                    <p>⚠️ {error}</p>
-                    <button onClick={triggerFileInput} className={styles.retryButton}>Try Again</button>
+                    <p>⚠️ Couldn't scan the bill. Please try again with a clearer image.</p>
+                    <button onClick={handleCancel} className={styles.retryButton}>Try Again</button>
                 </div>
             )}
         </div>

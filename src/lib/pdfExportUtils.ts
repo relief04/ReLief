@@ -8,9 +8,13 @@ interface UserData {
 
 interface CarbonData {
     totalEmissions: number;
-    savedCarbon: number;
-    topCategory: string;
-    weeklyChange: number;
+}
+
+interface LogEntry {
+    created_at: string;
+    category: string;
+    description: string;
+    emissions: number;
 }
 
 /**
@@ -23,7 +27,8 @@ export async function generateCarbonSummaryPDF(
         timeline?: HTMLElement | null;
         category?: HTMLElement | null;
         trend?: HTMLElement | null;
-    }
+    },
+    logs?: LogEntry[]
 ): Promise<void> {
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pageWidth = pdf.internal.pageSize.getWidth();
@@ -79,21 +84,20 @@ export async function generateCarbonSummaryPDF(
     yPosition += 10;
 
     // Stats boxes
+    const totalEntries = logs?.length ?? 0;
     const stats = [
         { label: 'Total Emissions', value: `${carbonData.totalEmissions.toFixed(2)} kg CO₂` },
-        { label: 'Carbon Saved', value: `${carbonData.savedCarbon.toFixed(2)} kg CO₂` },
-        { label: 'Top Category', value: carbonData.topCategory },
-        { label: 'Weekly Change', value: `${carbonData.weeklyChange > 0 ? '+' : ''}${carbonData.weeklyChange.toFixed(1)}%` }
+        { label: 'Total Entries', value: `${totalEntries} record${totalEntries !== 1 ? 's' : ''}` },
     ];
 
     pdf.setFontSize(11);
     pdf.setFont('helvetica', 'normal');
 
     stats.forEach((stat, index) => {
-        const xPos = 15 + (index % 2) * 90;
-        const yPos = yPosition + Math.floor(index / 2) * 20;
+        const xPos = 15 + index * 90;
+        const yPos = yPosition;
 
-        pdf.setFillColor(249, 250, 251); // Very light gray
+        pdf.setFillColor(249, 250, 251);
         pdf.roundedRect(xPos, yPos - 5, 85, 15, 2, 2, 'F');
 
         pdf.setFont('helvetica', 'bold');
@@ -103,7 +107,7 @@ export async function generateCarbonSummaryPDF(
         pdf.text(stat.value, xPos + 3, yPos + 7);
     });
 
-    yPosition += 50;
+    yPosition += 25;
 
     // Add charts if provided
     if (chartElements) {
@@ -128,6 +132,79 @@ export async function generateCarbonSummaryPDF(
 
         if (chartElements.trend) {
             yPosition = await addChartToPDF(chartElements.trend, pdf, yPosition, 'Monthly Trend');
+        }
+    }
+
+    // ── Emission History Table ────────────────────────────────────
+    if (logs && logs.length > 0) {
+        if (yPosition > pageHeight - 60) {
+            pdf.addPage();
+            yPosition = 20;
+        }
+
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(0, 0, 0);
+        pdf.text('Emission History', 15, yPosition);
+        yPosition += 8;
+
+        // Table header
+        const colWidths = [30, 35, 85, 30]; // Date | Category | Description | Emissions
+        const colX = [15, 45, 80, 165];
+        const headers = ['Date', 'Category', 'Description', 'kg CO\u2082'];
+
+        pdf.setFillColor(34, 197, 94);
+        pdf.rect(15, yPosition - 5, 180, 8, 'F');
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'bold');
+        headers.forEach((h, i) => pdf.text(h, colX[i] + 1, yPosition));
+        yPosition += 6;
+
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(8);
+        let rowShade = false;
+
+        for (const log of logs) {
+            if (yPosition > pageHeight - 20) {
+                pdf.addPage();
+                yPosition = 20;
+                // Repeat header on new page
+                pdf.setFillColor(34, 197, 94);
+                pdf.rect(15, yPosition - 5, 180, 8, 'F');
+                pdf.setTextColor(255, 255, 255);
+                pdf.setFontSize(9);
+                pdf.setFont('helvetica', 'bold');
+                headers.forEach((h, i) => pdf.text(h, colX[i] + 1, yPosition));
+                yPosition += 6;
+                pdf.setFont('helvetica', 'normal');
+                pdf.setFontSize(8);
+                rowShade = false;
+            }
+
+            if (rowShade) {
+                pdf.setFillColor(249, 250, 251);
+                pdf.rect(15, yPosition - 4, 180, 6, 'F');
+            }
+            rowShade = !rowShade;
+
+            pdf.setTextColor(30, 30, 30);
+            const date = new Date(log.created_at).toLocaleDateString();
+            const category = log.category === 'calculator' ? 'Carbon Footprint'
+                : log.category === 'bill_upload' ? 'Bill Scan' : log.category;
+            const desc = log.description?.slice(0, 55) ?? '';
+            const em = log.emissions.toFixed(2);
+
+            pdf.text(date, colX[0] + 1, yPosition);
+            pdf.text(category.slice(0, 20), colX[1] + 1, yPosition);
+            pdf.text(desc, colX[2] + 1, yPosition);
+            pdf.text(em, colX[3] + 1, yPosition);
+
+            // Row separator
+            pdf.setDrawColor(229, 231, 235);
+            pdf.line(15, yPosition + 2, 195, yPosition + 2);
+
+            yPosition += 6;
         }
     }
 

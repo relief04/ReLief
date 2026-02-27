@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { supabase } from '@/lib/supabaseClient';
 import { SkeletonLoader } from '@/components/community/SkeletonLoader';
+import { useRefresh } from '@/context/RefreshContext';
 import styles from './EventsView.module.css';
 
 interface Participant {
@@ -38,6 +39,7 @@ const EMPTY_FORM = {
 
 export function EventsView() {
     const { user } = useUser();
+    const { refreshKey, triggerRefresh } = useRefresh();
     const [events, setEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<string>('all');
@@ -72,7 +74,7 @@ export function EventsView() {
 
         if (eventsData && !error) {
 
-            const eventIds = eventsData.map(e => e.id);
+            const eventIds = eventsData.map((e: { id: number }) => e.id);
 
             const { data: rsvpsData } = await supabase
                 .from('event_rsvps')
@@ -82,16 +84,19 @@ export function EventsView() {
             let eventsWithData: Event[] = [];
 
             if (rsvpsData && rsvpsData.length > 0) {
-                const userIds = [...new Set(rsvpsData.map(r => r.user_id))];
+                type RsvpRow = { event_id: number; user_id: string; status: string };
+                type ProfileRow = { id: string; username: string; avatar_url: string | null };
+
+                const userIds = [...new Set((rsvpsData as RsvpRow[]).map(r => r.user_id))];
                 const { data: profilesData } = await supabase
                     .from('profiles')
                     .select('id, username, avatar_url')
                     .in('id', userIds);
 
-                const profilesMap = new Map((profilesData || []).map(p => [p.id, p]));
+                const profilesMap = new Map<string, ProfileRow>(((profilesData || []) as ProfileRow[]).map(p => [p.id, p]));
 
                 eventsWithData = eventsData.map((event: Partial<Event>) => {
-                    const eventRsvps = rsvpsData.filter(r => r.event_id === event.id);
+                    const eventRsvps = (rsvpsData as RsvpRow[]).filter(r => r.event_id === event.id);
                     const participantList = eventRsvps.map(r => {
                         const profile = profilesMap.get(r.user_id);
                         return {
@@ -123,7 +128,7 @@ export function EventsView() {
             setEvents(eventsWithData);
         }
         setLoading(false);
-    }, [user]);
+    }, [user, refreshKey]);
 
     useEffect(() => { fetchEvents(); }, [fetchEvents]);
 
@@ -156,6 +161,7 @@ export function EventsView() {
             setShowCreateModal(false);
             setNewEvent(EMPTY_FORM);
             showToast('🗓️ Event created!');
+            triggerRefresh('event');
         }
         setSubmitting(false);
     };
@@ -214,6 +220,7 @@ export function EventsView() {
         if (!error) {
             setEvents(prev => prev.filter(e => e.id !== eventId));
             showToast('🗑️ Event deleted.', 'info');
+            triggerRefresh('event');
         }
     };
 

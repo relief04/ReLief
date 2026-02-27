@@ -1,7 +1,7 @@
 // Real-time Supabase Hook
 import { useEffect, useState } from 'react';
 import { supabase } from './supabaseClient';
-import { RealtimeChannel } from '@supabase/supabase-js';
+import { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
 /**
  * Custom hook for real-time table subscriptions
@@ -59,7 +59,7 @@ export function useRealtimeSubscription<T>(
                     table: table,
                     filter: filter
                 },
-                (payload) => {
+                (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
                     console.log(`Real-time update on ${table}:`, payload);
 
                     // Update local state based on event type
@@ -170,12 +170,13 @@ export function useRealtimeBadges(userId: string) {
                     table: 'user_badges',
                     filter: `user_id=eq.${userId}`
                 },
-                async (payload) => {
+                async (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
                     // Fetch badge details
+                    const newRecord = payload.new as Record<string, unknown>;
                     const { data: badge } = await supabase
                         .from('badges')
                         .select('*')
-                        .eq('id', payload.new.badge_id)
+                        .eq('id', newRecord.badge_id)
                         .single();
 
                     if (badge) {

@@ -11,6 +11,7 @@ import { Reward } from '@/types/rewards';
 import RewardDetailsDrawer from '@/components/rewards/RewardDetailsDrawer';
 import { supabase } from '@/lib/supabaseClient';
 import { useToast } from '@/context/ToastContext';
+import { useRefresh } from '@/context/RefreshContext';
 import styles from './page.module.css';
 
 // Basic types to match API response
@@ -25,6 +26,7 @@ export default function RewardsPage() {
     const router = useRouter();
     const { user, isLoaded } = useUser();
     const [userPoints, setUserPoints] = useState(0);
+    const { refreshKey, triggerRefresh } = useRefresh();
 
     // UI State
     const [filterTab, setFilterTab] = useState<'All' | 'Claimable' | 'Owned' | 'Redeemed' | 'Locked'>('All');
@@ -40,7 +42,7 @@ export default function RewardsPage() {
         if (user) {
             fetchData();
         }
-    }, [user]);
+    }, [user, refreshKey]);
 
     const fetchData = async () => {
         if (!user) return;
@@ -69,7 +71,7 @@ export default function RewardsPage() {
             let redeemed = 0;
 
             const mergedRewards = allRewards.map((r: any) => {
-                const userEntry = userRewards?.find(ur => ur.reward_id === r.id);
+                const userEntry = userRewards?.find((ur: { reward_id: number; id: string; status: string; acquired_at: string }) => ur.reward_id === r.id);
 
                 let status = 'Locked';
                 // Logic:
@@ -188,6 +190,8 @@ export default function RewardsPage() {
             // Success
             await fetchData();
             setSelectedReward(null);
+            // Broadcast so profile/dashboard can reflect updated balance
+            triggerRefresh('reward');
 
         } catch (error) {
             console.error("Action error", error);

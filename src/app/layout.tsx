@@ -11,6 +11,7 @@ import { AIAssistant } from "@/components/ai/AIAssistant";
 import { ProfileSyncWrapper } from "@/components/providers/ProfileSyncWrapper";
 import { Footer } from "@/components/layout/Footer";
 import { ToastProvider } from "@/context/ToastContext";
+import { RefreshProvider } from "@/context/RefreshContext";
 import { Toaster } from "react-hot-toast";
 
 
@@ -43,24 +44,26 @@ export default function RootLayout({
           {/* <AutoLogout /> - Removed to fix session persistence */}
           <GlobalAudioProvider>
             <ToastProvider>
-              <ProfileSyncWrapper>
-                <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-                  <LiveBackground />
-                  <Navbar />
-                  <main className="animate-fade-in-up" style={{ flexGrow: 1, paddingTop: 'var(--nav-height)' }}>
-                    {children}
-                  </main>
-                  <Footer />
-                </div>
-                <AIAssistant />
-                <Toaster position="bottom-right" toastOptions={{
-                  style: {
-                    background: 'var(--color-bg-200)',
-                    color: 'var(--color-text-100)',
-                    border: '1px solid var(--color-border)',
-                  }
-                }} />
-              </ProfileSyncWrapper>
+              <RefreshProvider>
+                <ProfileSyncWrapper>
+                  <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                    <LiveBackground />
+                    <Navbar />
+                    <main className="animate-fade-in-up" style={{ flexGrow: 1, paddingTop: 'var(--nav-height)' }}>
+                      {children}
+                    </main>
+                    <Footer />
+                  </div>
+                  <AIAssistant />
+                  <Toaster position="bottom-right" toastOptions={{
+                    style: {
+                      background: 'var(--color-bg-200)',
+                      color: 'var(--color-text-100)',
+                      border: '1px solid var(--color-border)',
+                    }
+                  }} />
+                </ProfileSyncWrapper>
+              </RefreshProvider>
             </ToastProvider>
           </GlobalAudioProvider>
         </ClerkProvider>

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
+import { useRefresh } from '@/context/RefreshContext';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useToast } from '@/context/ToastContext';
@@ -14,6 +15,7 @@ import { recordLogin } from '@/lib/streakUtils';
 import { TimelineChart, CategoryPieChart } from '@/components/charts/CarbonCharts';
 
 interface DashboardData {
+    username: string;
     carbonTotal: number;
     carbonSavings: number;
     streak: number;
@@ -45,6 +47,7 @@ interface DbActivity {
 }
 
 const DEFAULT_DATA: DashboardData = {
+    username: '',
     carbonTotal: 0,
     carbonSavings: 0,
     streak: 0,
@@ -54,13 +57,14 @@ const DEFAULT_DATA: DashboardData = {
     recentActivity: [],
     weeklyEmissions: [],
     categoryEmissions: [],
-    onboardingCompleted: true // Default to true to avoid flashing, will update on fetch
+    onboardingCompleted: true
 };
 
 export default function DashboardPage() {
     const router = useRouter();
     const { user, isLoaded } = useUser();
     const { toast } = useToast();
+    const { refreshKey } = useRefresh();
     const [data, setData] = useState<DashboardData>(DEFAULT_DATA);
     const [loading, setLoading] = useState(true);
     const [isEditingBudget, setIsEditingBudget] = useState(false);
@@ -149,6 +153,7 @@ export default function DashboardPage() {
                         .reduce((sum: number, a) => sum + Number(a.emissions), 0);
 
                     setData({
+                        username: profile.username || user.fullName || 'Eco Hero',
                         carbonTotal: profile.carbon_total,
                         carbonSavings: profile.carbon_savings,
                         streak: profile.streak,
@@ -185,7 +190,7 @@ export default function DashboardPage() {
         }
 
         fetchDashboardData();
-    }, [user]);
+    }, [user, refreshKey]);
 
     const handleBudgetUpdate = async () => {
         if (!user || !newBudgetValue) {
@@ -231,7 +236,7 @@ export default function DashboardPage() {
         <div className={styles.dashboardContainer}>
             <header className={styles.header}>
                 <div className={styles.greeting}>
-                    <h1>Welcome back, <span className={styles.userName}>{user?.firstName || 'Eco Hero'}</span></h1>
+                    <h1>Welcome back, <span className={styles.userName}>{user?.username || 'Eco Hero'}</span></h1>
                     <p>Your carbon footprint analysis is ready.</p>
                 </div>
                 <div className={styles.headerActions}>

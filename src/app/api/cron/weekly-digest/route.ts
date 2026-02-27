@@ -25,7 +25,7 @@ export async function POST(request: Request) {
             throw new Error('Failed to fetch user profiles for digest');
         }
 
-        const emailPromises = profiles.map(async (profile) => {
+        const emailPromises = profiles.map(async (profile: { email: string | null; username: string | null }) => {
             if (!profile.email) return;
 
             // 2. Fetch Weekly Emissions Data 

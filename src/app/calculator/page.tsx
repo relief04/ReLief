@@ -5,6 +5,7 @@ import { useUser } from '@clerk/nextjs';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useToast } from '@/context/ToastContext';
+import { useRefresh } from '@/context/RefreshContext';
 import { Input } from '@/components/ui/Input';
 import { calculateEmissions, CalculationResult, DietType, getAverageBaseline } from '@/lib/calculator';
 import { BillScanner } from '@/components/bills/BillScanner';
@@ -39,6 +40,7 @@ export default function CalculatorPage() {
         todayLogData: null as any | null
     });
     const { user } = useUser();
+    const { triggerRefresh } = useRefresh();
 
     const checkLimits = React.useCallback(async () => {
         if (!user) return;
@@ -57,16 +59,16 @@ export default function CalculatorPage() {
 
             if (fetchError) throw fetchError;
 
-            const todayLog = activities?.find(a =>
+            const todayLog = activities?.find((a: { type: string; created_at: string; description: string }) =>
                 a.type === 'calculator' && a.created_at >= startOfDay
             );
 
             setLimits({
                 dailyLogged: !!todayLog,
-                electricityScanned: activities?.some(a =>
+                electricityScanned: activities?.some((a: { type: string; description: string }) =>
                     a.type === 'bill_upload' && a.description.toLowerCase().includes('electricity')
                 ) || false,
-                lpgScanned: activities?.some(a =>
+                lpgScanned: activities?.some((a: { type: string; description: string }) =>
                     a.type === 'bill_upload' && a.description.toLowerCase().includes('lpg')
                 ) || false,
                 loading: false,
@@ -220,6 +222,9 @@ export default function CalculatorPage() {
             }
 
             toast(`Saved! You earned ${earnedKarma} KP! ${scannedData ? '🎉 Bonus for scanning bill!' : ''} ${newStreak ? `Streak: ${newStreak} days!` : ''}${badgeMessage}`, "success");
+
+            // Trigger global refresh so dashboard/profile update without reloading
+            triggerRefresh('activity');
 
             // BACKGROUND TASK: Trigger Email Notification for manual logs
             if (!scannedData) {
@@ -423,6 +428,10 @@ export default function CalculatorPage() {
                                 <BillScanner
                                     onScanComplete={handleBillScanComplete}
                                     disabled={limits.loading}
+                                    disabledTypes={[
+                                        ...(limits.electricityScanned ? ['electricity' as const] : []),
+                                        ...(limits.lpgScanned ? ['lpg' as const] : []),
+                                    ]}
                                 />
                                 <div className={styles.scanHint}>
                                     💡 Tip: Use clear, well-lit images for best results.
@@ -459,11 +468,25 @@ export default function CalculatorPage() {
                                         <div className={styles.detailRow}>
                                             <span>Extracted Units</span>
                                             <strong>
-                                                {scannedData.extracted_data.units_consumed ||
-                                                    scannedData.extracted_data.cylinder_weight ||
-                                                    scannedData.extracted_data.total_amount || 0}
-                                                {scannedData.bill_type === 'electricity' ? ' kWh' :
-                                                    scannedData.bill_type === 'lpg' ? ' kg' : ' INR'}
+                                                {(() => {
+                                                    const d = scannedData.extracted_data;
+                                                    const type = scannedData.bill_type;
+                                                    if (type === 'electricity') {
+                                                        if (d.units_consumed != null && d.units_consumed > 0)
+                                                            return `${d.units_consumed} kWh`;
+                                                        if (d.amount != null)
+                                                            return `₹${d.amount} (est.)`;
+                                                        return '— kWh';
+                                                    }
+                                                    if (type === 'lpg') {
+                                                        const weight = d.cylinder_weight ?? 14.2;
+                                                        return `${weight} kg`;
+                                                    }
+                                                    if (type === 'shopping') {
+                                                        return d.total_amount != null ? `₹${d.total_amount}` : '—';
+                                                    }
+                                                    return d.units_consumed ?? d.total_amount ?? d.amount ?? 0;
+                                                })()}
                                             </strong>
                                         </div>
                                         <div className={styles.detailRow}>

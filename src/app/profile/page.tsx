@@ -7,6 +7,8 @@ import { useGlobalAudio, FOCUS_TRACKS } from '@/components/providers/GlobalAudio
 import { supabase } from '@/lib/supabaseClient';
 import { ensureUserProfile } from '@/lib/userUtils';
 import { recordLogin } from '@/lib/streakUtils';
+import { useRefresh } from '@/context/RefreshContext';
+import { isAdminEmail } from '@/lib/admin';
 import { Card } from '@/components/ui/Card';
 import { StreakCalendar } from '@/components/ui/StreakCalendar';
 import { Modal } from '@/components/ui/Modal';
@@ -44,6 +46,7 @@ export default function ProfilePage() {
     const { user, isLoaded } = useUser();
     const { signOut } = useClerk();
     const { isPlaying, currentTrack, togglePlay, setTrack } = useGlobalAudio();
+    const { refreshKey } = useRefresh();
     const [profileData, setProfileData] = useState<any>(null);
     const [loadingData, setLoadingData] = useState(true);
     const [isStreakModalOpen, setIsStreakModalOpen] = useState(false);
@@ -70,7 +73,7 @@ export default function ProfilePage() {
         }
         if (isLoaded && user) loadProfile();
         else if (isLoaded && !user) setLoadingData(false);
-    }, [user, isLoaded]);
+    }, [user, isLoaded, refreshKey]);
 
     if (!isLoaded || (user && loadingData)) {
         return (
@@ -105,7 +108,7 @@ export default function ProfilePage() {
                         <UserButton afterSignOutUrl="/" />
                     </div>
                 </div>
-                <h1 className={styles.name}>{user.fullName}</h1>
+                <h1 className={styles.name}>{user.username || user.fullName}</h1>
                 <div className={styles.email}><span>{user.primaryEmailAddress?.emailAddress}</span></div>
 
                 {/* Rank and Member Since */}
@@ -212,6 +215,36 @@ export default function ProfilePage() {
                         <LogOut size={18} />
                         Log Out
                     </button>
+
+                    {isAdminEmail(user.primaryEmailAddress?.emailAddress) && (
+                        <button
+                            onClick={() => router.push('/admin')}
+                            style={{
+                                padding: '0.75rem 1.5rem',
+                                background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '12px',
+                                cursor: 'pointer',
+                                fontWeight: 700,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem',
+                                transition: 'all 0.2s ease',
+                                boxShadow: 'var(--shadow-glow)',
+                            }}
+                            onMouseOver={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = 'var(--shadow-premium)';
+                            }}
+                            onMouseOut={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = 'var(--shadow-glow)';
+                            }}
+                        >
+                            ⚙️ Admin Dashboard
+                        </button>
+                    )}
                 </div>
             </div>
 

@@ -6,24 +6,28 @@ import { FeedView } from '@/components/community/views/FeedView';
 import { GroupsView } from '@/components/community/views/GroupsView';
 import { EventsView } from '@/components/community/views/EventsView';
 import { StoriesView } from '@/components/community/views/StoriesView';
+import { useRefresh } from '@/context/RefreshContext';
 
 export default function FeedPage() {
     const [activeTab, setActiveTab] = useState<'feed' | 'groups' | 'events' | 'stories'>('feed');
     const [selectedHashtag, setSelectedHashtag] = useState<string | null>(null);
+    const { refreshKey } = useRefresh();
 
     const renderContent = () => {
         switch (activeTab) {
             case 'feed': return (
                 <FeedView
+                    key={activeTab}
                     selectedHashtag={selectedHashtag}
                     onHashtagClick={setSelectedHashtag}
                 />
             );
-            case 'groups': return <GroupsView />;
-            case 'events': return <EventsView />;
-            case 'stories': return <StoriesView />;
+            case 'groups': return <GroupsView key={activeTab} />;
+            case 'events': return <EventsView key={activeTab} />;
+            case 'stories': return <StoriesView key={activeTab} />;
             default: return (
                 <FeedView
+                    key={activeTab}
                     selectedHashtag={selectedHashtag}
                     onHashtagClick={setSelectedHashtag}
                 />
