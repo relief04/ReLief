@@ -13,17 +13,19 @@ async function verifyAdmin() {
 // PATCH /api/admin/posts/[id] — update post content (bypasses RLS via service role)
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     if (!await verifyAdmin()) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
     const { content } = await req.json();
+    const resolvedParams = await params;
+
     const db = createAdminClient();
     const { error } = await db
         .from('posts')
         .update({ content })
-        .eq('id', params.id);
+        .eq('id', resolvedParams.id);
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ success: true });
@@ -32,16 +34,18 @@ export async function PATCH(
 // DELETE /api/admin/posts/[id] — delete a post (bypasses RLS via service role)
 export async function DELETE(
     _req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     if (!await verifyAdmin()) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
+    const resolvedParams = await params;
+
     const db = createAdminClient();
     const { error } = await db
         .from('posts')
         .delete()
-        .eq('id', params.id);
+        .eq('id', resolvedParams.id);
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ success: true });

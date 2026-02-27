@@ -284,7 +284,7 @@ export function GroupDetailView({ group, onBack, onJoin, onLeave, onEdit, onDele
                         participants: eventRsvps.filter((r: RsvpRow) => r.status === 'going').length,
                         user_rsvp: currentUserRsvp?.status || null,
                         participant_list: participantList
-                    };
+                    } as EventWithDetails;
                 });
             } else {
                 formattedEvents = eventsData.map((e: { id: number;[key: string]: unknown }) => ({
@@ -292,7 +292,7 @@ export function GroupDetailView({ group, onBack, onJoin, onLeave, onEdit, onDele
                     participants: 0,
                     user_rsvp: null,
                     participant_list: []
-                }));
+                } as unknown as EventWithDetails));
             }
             setEvents(formattedEvents);
         } else {
