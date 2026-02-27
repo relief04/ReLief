@@ -4,10 +4,10 @@ import React, { createContext, useContext, useState, useRef, useEffect } from 'r
 
 // Define Tracks
 export const FOCUS_TRACKS = [
-    { id: 'rain', name: 'Gentle Rain', emoji: '🌧️', src: '/music/rain.mpeg' },
-    { id: 'forest', name: 'Forest Birds', emoji: '🐦', src: '/music/forest-birdsong.mpeg' },
-    { id: 'ocean', name: 'Ocean Waves', emoji: '🌊', src: '/music/ocean.mpeg' },
-    { id: 'wind', name: 'Mountain Wind', emoji: '🏔️', src: '/music/mountain-wind.mpeg' },
+    { id: 'rain', name: 'Gentle Rain', emoji: '🌧️', src: '/music/rain.mp3' },
+    { id: 'forest', name: 'Forest Birds', emoji: '🐦', src: '/music/forest-birdsong.mp3' },
+    { id: 'ocean', name: 'Ocean Waves', emoji: '🌊', src: '/music/ocean.mp3' },
+    { id: 'wind', name: 'Mountain Wind', emoji: '🏔️', src: '/music/mountain-wind.mp3' },
 ];
 
 type Track = typeof FOCUS_TRACKS[0];
