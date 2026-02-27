@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-// Initialize Resend with the API key from environment variables
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Force this route to be dynamic — prevents Next.js from attempting
+// static collection at build time (which would fail without env vars)
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
+    // Initialize Resend lazily inside the handler so it only runs at request time
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
     try {
         const body = await request.json();
         const { fullName, emailAddress, subject, message } = body;
@@ -13,6 +17,14 @@ export async function POST(request: Request) {
             return NextResponse.json(
                 { error: 'Missing required fields' },
                 { status: 400 }
+            );
+        }
+
+        if (!process.env.RESEND_API_KEY) {
+            console.error('RESEND_API_KEY is not set');
+            return NextResponse.json(
+                { error: 'Email service not configured' },
+                { status: 503 }
             );
         }
 
