@@ -7,7 +7,7 @@ export const FOCUS_TRACKS = [
     { id: 'rain', name: 'Gentle Rain', emoji: '🌧️', src: '/music/rain.mpeg' },
     { id: 'forest', name: 'Forest Birds', emoji: '🐦', src: '/music/forest-birdsong.mpeg' },
     { id: 'ocean', name: 'Ocean Waves', emoji: '🌊', src: '/music/ocean.mpeg' },
-    { id: 'wind', name: 'Mountain Wind', emoji: '🏔️', src: '/music/Mountain Wind.mpeg' },
+    { id: 'wind', name: 'Mountain Wind', emoji: '🏔️', src: '/music/mountain-wind.mpeg' },
 ];
 
 type Track = typeof FOCUS_TRACKS[0];
