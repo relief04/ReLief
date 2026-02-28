@@ -102,95 +102,141 @@ const getWeatherCondition = (code: number): string => {
 
 
 
-// --- WAQI Integration ---
-interface WAQIResponse {
-    status: string;
-    data: {
-        aqi: number;
-        idx: number; // Unique ID
-        city: {
-            name: string;
-            url: string;
+// --- OpenWeather Integration ---
+interface OpenWeatherAirPollutionResponse {
+    list: {
+        dt: number;
+        main: { aqi: number };
+        components: {
+            co: number;
+            no: number;
+            no2: number;
+            o3: number;
+            so2: number;
+            pm2_5: number;
+            pm10: number;
+            nh3: number;
         };
-        iaqi: {
-            pm25?: { v: number };
-            pm10?: { v: number };
-            o3?: { v: number };
-            no2?: { v: number };
-            t?: { v: number }; // Temp
-            h?: { v: number }; // Humidity
-            w?: { v: number }; // Wind
-        };
-        forecast?: {
-            daily?: {
-                pm25?: { avg: number; day: string; max: number; min: number }[];
-            }
-        }
-    };
+    }[];
 }
 
-const getWAQIData = async (lat: number, lon: number): Promise<AQIData | null> => {
-    const token = process.env.NEXT_PUBLIC_WAQI_TOKEN;
-    if (!token) return null;
+// Helper to convert PM2.5 (μg/m³) to US EPA AQI (0-500)
+// using the official breakpoints from AirNow
+const calculateUS_EPA_AQI_from_PM25 = (c: number): number => {
+    let AQI = 0;
+    let bplo = 0, bphi = 0, ilo = 0, ihi = 0;
+
+    if (c <= 12.0) {
+        bplo = 0.0; bphi = 12.0; ilo = 0; ihi = 50;
+    } else if (c <= 35.4) {
+        bplo = 12.1; bphi = 35.4; ilo = 51; ihi = 100;
+    } else if (c <= 55.4) {
+        bplo = 35.5; bphi = 55.4; ilo = 101; ihi = 150;
+    } else if (c <= 150.4) {
+        bplo = 55.5; bphi = 150.4; ilo = 151; ihi = 200;
+    } else if (c <= 250.4) {
+        bplo = 150.5; bphi = 250.4; ilo = 201; ihi = 300;
+    } else if (c <= 350.4) {
+        bplo = 250.5; bphi = 350.4; ilo = 301; ihi = 400;
+    } else if (c <= 500.4) {
+        bplo = 350.5; bphi = 500.4; ilo = 401; ihi = 500;
+    } else {
+        return 500; // Max out at 500
+    }
+
+    AQI = Math.round(((ihi - ilo) / (bphi - bplo)) * (c - bplo) + ilo);
+    return AQI;
+};
+
+const getOpenWeatherData = async (lat: number, lon: number): Promise<AQIData | null> => {
+    const token = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
+    if (!token) {
+        console.warn("OpenWeather Token not found in environment variables.");
+        return null;
+    }
 
     try {
-        console.log(`Fetching WAQI for ${lat}, ${lon}`);
-        const res = await fetch(`https://api.waqi.info/feed/geo:${lat};${lon}/?token=${token}`);
-        const json: WAQIResponse = await res.json();
+        console.log(`Fetching OpenWeather Air Pollution for ${lat}, ${lon}`);
 
-        if (json.status !== 'ok') {
-            console.warn("WAQI API error:", json);
+        // Fetch Current Pollution
+        const res = await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${token}`);
+        if (!res.ok) {
+            console.warn(`OpenWeather API error: ${res.statusText}`);
             return null;
         }
 
-        const d = json.data;
-        console.log("WAQI Station Found:", d.city.name); // Log station name
-        // WAQI weather is limited, but we can use it or fetch Open-Meteo weather separately if needed.
-        // For simplicity and consistency, let's mix WAQI air data with Open-Meteo Weather for full details if WAQI is missing bits.
-        // Actually, let's just use what WAQI gives for pollution and fallback to OpenMeteo for weather if we assume OpenMeteo is always called for weather.
+        const json: OpenWeatherAirPollutionResponse = await res.json();
+        const currentData = json.list[0];
 
-        // HOWEVER, to keep it simple: if WAQI works, we use it. 
-        // We might need to fetch weather separately if WAQI doesn't provide full weather context (like 'Condition' text).
-        // Let's stick to the plan: Use WAQI for pollutants, but we still likely need Open-Meteo for detailed weather conditions.
+        if (!currentData) return null;
 
-        // Strategy: Fetch WAQI. If successful, use its AQI/Pollutants. THEN fetch Open-Meteo Weather to complement it.
-        // Parse up to 3 days of future forecast from WAQI pm25 array
+        // Fetch Forecast
         let forecast: AQIForecastDay[] = [];
-        if (d.forecast?.daily?.pm25) {
-            const todayStr = new Date().toLocaleDateString('en-CA');
-            forecast = d.forecast.daily.pm25
-                .filter(f => f.day >= todayStr)
-                .slice(0, 3)
-                .map(f => {
-                    const { status } = getStatusAndRecommendation(f.avg);
+        try {
+            const forecastRes = await fetch(`https://api.openweathermap.org/data/2.5/air_pollution/forecast?lat=${lat}&lon=${lon}&appid=${token}`);
+            if (forecastRes.ok) {
+                const forecastJson: OpenWeatherAirPollutionResponse = await forecastRes.json();
+
+                // Group forecast by day and find daily max/avg PM2.5 to calculate AQI
+                const dailyMap = new Map<string, { sumPM: number, maxPM: number, count: number }>();
+                const todayStr = new Date().toLocaleDateString('en-CA');
+
+                forecastJson.list.forEach(f => {
+                    const dateStr = new Date(f.dt * 1000).toLocaleDateString('en-CA');
+                    if (dateStr >= todayStr) {
+                        if (!dailyMap.has(dateStr)) dailyMap.set(dateStr, { sumPM: 0, maxPM: 0, count: 0 });
+                        const dayData = dailyMap.get(dateStr)!;
+                        const pm25 = f.components.pm2_5;
+
+                        dayData.sumPM += pm25;
+                        if (pm25 > dayData.maxPM) dayData.maxPM = pm25;
+                        dayData.count += 1;
+                    }
+                });
+
+                // Extract top 3 future days
+                const sortedDays = Array.from(dailyMap.keys()).sort();
+                forecast = sortedDays.slice(0, 3).map(day => {
+                    const dayData = dailyMap.get(day)!;
+                    const avgPM = dayData.sumPM / dayData.count;
+
+                    const avgAQI = calculateUS_EPA_AQI_from_PM25(avgPM);
+                    const maxAQI = calculateUS_EPA_AQI_from_PM25(dayData.maxPM);
+                    const { status } = getStatusAndRecommendation(avgAQI);
+
                     return {
-                        date: f.day,
-                        avgAQI: f.avg, // PM2.5 in WAQI naturally aligns with AQI scales
-                        maxAQI: f.max,
+                        date: day,
+                        avgAQI: avgAQI,
+                        maxAQI: maxAQI,
                         status
                     };
                 });
+            }
+        } catch (e) {
+            console.warn("Failed to fetch OpenWeather forecast", e);
         }
 
-        const { status, advice, habits } = getStatusAndRecommendation(d.aqi);
+        // Calculate accurate US EPA AQI from OpenWeather's raw pm2.5 concentration μg/m3
+        const epaAQI = calculateUS_EPA_AQI_from_PM25(currentData.components.pm2_5);
+        const { status, advice, habits } = getStatusAndRecommendation(epaAQI);
 
         return {
-            city: d.city.name,
-            aqi: d.aqi,
+            city: "OpenWeather Station", // Needs to be overridden by generic fallback
+            aqi: epaAQI,
             status,
             pollutants: {
-                pm25: d.iaqi.pm25?.v || 0,
-                pm10: d.iaqi.pm10?.v || 0,
-                o3: d.iaqi.o3?.v || 0,
-                no2: d.iaqi.no2?.v || 0
+                pm25: currentData.components.pm2_5 || 0,
+                pm10: currentData.components.pm10 || 0,
+                o3: currentData.components.o3 || 0,
+                no2: currentData.components.no2 || 0
             },
             weather: {
-                temperature: d.iaqi.t?.v || 0,
-                humidity: d.iaqi.h?.v || 0,
-                windSpeed: d.iaqi.w?.v || 0,
-                apparentTemperature: d.iaqi.t?.v || 0, // Fallback to temp if not separately available
-                condition: 'Local Station Data', // WAQI doesn't give text conditions
-                isDay: true // Assumption or need calculation
+                temperature: 0,
+                humidity: 0,
+                windSpeed: 0,
+                apparentTemperature: 0,
+                condition: 'Local Station Data',
+                isDay: true
             },
             advice,
             habits,
@@ -199,21 +245,19 @@ const getWAQIData = async (lat: number, lon: number): Promise<AQIData | null> =>
 
     } catch (e) {
         if (e instanceof Error && e.name !== 'AbortError') {
-            console.error("WAQI Fetch Error", e);
+            console.error("OpenWeather Fetch Error", e);
         }
         return null;
     }
 };
 
-// Modified to try WAQI first, then fallback to Open-Meteo
 const fetchUnifiedData = async (latitude: number, longitude: number, fallbackName: string): Promise<AQIData> => {
     console.log(`Unified Fetch: ${latitude}, ${longitude} | Fallback Name: ${fallbackName}`);
 
-    // 1. Try WAQI
-    const waqiData = await getWAQIData(latitude, longitude);
+    // 1. Try OpenWeather for Air Pollution
+    const owData = await getOpenWeatherData(latitude, longitude);
 
     // 2. Always fetch Weather from Open-Meteo because it's better (has conditions like "Cloudy", "Rain")
-    // and WAQI doesn't strictly provide that.
     const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m`);
     const weatherJson = await weatherRes.json();
     const omWeather = weatherJson.current;
@@ -227,12 +271,12 @@ const fetchUnifiedData = async (latitude: number, longitude: number, fallbackNam
         isDay: !!omWeather.is_day
     };
 
-    if (waqiData) {
-        console.log(`Using WAQI Data. Station: ${waqiData.city}`);
+    if (owData) {
+        console.log(`Using OpenWeather API Data.`);
         return {
-            ...waqiData,
+            ...owData,
             weather: weatherObj,
-            city: fallbackName, // Use the requested name (search/geo) instead of Station Name to avoid confusion
+            city: fallbackName, // Use the requested name (search/geo) 
             coordinates: {
                 lat: latitude,
                 lon: longitude
@@ -240,8 +284,8 @@ const fetchUnifiedData = async (latitude: number, longitude: number, fallbackNam
         };
     }
 
-    console.error("WAQI returned null, and no fallback is permitted by user configuration.");
-    throw new Error('AQICN API failed to return data for this location.');
+    console.error("OpenWeather returned null, and no fallback is permitted by user configuration.");
+    throw new Error('API failed to return data for this location.');
 };
 
 export const getAQIData = async (city: string): Promise<AQIData> => {

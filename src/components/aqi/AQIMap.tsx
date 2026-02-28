@@ -42,7 +42,7 @@ function MapUpdater({ lat, lon }: { lat: number; lon: number }) {
 }
 
 export default function AQIMap({ lat, lon, zoom = 10, status }: AQIMapProps) {
-    const token = process.env.NEXT_PUBLIC_WAQI_TOKEN;
+    const token = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
     const [theme, setTheme] = useState('light');
     const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
 
@@ -63,7 +63,7 @@ export default function AQIMap({ lat, lon, zoom = 10, status }: AQIMapProps) {
     }, []);
 
     if (!token) {
-        return <div className="p-4 bg-red-100 text-red-700 rounded">Error: WAQI Token not found.</div>;
+        return <div className="p-4 bg-red-100 text-red-700 rounded">Error: OpenWeather API Key not found.</div>;
     }
 
     const cartoTileUrl = theme === 'dark'
@@ -102,7 +102,7 @@ export default function AQIMap({ lat, lon, zoom = 10, status }: AQIMapProps) {
 
                 <TileLayer
                     opacity={0.5}
-                    url="https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=9e1081699f7d0186981880ca02b9fdd3"
+                    url={`https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${token}`}
                     attribution='&copy; <a href="https://openweathermap.org/">OpenWeatherMap</a>'
                 />
 
