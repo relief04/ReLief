@@ -3,10 +3,17 @@
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 0 1.5rem 4rem;
-    overflow-x: hidden;
+    overflow-x: visible;
+    /* Allow content to overflow naturally */
     opacity: 0;
     transition: opacity 0.5s ease;
     min-height: 100vh;
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 1rem 3rem;
+    }
 }
 
 .container.mounted {
@@ -313,6 +320,15 @@
     box-shadow: var(--shadow-lg);
     position: relative;
     overflow: hidden;
+}
+
+@media (max-width: 767px) {
+    .formBox {
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        margin: 0 -0.5rem;
+        /* Slight pull to give more internal space */
+    }
 }
 
 @media (min-width: 768px) {
