@@ -113,25 +113,31 @@ body {
   background-color: var(--color-bg-100);
   color: var(--color-text-100);
   transition: background-color 0.3s ease, color 0.3s ease;
-  overflow-x: auto;
-  /* Changed from hidden to allow horizontal scroll if needed */
+  overflow-x: hidden;
+  /* Default back to hidden for desktop */
   line-height: 1.6;
   font-family: var(--font-body), sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Custom Horizontal Scrollbar for a premium look */
-body::-webkit-scrollbar {
-  height: 4px;
-}
+/* Mobile-only horizontal scroll for a premium look */
+@media (max-width: 768px) {
+  body {
+    overflow-x: auto;
+  }
 
-body::-webkit-scrollbar-track {
-  background: var(--color-bg-100);
-}
+  body::-webkit-scrollbar {
+    height: 4px;
+  }
 
-body::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-  border-radius: 2px;
+  body::-webkit-scrollbar-track {
+    background: var(--color-bg-100);
+  }
+
+  body::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 2px;
+  }
 }
 
 /* Typography Defaults */
