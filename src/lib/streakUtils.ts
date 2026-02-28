@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabaseClient';
-import { checkAndAwardBadges } from '@/lib/badges';
+import { checkAndAwardBadges } from '@/lib/badgesServer';
 
 export interface LoginHistoryEntry {
     id: string;

@@ -101,9 +101,9 @@ export default function AQIMap({ lat, lon, zoom = 10, status }: AQIMapProps) {
                 />
 
                 <TileLayer
-                    opacity={0.6}
-                    url={`https://tiles.aqicn.org/tiles/usepa-aqi/{z}/{x}/{y}.png?token=${token}`}
-                    attribution='&copy; <a href="https://aqicn.org/">WAQI</a>'
+                    opacity={0.5}
+                    url="https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=9e1081699f7d0186981880ca02b9fdd3"
+                    attribution='&copy; <a href="https://openweathermap.org/">OpenWeatherMap</a>'
                 />
 
                 <Marker position={[lat, lon]} icon={customIcon} />

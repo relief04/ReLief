@@ -5,6 +5,7 @@ import { useUser } from '@clerk/nextjs';
 import { BillScanner } from '@/components/bills/BillScanner';
 import { BillScanResult } from '@/lib/billScanningAPI';
 import { supabase } from '@/lib/supabaseClient';
+import { logPointsHistory } from '@/lib/userUtils';
 import { Card } from '@/components/ui/Card';
 import styles from './page.module.css';
 import Link from 'next/link';
@@ -75,6 +76,7 @@ export default function ScannerPage() {
                 p_user_id: user.id,
                 p_points: 10
             });
+            await logPointsHistory(user.id, 10, `Scanned ${result.bill_type} bill`, 'AI Scanner');
 
         } catch (err) {
             console.error('Error saving bill:', err);

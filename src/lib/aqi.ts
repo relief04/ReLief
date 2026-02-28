@@ -22,6 +22,10 @@ export interface AQIData {
     };
     habits: string[];
     forecast?: AQIForecastDay[];
+    coordinates?: {
+        lat: number;
+        lon: number;
+    };
 }
 
 export interface AQIForecastDay {
@@ -228,7 +232,11 @@ const fetchUnifiedData = async (latitude: number, longitude: number, fallbackNam
         return {
             ...waqiData,
             weather: weatherObj,
-            city: fallbackName // Use the requested name (search/geo) instead of Station Name to avoid confusion
+            city: fallbackName, // Use the requested name (search/geo) instead of Station Name to avoid confusion
+            coordinates: {
+                lat: latitude,
+                lon: longitude
+            }
         };
     }
 
@@ -251,7 +259,7 @@ export const getAQIData = async (city: string): Promise<AQIData> => {
         return await fetchUnifiedData(latitude, longitude, displayName);
 
     } catch (error) {
-        if (error instanceof Error && error.name !== 'AbortError') {
+        if (error instanceof Error && error.name !== 'AbortError' && error.message !== 'City not found') {
             console.error("Error fetching data:", error);
         }
         throw error;

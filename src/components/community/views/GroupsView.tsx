@@ -7,7 +7,7 @@ import { GroupDetailView } from './GroupDetailView';
 import { Card } from '@/components/ui/Card';
 import { supabase } from '@/lib/supabaseClient';
 import { SkeletonLoader } from '@/components/community/SkeletonLoader';
-import { checkAndAwardBadges } from '@/lib/badges';
+import { checkAndAwardBadges } from '@/lib/badgesServer';
 import { useToast } from '@/context/ToastContext';
 import { useRefresh } from '@/context/RefreshContext';
 import styles from './GroupsView.module.css';

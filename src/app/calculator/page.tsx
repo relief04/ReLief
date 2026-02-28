@@ -17,7 +17,7 @@ import { Sparkles } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { updateUserStats } from '@/lib/userUtils';
 import { recordLogin } from '@/lib/streakUtils';
-import { checkAndAwardBadges } from '@/lib/badges';
+import { checkAndAwardBadges } from '@/lib/badgesServer';
 
 type InputMode = 'manual' | 'scan';
 
@@ -208,7 +208,14 @@ export default function CalculatorPage() {
             const baseline = getAverageBaseline();
             const savings = Math.max(0, baseline - result.total);
 
-            await updateUserStats(user.id, result.total, earnedKarma, savings);
+            await updateUserStats(
+                user.id,
+                result.total,
+                earnedKarma,
+                savings,
+                scannedData ? `Scanned ${scannedData.bill_type} bill` : 'Logged Daily Footprint',
+                scannedData ? 'AI Scanner' : 'Calculator'
+            );
 
             const streakData = await recordLogin(user.id);
             const newStreak = streakData?.current_streak || 0;

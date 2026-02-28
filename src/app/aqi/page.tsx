@@ -8,7 +8,7 @@ import { getAQIData, getAQIDataByCoords, AQIData } from '@/lib/aqi';
 import { INDIA_LOCATIONS } from '@/lib/india-locations';
 
 import styles from './page.module.css';
-import { LocateFixed, Share2, Wind, AlertTriangle, CheckCircle2, Thermometer, Droplets, Sun, Moon, Leaf, Search } from 'lucide-react';
+import { LocateFixed, Share2, Wind, AlertTriangle, CheckCircle2, Thermometer, Droplets, Sun, Moon, Search } from 'lucide-react';
 
 const getAQITint = (status?: string) => {
     switch (status) {
@@ -58,27 +58,19 @@ export default function AQIPage() {
             const result = await getAQIData(query);
 
             setData(result);
-
-            try {
-                const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en&format=json`);
-                const geoJson = await geoRes.json();
-                if (geoJson.results?.[0]) {
-                    setCoords({ lat: geoJson.results[0].latitude, lon: geoJson.results[0].longitude });
-                }
-            } catch (e) { /* ignore map error */ }
+            if (result.coordinates) {
+                setCoords(result.coordinates);
+            }
 
             return;
         } catch {
-            // ... fallbacks ...
-            // For brevity, skipping logic update in fallback.
             console.log("Attempt 1 failed");
-            // ...
-            // (Keeping fallback logic from previous simple version)
             if (stateContext) {
                 try {
                     // Attempt 2: City, State
                     const val = await getAQIData(`${cleanCity}, ${stateContext}`);
                     setData(val);
+                    if (val.coordinates) setCoords(val.coordinates);
                     return;
                 } catch { }
             }
@@ -86,8 +78,8 @@ export default function AQIPage() {
                 // Attempt 3: Just City
                 const res = await getAQIData(cleanCity);
                 setData(res);
+                if (res.coordinates) setCoords(res.coordinates);
             } catch (finalErr) {
-                console.error(finalErr);
                 setError(`Could not find data for "${cleanCity}".`);
                 setData(null);
             }
@@ -200,7 +192,7 @@ export default function AQIPage() {
                             className={styles.locationBtn}
                             title="Use Current Location"
                         >
-                            <LocateFixed size={24} />
+                            <LocateFixed size={18} /> Locate Me
                         </Button>
                         <Button
                             variant="primary"
@@ -309,22 +301,7 @@ export default function AQIPage() {
                         </Card>
                     </div>
 
-                    {/* ECO HABITS */}
-                    <Card className={styles.habitsCard}>
-                        <h3>Suggested Eco-Habits</h3>
-                        <div className={styles.habitsList}>
-                            {data.habits && data.habits.length > 0 ? (
-                                data.habits.map((habit, idx) => (
-                                    <div key={idx} className={styles.habitItem}>
-                                        <Leaf size={16} className={styles.leafIcon} />
-                                        {habit}
-                                    </div>
-                                ))
-                            ) : (
-                                <p>No specific tips available for this status.</p>
-                            )}
-                        </div>
-                    </Card>
+
 
                     <div className={styles.statsGrid}>
                         {[

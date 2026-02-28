@@ -1,6 +1,7 @@
 // Badge Detection and Award Logic
 import { supabase } from './supabaseClient';
 import { Badge, UserStatsForBadges, checkBadgeEligibility } from './badges';
+import { logPointsHistory } from './userUtils';
 import { sendBadgeEmail } from './email';
 
 /**
@@ -78,6 +79,7 @@ export async function detectAndAwardBadges(
                         p_user_id: userId,
                         p_points: badge.karma_reward
                     });
+                    await logPointsHistory(userId, badge.karma_reward, `Earned Badge: ${badge.name}`, 'Badges');
                 }
 
                 console.log(`✅ Badge awarded: ${badge.name} to user ${userId}`);

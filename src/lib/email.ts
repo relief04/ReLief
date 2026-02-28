@@ -1,4 +1,4 @@
-import { resend } from '@/lib/resend';
+import { transporter, getSender } from '@/lib/nodemailer';
 
 interface MailOptions {
   to: string;
@@ -8,30 +8,25 @@ interface MailOptions {
 }
 
 /**
- * Generic function to send emails using Resend.
+ * Generic function to send emails using Nodemailer.
  */
 export const sendEmail = async ({ to, subject, text, html }: MailOptions) => {
   try {
-    if (!resend) {
-      console.warn("⚠️ Email not sent: RESEND_API_KEY is missing or running on client.");
-      return { success: false, error: "Missing API Key" };
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.warn("⚠️ Email not sent: Gmail App Password is missing in env.");
+      return { success: false, error: "Missing App Password" };
     }
 
-    const { data, error } = await resend.emails.send({
-      from: 'ReLief Team <onboarding@resend.dev>', // Default Resend testing domain
-      to: [to],
+    const info = await transporter.sendMail({
+      from: getSender(),
+      to: to,
       subject: subject,
       text: text,
       html: html,
     });
 
-    if (error) {
-      console.error("❌ Error sending email:", error);
-      return { success: false, error };
-    }
-
-    console.log("Message sent:", data?.id);
-    return { success: true, id: data?.id };
+    console.log("Message sent:", info.messageId);
+    return { success: true, id: info.messageId };
 
   } catch (error) {
     console.error("❌ Unexpected error sending email:", error);

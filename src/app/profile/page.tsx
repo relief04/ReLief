@@ -12,6 +12,7 @@ import { isAdminEmail } from '@/lib/admin';
 import { Card } from '@/components/ui/Card';
 import { StreakCalendar } from '@/components/ui/StreakCalendar';
 import { Modal } from '@/components/ui/Modal';
+import { PointsHistoryModal } from '@/components/profile/PointsHistoryModal';
 import { EmailPreferences } from '@/components/settings/EmailPreferences';
 import {
     Leaf,
@@ -50,6 +51,7 @@ export default function ProfilePage() {
     const [profileData, setProfileData] = useState<any>(null);
     const [loadingData, setLoadingData] = useState(true);
     const [isStreakModalOpen, setIsStreakModalOpen] = useState(false);
+    const [isPointsModalOpen, setIsPointsModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<'overview' | 'notifications'>('overview');
 
     useEffect(() => {
@@ -289,7 +291,13 @@ export default function ProfilePage() {
                 <>
                     {/* Metrics Grid */}
                     <div className={styles.statsGrid}>
-                        <div className={styles.statCard}>
+                        <div
+                            className={`${styles.statCard} cursor-pointer hover:border-yellow-400 hover:shadow-lg transition-all`}
+                            onClick={() => setIsPointsModalOpen(true)}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => e.key === 'Enter' && setIsPointsModalOpen(true)}
+                        >
                             <div className={styles.statHeader}>
                                 <div className={`${styles.statIcon} ${styles.iconYellow}`}><Award size={20} /></div>
                                 Trivia Points
@@ -421,6 +429,13 @@ export default function ProfilePage() {
                     longestStreak={profileData?.longest_streak || 0}
                 />
             </Modal>
+
+            {/* Points History Modal */}
+            <PointsHistoryModal
+                isOpen={isPointsModalOpen}
+                onClose={() => setIsPointsModalOpen(false)}
+                userId={user.id}
+            />
         </div>
     );
 }

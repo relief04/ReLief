@@ -7,7 +7,7 @@ import { PostCard } from '@/components/community/PostCard';
 import { SkeletonLoader } from '@/components/community/SkeletonLoader';
 import { supabase } from '@/lib/supabaseClient';
 import { useToast } from '@/context/ToastContext';
-import { checkAndAwardBadges } from '@/lib/badges';
+import { checkAndAwardBadges } from '@/lib/badgesServer';
 import { useRefresh } from '@/context/RefreshContext';
 import styles from './FeedView.module.css';
 

@@ -1,5 +1,5 @@
 import { supabase } from './supabaseClient';
-
+import { logPointsHistory } from './userUtils';
 export interface QuizQuestion {
     id: number;
     level_id: number;
@@ -176,6 +176,7 @@ export async function submitQuizAnswer(
                 p_user_id: userId,
                 p_points: 10 // 10 KP per correct answer
             });
+            await logPointsHistory(userId, 10, 'Correct Answer', `Quiz Level ${levelId}`);
         }
 
         if (completed && passed) {
@@ -183,6 +184,7 @@ export async function submitQuizAnswer(
                 p_user_id: userId,
                 p_points: 100 // 100 KP bonus for passing a level
             });
+            await logPointsHistory(userId, 100, 'Level Passed', `Quiz Level ${levelId}`);
         }
     } catch (rpcError) {
         console.error('Error awarding points:', rpcError);

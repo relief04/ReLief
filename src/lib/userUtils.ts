@@ -62,9 +62,28 @@ export async function ensureUserProfile(userId: string, email?: string, username
 }
 
 /**
+ * Logs points history to the points_history table.
+ */
+export async function logPointsHistory(userId: string, amount: number, action: string, source: string) {
+    if (amount === 0) return { error: null };
+    const { error } = await supabase
+        .from('points_history')
+        .insert({
+            user_id: userId,
+            amount,
+            action,
+            source
+        });
+    if (error) {
+        console.error('Error logging points history:', error.message || JSON.stringify(error));
+    }
+    return { error };
+}
+
+/**
  * Updates the user's stats: carbon_total, carbon_savings, and balance (Points).
  */
-export async function updateUserStats(userId: string, emission: number, karmaToAdd: number, savingsToAdd: number = 0) {
+export async function updateUserStats(userId: string, emission: number, karmaToAdd: number, savingsToAdd: number = 0, action?: string, source?: string) {
     // 1. Get current stats
     const profile = await getUserProfile(userId);
     if (!profile) return { error: 'Profile not found' };
@@ -82,6 +101,9 @@ export async function updateUserStats(userId: string, emission: number, karmaToA
         })
         .eq('id', userId);
 
+    if (!error && karmaToAdd > 0 && action && source) {
+        await logPointsHistory(userId, karmaToAdd, action, source);
+    }
+
     return { error };
 }
-

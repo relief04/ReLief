@@ -70,7 +70,7 @@ export function AIAssistant() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     message: text,
-                    previousMessages: messages.slice(-5)
+                    previousMessages: messages.filter(m => !m.content.includes('Hi! I am the **ReLief AI**')).slice(-5)
                 })
             });
 

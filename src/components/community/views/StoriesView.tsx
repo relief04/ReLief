@@ -6,7 +6,7 @@ import { SuccessStoryCard } from '@/components/community/SuccessStoryCard';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { supabase } from '@/lib/supabaseClient';
-import { checkAndAwardBadges } from '@/lib/badges';
+import { checkAndAwardBadges } from '@/lib/badgesServer';
 import { useToast } from '@/context/ToastContext';
 import { useRefresh } from '@/context/RefreshContext';
 import styles from './StoriesView.module.css';

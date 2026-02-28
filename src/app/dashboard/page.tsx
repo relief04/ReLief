@@ -13,6 +13,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { ensureUserProfile } from '@/lib/userUtils';
 import { recordLogin } from '@/lib/streakUtils';
 import { TimelineChart, CategoryPieChart } from '@/components/charts/CarbonCharts';
+import { PointsHistoryModal } from '@/components/profile/PointsHistoryModal';
 
 interface DashboardData {
     username: string;
@@ -69,6 +70,7 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
     const [isEditingBudget, setIsEditingBudget] = useState(false);
     const [newBudgetValue, setNewBudgetValue] = useState<string>('');
+    const [isPointsModalOpen, setIsPointsModalOpen] = useState(false);
 
     useEffect(() => {
         async function fetchDashboardData() {
@@ -274,7 +276,13 @@ export default function DashboardPage() {
                     <span className={styles.miniLabel}>Carbon Saved</span>
                     <span className={styles.miniVal} style={{ color: '#4caf50' }}>{data.carbonSavings.toFixed(1)} <small>kg</small></span>
                 </div>
-                <div className={`${styles.miniStat} ${styles.statKarma}`}>
+                <div
+                    className={`${styles.miniStat} ${styles.statKarma} cursor-pointer hover:border-yellow-400 hover:shadow-lg transition-all`}
+                    onClick={() => setIsPointsModalOpen(true)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => e.key === 'Enter' && setIsPointsModalOpen(true)}
+                >
                     <span className={styles.miniLabel}>Karma Balance</span>
                     <span className={styles.miniVal} style={{ color: '#ffc107' }}>{data.balance} <small>KP</small></span>
                 </div>
@@ -401,6 +409,13 @@ export default function DashboardPage() {
 
                 </aside>
             </div>
-        </div >
+
+            {/* Points History Modal */}
+            <PointsHistoryModal
+                isOpen={isPointsModalOpen}
+                onClose={() => setIsPointsModalOpen(false)}
+                userId={user?.id || ''}
+            />
+        </div>
     );
 }

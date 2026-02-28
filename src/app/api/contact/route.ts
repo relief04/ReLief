@@ -1,14 +1,11 @@
 import { NextResponse } from 'next/server';
-import { Resend } from 'resend';
+import { transporter, getSender } from '@/lib/nodemailer';
 
 // Force this route to be dynamic — prevents Next.js from attempting
 // static collection at build time (which would fail without env vars)
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
-    // Initialize Resend lazily inside the handler so it only runs at request time
-    const resend = new Resend(process.env.RESEND_API_KEY);
-
     try {
         const body = await request.json();
         const { fullName, emailAddress, subject, message } = body;
@@ -20,18 +17,19 @@ export async function POST(request: Request) {
             );
         }
 
-        if (!process.env.RESEND_API_KEY) {
-            console.error('RESEND_API_KEY is not set');
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+            console.error('Gmail credentials not set');
             return NextResponse.json(
                 { error: 'Email service not configured' },
                 { status: 503 }
             );
         }
 
-        // Send the email using Resend
-        const data = await resend.emails.send({
-            from: 'ReLief Contact Form <onboarding@resend.dev>', // Use verified domain in production
-            to: ['reliefearth0@gmail.com'], // Send to the team's email
+        // Send the email using Nodemailer
+        const info = await transporter.sendMail({
+            from: getSender(), // Use configured Gmail address
+            to: process.env.EMAIL_USER, // Send to the team's email
+            replyTo: emailAddress, // Allow replying to the user
             subject: `New Contact Request: ${subject}`,
             html: `
                 <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0f172a; color: #f8fafc; border-radius: 16px; overflow: hidden; border: 1px solid #1e293b; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
@@ -68,7 +66,7 @@ export async function POST(request: Request) {
             `,
         });
 
-        return NextResponse.json({ success: true, data });
+        return NextResponse.json({ success: true, messageId: info.messageId });
     } catch (error) {
         console.error('Email sending error:', error);
         return NextResponse.json(
