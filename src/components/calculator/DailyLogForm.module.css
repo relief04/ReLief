@@ -109,7 +109,7 @@
 
 .applianceGrid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 0.75rem;
     padding: 1rem;
     background: var(--color-bg-100);

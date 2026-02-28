@@ -10,7 +10,7 @@
 }
 
 .header h1 {
-    font-size: 3rem;
+    font-size: clamp(2rem, 8vw, 3rem);
     color: var(--color-primary);
     font-weight: 800;
 }
@@ -185,7 +185,7 @@
 }
 
 .aiValue {
-    font-size: 3.5rem;
+    font-size: clamp(2.5rem, 12vw, 3.5rem);
     font-weight: 800;
     color: var(--color-success);
     /* Green highlight */

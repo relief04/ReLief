@@ -131,7 +131,22 @@ h6 {
   margin-bottom: 1rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  /* Tightens heaings for modern look */
+}
+
+h1 {
+  font-size: clamp(2.25rem, 8vw, 3.5rem);
+}
+
+h2 {
+  font-size: clamp(1.85rem, 6vw, 2.75rem);
+}
+
+h3 {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+h4 {
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
 }
 
 a {
@@ -144,6 +159,12 @@ a {
   max-width: var(--max-width);
   margin: 0 auto;
   padding: 0 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 1rem;
+  }
 }
 
 .vis-hidden {

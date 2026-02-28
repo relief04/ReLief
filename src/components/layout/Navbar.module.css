@@ -30,7 +30,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 1.5rem;
+    font-size: clamp(1.2rem, 4vw, 1.5rem);
     font-weight: 800;
     color: var(--color-primary);
     text-decoration: none;
@@ -142,11 +142,11 @@
 }
 
 .mobileLink {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 600;
     color: var(--color-text-100);
     border-bottom: 1px solid var(--color-bg-300);
-    padding-bottom: 1rem;
+    padding-bottom: 0.75rem;
 }
 
 .mobileActions {

@@ -152,3 +152,15 @@
     margin-left: auto;
     flex-shrink: 0;
 }
+
+@media (max-width: 640px) {
+    .eventIcon {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1.5rem;
+    }
+
+    .eventActions {
+        flex-direction: column;
+    }
+}

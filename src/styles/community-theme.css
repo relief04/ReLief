@@ -262,7 +262,8 @@
     :root {
         --community-sidebar-width: 0px;
         --community-space-lg: 1rem;
-        --community-space-xl: 1.5rem;
+        --community-space-xl: 1.25rem;
+        --community-font-4xl: 1.75rem;
     }
 
     .community-container {

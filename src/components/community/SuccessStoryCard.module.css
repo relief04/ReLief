@@ -137,3 +137,25 @@
 .deleteBtn:hover {
     background: rgba(231, 76, 60, 0.1);
 }
+
+@media (max-width: 640px) {
+    .imagesContainer {
+        height: 160px;
+    }
+
+    .content {
+        padding: 1rem;
+    }
+
+    .content h3 {
+        font-size: 1.1rem;
+    }
+
+    .typeBadge {
+        margin-bottom: 0.5rem;
+    }
+
+    .footer {
+        padding: 0.75rem 1rem;
+    }
+}

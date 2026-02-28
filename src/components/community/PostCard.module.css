@@ -324,3 +324,25 @@
     color: var(--color-text);
     font-weight: 500;
 }
+
+@media (max-width: 640px) {
+    .avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+
+    .postImage {
+        max-height: 280px;
+    }
+
+    .actionBtn {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.85rem;
+        gap: 0.35rem;
+    }
+
+    .postFooter {
+        gap: 0.5rem;
+    }
+}

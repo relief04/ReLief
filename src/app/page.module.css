@@ -38,7 +38,7 @@
 }
 
 .title {
-  font-size: 3.5rem;
+  font-size: clamp(2.5rem, 10vw, 3.5rem);
   font-weight: 800;
   line-height: 1.1;
   margin-bottom: 1.5rem;
@@ -65,6 +65,7 @@
   display: flex;
   gap: 1rem;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 @media (min-width: 968px) {
@@ -107,8 +108,7 @@
 }
 
 .planetPulse {
-  font-size: 25rem;
-  /* Increased from 15rem */
+  font-size: clamp(12rem, 60vw, 20rem);
   position: relative;
   animation: floatPlanet 6s ease-in-out infinite;
   z-index: 1;
@@ -363,7 +363,7 @@
   border: 1px border rgba(255, 255, 255, 0.1);
   box-shadow: var(--shadow-lg);
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
   padding: 2rem;
 }
