@@ -18,12 +18,17 @@ export async function POST(request: Request) {
         }
 
         if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-            console.error('Gmail credentials not set');
+            console.error('CONTACT_API_ERROR: Gmail credentials missing or incomplete', {
+                user: !!process.env.EMAIL_USER,
+                pass: !!process.env.EMAIL_PASS
+            });
             return NextResponse.json(
-                { error: 'Email service not configured' },
+                { error: 'Email service configuration is incomplete on the server.' },
                 { status: 503 }
             );
         }
+
+        console.log(`CONTACT_API_INFO: Attempting to send email from ${emailAddress}`);
 
         // Send the email using Nodemailer
         const info = await transporter.sendMail({
@@ -66,11 +71,15 @@ export async function POST(request: Request) {
             `,
         });
 
+        console.log(`CONTACT_API_SUCCESS: Email sent successfully. Message ID: ${info.messageId}`);
         return NextResponse.json({ success: true, messageId: info.messageId });
-    } catch (error) {
-        console.error('Email sending error:', error);
+    } catch (error: any) {
+        console.error('CONTACT_API_ERROR: Email sending failed', {
+            error: error.message,
+            stack: error.stack
+        });
         return NextResponse.json(
-            { error: 'Failed to send email' },
+            { error: `Failed to send email: ${error.message || 'Internal Server Error'}` },
             { status: 500 }
         );
     }

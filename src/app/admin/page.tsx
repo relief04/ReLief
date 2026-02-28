@@ -3,12 +3,14 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { isAdminEmail } from '@/lib/admin';
 import styles from './page.module.css';
+import { useToast } from '@/context/ToastContext';
 
 interface Stats { users: number; posts: number; groups: number; badges: number; }
 interface RecentPost { id: number; author_name: string; content: string; created_at: string; user_id: string; }
 interface RecentUser { id: string; username: string; email: string; created_at: string; balance: number; }
 
 export default function AdminPage() {
+    const { toast, confirm } = useToast();
     const { user, isLoaded } = useUser();
     const [stats, setStats] = useState<Stats | null>(null);
     const [posts, setPosts] = useState<RecentPost[]>([]);
@@ -20,8 +22,7 @@ export default function AdminPage() {
     const [statusMsg, setStatusMsg] = useState<{ text: string; ok: boolean } | null>(null);
 
     const showStatus = (text: string, ok: boolean) => {
-        setStatusMsg({ text, ok });
-        setTimeout(() => setStatusMsg(null), 4000);
+        toast(text, ok ? 'success' : 'error');
     };
 
     const email = user?.emailAddresses?.[0]?.emailAddress;
@@ -63,10 +64,17 @@ export default function AdminPage() {
 
     // ── DELETE post ──────────────────────────────────────────────
     const handleDeletePost = async (id: number) => {
-        if (!confirm('Delete this post? This cannot be undone.')) return;
+        const confirmed = await confirm({
+            title: 'Delete Post',
+            message: 'Are you sure you want to delete this post? This cannot be undone.',
+            confirmLabel: 'Delete',
+            danger: true
+        });
+        if (!confirmed) return;
+
         const res = await fetch(`/api/admin/posts/${id}`, { method: 'DELETE' });
         if (res.ok) {
-            showStatus('Post deleted.', true);
+            showStatus('Post deleted successfully.', true);
         } else {
             const err = await res.json().catch(() => ({}));
             showStatus(`Failed to delete post: ${err.error || res.status}`, false);
@@ -75,10 +83,17 @@ export default function AdminPage() {
     };
 
     const handleDeleteUser = async (id: string) => {
-        if (!confirm('Delete this user profile? This cannot be undone.')) return;
+        const confirmed = await confirm({
+            title: 'Delete User Profile',
+            message: 'Are you sure you want to delete this user profile? This cannot be undone.',
+            confirmLabel: 'Delete',
+            danger: true
+        });
+        if (!confirmed) return;
+
         const res = await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
         if (res.ok) {
-            showStatus('User profile deleted.', true);
+            showStatus('User profile deleted successfully.', true);
         } else {
             const err = await res.json().catch(() => ({}));
             showStatus(`Failed to delete user: ${err.error || res.status}`, false);

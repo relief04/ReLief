@@ -4,10 +4,12 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Mail, Send, ChevronDown, MessageSquare, Globe, ShieldCheck, Handshake, Newspaper, Paperclip, Flag } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
+import { useToast } from '@/context/ToastContext';
 
 import styles from './contact.module.css';
 
 export default function ContactPage() {
+    const { toast } = useToast();
     const [formState, setFormState] = useState<'idle' | 'sending' | 'sent'>('idle');
     const [fileName, setFileName] = useState<string | null>(null);
 
@@ -38,14 +40,16 @@ export default function ContactPage() {
 
             if (response.ok) {
                 setFormState('sent');
+                toast('Message sent successfully! We will get back to you soon.', 'success');
             } else {
+                const errorData = await response.json().catch(() => ({}));
                 setFormState('idle');
-                alert('Failed to send message. Please try again later.');
+                toast(errorData.error || 'Failed to send message. Please try again later.', 'error');
             }
         } catch (error) {
             console.error('Error sending message:', error);
             setFormState('idle');
-            alert('An error occurred. Please try again.');
+            toast('An error occurred while sending your message. Please try again.', 'error');
         }
     };
 

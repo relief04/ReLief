@@ -13,10 +13,12 @@ import { Button } from "@/components/ui/Button";
 import styles from "./page.module.css";
 import { INITIAL_DATA, OnboardingData, FuelType, TravelMode, FlightHaul, FlightClass, DietType } from "./types";
 import { calculateFootprint } from "./calculations";
+import { useToast } from "@/context/ToastContext";
 
 const TOTAL_STEPS = 14;
 
 export default function OnboardingPage() {
+    const { toast } = useToast();
     const router = useRouter();
     const { user } = useUser();
     const [step, setStep] = useState(1);
@@ -149,9 +151,9 @@ export default function OnboardingPage() {
                 // Don't block onboarding completion on this, but log it
             }
             router.push('/dashboard');
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
-            alert("Error saving profile. Please try again.");
+            toast(err.message || "Error saving profile. Please try again.", "error");
         } finally {
             setIsSubmitting(false);
         }
