@@ -32,10 +32,8 @@ export default function ContactPage() {
         try {
             const response = await fetch('/api/contact', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ fullName, emailAddress, subject, message }),
+                // Removing Content-Type forces the browser to set the correct multipart/form-data boundary
+                body: formData,
             });
 
             if (response.ok) {
@@ -221,10 +219,10 @@ export default function ContactPage() {
                                     <div className={styles.formGroup}>
                                         <label className={styles.label}>Attach File <span className={styles.optional}>(Optional)</span></label>
                                         <div className={styles.fileUploadWrapper}>
-                                            <input type="file" id="file" className={styles.fileInput} accept=".jpg,.png,.pdf" onChange={handleFileChange} />
+                                            <input type="file" id="file" name="file" className={styles.fileInput} accept=".jpg,.png,.pdf,video/mp4,video/quicktime" onChange={handleFileChange} />
                                             <label htmlFor="file" className={styles.fileLabel}>
                                                 <Paperclip size={18} />
-                                                <span className={styles.fileName}>{fileName || 'Upload .jpg, .png, or .pdf (Max: 10MB)'}</span>
+                                                <span className={styles.fileName}>{fileName || 'Upload Image, PDF, or Video (Max: 10MB)'}</span>
                                             </label>
                                         </div>
                                     </div>

@@ -7,8 +7,12 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
     try {
-        const body = await request.json();
-        const { fullName, emailAddress, subject, message } = body;
+        const formData = await request.formData();
+        const fullName = formData.get('fullName') as string;
+        const emailAddress = formData.get('emailAddress') as string;
+        const subject = formData.get('subject') as string;
+        const message = formData.get('message') as string;
+        const file = formData.get('file') as File | null;
 
         if (!fullName || !emailAddress || !subject || !message) {
             return NextResponse.json(
@@ -30,12 +34,26 @@ export async function POST(request: Request) {
 
         console.log(`CONTACT_API_INFO: Attempting to send email from ${emailAddress}`);
 
+        // Prepare attachments
+        const attachments = [];
+        if (file && file.size > 0) {
+            // Convert file to a buffer for Nodemailer
+            const arrayBuffer = await file.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+            attachments.push({
+                filename: file.name,
+                content: buffer,
+                contentType: file.type,
+            });
+        }
+
         // Send the email using Nodemailer
         const info = await transporter.sendMail({
             from: getSender(), // Use configured Gmail address
             to: process.env.EMAIL_USER, // Send to the team's email
             replyTo: emailAddress, // Allow replying to the user
             subject: `New Contact Request: ${subject}`,
+            attachments: attachments, // Attach the processed file if any
             html: `
                 <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0f172a; color: #f8fafc; border-radius: 16px; overflow: hidden; border: 1px solid #1e293b; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
                     <div style="background: linear-gradient(135deg, #10b981, #0ea5e9); padding: 24px; text-align: center;">
@@ -61,6 +79,7 @@ export async function POST(request: Request) {
                             <div style="background-color: #1e293b; padding: 20px; border-radius: 12px; font-size: 15px; line-height: 1.6; color: #cbd5e1;">
                                 ${message.replace(/\n/g, '<br />')}
                             </div>
+                            ${attachments.length > 0 ? `<p style="margin-top: 15px; font-size: 13px; color: #10b981;">📎 1 file attached (${file?.name})</p>` : ''}
                         </div>
                     </div>
                     <div style="background-color: #0b1120; padding: 20px 24px; text-align: center; color: #64748b; font-size: 12px;">
