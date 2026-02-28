@@ -84,7 +84,8 @@ export function AIAssistant() {
             }
         } catch (error) {
             console.error('Chat error:', error);
-            setMessages(prev => [...prev, { role: 'model', content: '_Sorry, I encountered an error. Please try again later._' }]);
+            const errorMessage = error instanceof Error ? error.message : 'Sorry, I encountered an error. Please try again later.';
+            setMessages(prev => [...prev, { role: 'model', content: `_${errorMessage}_` }]);
         } finally {
             setLoading(false);
         }

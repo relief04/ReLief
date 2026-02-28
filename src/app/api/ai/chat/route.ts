@@ -103,9 +103,21 @@ Instructions:
 
     } catch (error) {
         console.error("Error in chat route:", error);
+
+        const errorString = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
+        let errorMessage = "Failed to process chat message";
+        let statusCode = 500;
+
+        if (errorString.includes("429") || errorString.includes("quota exceeded") || errorString.includes("too many requests")) {
+            errorMessage = "AI chat quota exceeded. Please try again later.";
+            statusCode = 429;
+        } else if (error instanceof Error) {
+            errorMessage = error.message;
+        }
+
         return NextResponse.json(
-            { error: "Failed to process chat message", details: error instanceof Error ? error.message : "Unknown error" },
-            { status: 500 }
+            { error: errorMessage },
+            { status: statusCode }
         );
     }
 }
