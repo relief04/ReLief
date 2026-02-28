@@ -109,12 +109,23 @@ export async function scanBillWithGemini(
         }
     } catch (error) {
         console.error("Gemini Scan Error:", error);
+
+        let errorMessage = "An error occurred during AI scanning.";
+        const errorString = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
+
+        // Specific check for Free Tier Quota Exhaustion
+        if (errorString.includes("429") || errorString.includes("quota exceeded") || errorString.includes("too many requests")) {
+            errorMessage = "AI scanning quota exceeded. Please try again later or check API billing.";
+        } else if (error instanceof Error) {
+            errorMessage = error.message;
+        }
+
         return {
             success: false,
             bill_type: "unknown",
             fields: {},
             confidence: 0,
-            message: error instanceof Error ? error.message : "An error occurred during AI scanning."
+            message: errorMessage
         };
     }
 }

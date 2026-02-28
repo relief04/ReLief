@@ -32,9 +32,10 @@ export async function POST(req: NextRequest) {
         );
 
         if (!result.success) {
+            const isQuotaError = result.message?.includes("quota exceeded") || result.message?.includes("429");
             return NextResponse.json(
                 { error: result.message || "Failed to process bill" },
-                { status: 500 }
+                { status: isQuotaError ? 429 : 500 }
             );
         }
 

@@ -2,6 +2,8 @@
 
 import React, { useState, useRef } from 'react';
 import { scanBill, BillScanResult } from '@/lib/billScanningAPI';
+import Image from 'next/image';
+import { useToast } from '@/context/ToastContext';
 import styles from './BillScanner.module.css';
 
 type BillType = 'electricity' | 'lpg' | 'shopping';
@@ -108,6 +110,8 @@ export function BillScanner({ onScanComplete, billType: propBillType, disabled =
         }, 1500);
     };
 
+    const { toast } = useToast();
+
     const processBill = async (file: File) => {
         setUploading(true);
         setError(null);
@@ -119,11 +123,15 @@ export function BillScanner({ onScanComplete, billType: propBillType, disabled =
             if (result.success) {
                 setVerificationData(result);
             } else {
-                setError(result.message || 'Failed to process bill');
+                const errorMsg = result.message || 'Failed to process bill';
+                setError(errorMsg);
+                toast(errorMsg, 'error');
             }
         } catch (err) {
             console.error('Bill scanning error:', err);
-            setError(err instanceof Error ? err.message : 'Failed to scan bill. Please try again.');
+            const errorMsg = err instanceof Error ? err.message : 'Failed to scan bill. Please try again.';
+            setError(errorMsg);
+            toast(errorMsg, 'error');
         } finally {
             if (progressInterval.current) clearInterval(progressInterval.current);
             setUploading(false);
