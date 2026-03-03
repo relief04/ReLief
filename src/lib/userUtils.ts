@@ -7,22 +7,36 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
  * Retries once on network failure (Failed to fetch).
  */
 export async function getUserProfile(userId: string, retries = 1): Promise<any> {
-    const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
+    try {
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .maybeSingle();
 
-    if (error) {
-        const msg = error.message || JSON.stringify(error);
-        if (msg.includes('Failed to fetch') && retries > 0) {
-            await sleep(1000);
-            return getUserProfile(userId, retries - 1);
+        if (error) {
+            const msg = error.message || JSON.stringify(error);
+            if (msg.includes('Failed to fetch') && retries > 0) {
+                console.warn(`Profile fetch failed, retrying... (${retries} left)`);
+                await sleep(1000);
+                return await getUserProfile(userId, retries - 1);
+            }
+            console.error('Supabase profile query error:', msg);
+            return null;
         }
-        console.error('Error fetching profile:', msg);
+
+        return data;
+    } catch (err: any) {
+        // Handle actual network throw errors (like CORS or DNS failures)
+        const msg = err.message || JSON.stringify(err);
+        if (msg.includes('Failed to fetch') && retries > 0) {
+            console.warn(`Profile fetch threw error, retrying... (${retries} left)`);
+            await sleep(1000);
+            return await getUserProfile(userId, retries - 1);
+        }
+        console.error('Error exception fetching profile:', msg);
         return null;
     }
-    return data;
 }
 
 /**
@@ -36,29 +50,34 @@ export async function ensureUserProfile(userId: string, email?: string, username
         return { data: existing, error: null };
     }
 
-    // Create new profile
-    const { data, error } = await supabase
-        .from('profiles')
-        .insert({
-            id: userId,
-            email: email || '',
-            username: username || 'User',
-            avatar_url: avatarUrl || '',
-            carbon_total: 0,
-            carbon_savings: 0,
-            streak: 0,
-            balance: 0
-        })
-        .select()
-        .single();
+    try {
+        // Create new profile
+        const { data, error } = await supabase
+            .from('profiles')
+            .insert({
+                id: userId,
+                email: email || '',
+                username: username || 'User',
+                avatar_url: avatarUrl || '',
+                carbon_total: 0,
+                carbon_savings: 0,
+                streak: 0,
+                balance: 0
+            })
+            .select()
+            .single();
 
-    if (error) {
-        console.error('Error creating profile:', error.message || JSON.stringify(error));
-        return { data: null, error };
+        if (error) {
+            console.error('Supabase error creating profile:', error.message || JSON.stringify(error));
+            return { data: null, error };
+        }
+
+        console.log('Created new profile for user:', userId);
+        return { data, error: null };
+    } catch (err: any) {
+        console.error('Error exception creating profile:', err.message || JSON.stringify(err));
+        return { data: null, error: err };
     }
-
-    console.log('Created new profile for user:', userId);
-    return { data, error: null };
 }
 
 /**

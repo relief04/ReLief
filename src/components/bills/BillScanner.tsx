@@ -63,7 +63,7 @@ export function BillScanner({ onScanComplete, billType: propBillType, disabled =
 
     const STEPS = [
         "Uploading Bill...",
-        "AI Analyzing Image (Gemini)...",
+        "AI Analyzing Image...",
         "Extracting Usage Data...",
         "Calculating Carbon Footprint...",
         "Finalizing...",
@@ -250,7 +250,7 @@ export function BillScanner({ onScanComplete, billType: propBillType, disabled =
                         />
                     </div>
                     {progressStep >= 3 && (
-                        <p className={styles.slowMessage}>Taking a bit longer? Gemini AI is doing its magic...</p>
+                        <p className={styles.slowMessage}>Taking a bit longer? Advanced AI is doing its magic...</p>
                     )}
                 </div>
             )}
@@ -343,7 +343,6 @@ export function BillScanner({ onScanComplete, billType: propBillType, disabled =
             {/* ── Error ── */}
             {error && (
                 <div className={styles.error}>
-                    <p>⚠️ Couldn't scan the bill. Please try again with a clearer image.</p>
                     <button onClick={handleCancel} className={styles.retryButton}>Try Again</button>
                 </div>
             )}

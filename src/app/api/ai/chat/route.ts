@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 // Initialize Gemini
 const getApiKey = () => process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || '';
 const genAI = new GoogleGenerativeAI(getApiKey());
-const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
+const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
 const KNOWLEDGE_BASE = `
 ReLief is an eco-platform that helps users track, reduce, and heal their carbon footprint.

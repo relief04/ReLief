@@ -150,6 +150,14 @@ export default function OnboardingPage() {
                 console.error("Error setting budget:", JSON.stringify(budgetError, null, 2));
                 // Don't block onboarding completion on this, but log it
             }
+
+            // Trigger welcome email (fire and forget)
+            fetch('/api/users/welcome', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: user.id })
+            }).catch(e => console.error("Failed to trigger welcome email:", e));
+
             router.push('/dashboard');
         } catch (err: any) {
             console.error(err);

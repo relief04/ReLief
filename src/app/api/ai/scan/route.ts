@@ -24,18 +24,17 @@ export async function POST(req: NextRequest) {
         const arrayBuffer = await file.arrayBuffer();
         const buffer = new Uint8Array(arrayBuffer);
 
-        // Process with Gemini
-        const result = await scanBillWithGemini(
+        // Process with Gemini (Rotation Strategy handled inside function)
+        let result = await scanBillWithGemini(
             buffer,
             file.type,
             billType
         );
 
         if (!result.success) {
-            const isQuotaError = result.message?.includes("quota exceeded") || result.message?.includes("429");
             return NextResponse.json(
-                { error: result.message || "Failed to process bill" },
-                { status: isQuotaError ? 429 : 500 }
+                { error: result.message },
+                { status: 500 }
             );
         }
 
@@ -55,6 +54,59 @@ export async function POST(req: NextRequest) {
             detectedBillType = 'shopping';
         } else {
             detectedBillType = 'unknown';
+        }
+
+        // Validate the uploaded bill against the selected bill type based on extracted units
+        if (billType) {
+            if (detectedBillType !== 'unknown' && detectedBillType !== billType) {
+                return NextResponse.json(
+                    { error: `Validation failed: You selected ${billType}, but the uploaded document appears to be a ${detectedBillType} bill.` },
+                    { status: 400 }
+                );
+            }
+
+            if (billType === 'electricity') {
+                if (result.fields.cylinder_weight !== undefined && result.fields.cylinder_weight !== null) {
+                    return NextResponse.json(
+                        { error: "Validation failed: You selected Electricity, but the uploaded document appears to be an LPG bill based on its units (cylinder weight detected)." },
+                        { status: 400 }
+                    );
+                }
+                if (result.fields.item_count !== undefined && result.fields.item_count !== null) {
+                    return NextResponse.json(
+                        { error: "Validation failed: You selected Electricity, but the uploaded document appears to be a Shopping bill based on its units (item count detected)." },
+                        { status: 400 }
+                    );
+                }
+            }
+            if (billType === 'lpg') {
+                if (result.fields.units_consumed !== undefined && result.fields.units_consumed !== null) {
+                    return NextResponse.json(
+                        { error: "Validation failed: You selected LPG, but the uploaded document appears to be an Electricity bill based on its units (units consumed detected)." },
+                        { status: 400 }
+                    );
+                }
+                if (result.fields.item_count !== undefined && result.fields.item_count !== null) {
+                    return NextResponse.json(
+                        { error: "Validation failed: You selected LPG, but the uploaded document appears to be a Shopping bill based on its units (item count detected)." },
+                        { status: 400 }
+                    );
+                }
+            }
+            if (billType === 'shopping') {
+                if (result.fields.units_consumed !== undefined && result.fields.units_consumed !== null) {
+                    return NextResponse.json(
+                        { error: "Validation failed: You selected Shopping, but the uploaded document appears to be an Electricity bill based on its units." },
+                        { status: 400 }
+                    );
+                }
+                if (result.fields.cylinder_weight !== undefined && result.fields.cylinder_weight !== null) {
+                    return NextResponse.json(
+                        { error: "Validation failed: You selected Shopping, but the uploaded document appears to be an LPG bill based on its units." },
+                        { status: 400 }
+                    );
+                }
+            }
         }
 
         let carbonEmissions = 0;

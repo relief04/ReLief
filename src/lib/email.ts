@@ -12,9 +12,38 @@ interface MailOptions {
  */
 export const sendEmail = async ({ to, subject, text, html }: MailOptions) => {
   try {
+    // 1. Try Resend First (safer for edge/serverless and local DNS issues)
+    const resendKey = process.env.RESEND_API_KEY;
+    if (resendKey) {
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${resendKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: 'ReLief <onboarding@resend.dev>', // You can change this if you verified a custom domain
+          to: [to],
+          subject: subject,
+          text: text || "Please view this email in an HTML-compatible client.",
+          html: html
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        console.warn("⚠️ Resend API Error:", data);
+        // Fallthrough down to nodemailer if Resend fails, or just return false
+        return { success: false, error: data };
+      }
+      console.log("Message sent via Resend:", data.id);
+      return { success: true, id: data.id };
+    }
+
+    // 2. Fallback to Nodemailer
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.warn("⚠️ Email not sent: Gmail App Password is missing in env.");
-      return { success: false, error: "Missing App Password" };
+      console.warn("⚠️ Email not sent: Missing Gmail or Resend credentials in env.");
+      return { success: false, error: "Missing Credentials" };
     }
 
     const info = await transporter.sendMail({
@@ -25,7 +54,7 @@ export const sendEmail = async ({ to, subject, text, html }: MailOptions) => {
       html: html,
     });
 
-    console.log("Message sent:", info.messageId);
+    console.log("Message sent via Nodemailer:", info.messageId);
     return { success: true, id: info.messageId };
 
   } catch (error) {
