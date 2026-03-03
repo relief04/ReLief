@@ -13,6 +13,9 @@ export async function GET() {
 
     const db = createAdminClient();
 
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
     const [
         { count: userCount },
         { count: postCount },
@@ -20,6 +23,8 @@ export async function GET() {
         { count: badgeCount },
         { data: recentPosts },
         { data: recentUsers },
+        { data: groupsList },
+        { data: historicalUsers },
     ] = await Promise.all([
         db.from('profiles').select('*', { count: 'exact', head: true }),
         db.from('posts').select('*', { count: 'exact', head: true }),
@@ -35,7 +40,35 @@ export async function GET() {
             .select('id, username, email, created_at, balance')
             .order('created_at', { ascending: false })
             .limit(10),
+        db
+            .from('groups')
+            .select('id, name, description, created_at')
+            .order('created_at', { ascending: false }),
+        db
+            .from('profiles')
+            .select('created_at')
+            .gte('created_at', thirtyDaysAgo.toISOString())
+            .order('created_at', { ascending: true }),
     ]);
+
+    // Format historical users into a daily count for Recharts
+    const growthDataMap = new Map<string, number>();
+    historicalUsers?.forEach(u => {
+        const date = u.created_at.split('T')[0];
+        growthDataMap.set(date, (growthDataMap.get(date) || 0) + 1);
+    });
+
+    // Fill in empty days
+    const chartData = [];
+    for (let i = 29; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const dateStr = d.toISOString().split('T')[0];
+        chartData.push({
+            date: dateStr,
+            users: growthDataMap.get(dateStr) || 0
+        });
+    }
 
     return NextResponse.json({
         stats: {
@@ -46,5 +79,7 @@ export async function GET() {
         },
         recentPosts: recentPosts ?? [],
         recentUsers: recentUsers ?? [],
+        groups: groupsList ?? [],
+        chartData
     });
 }
