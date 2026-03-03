@@ -21,15 +21,21 @@ export async function GET() {
         { count: postCount },
         { count: groupCount },
         { count: badgeCount },
+        { count: eventCount },
+        { count: storyCount },
         { data: recentPosts },
         { data: recentUsers },
         { data: groupsList },
         { data: historicalUsers },
+        { data: eventsList },
+        { data: storiesList },
     ] = await Promise.all([
         db.from('profiles').select('*', { count: 'exact', head: true }),
         db.from('posts').select('*', { count: 'exact', head: true }),
         db.from('groups').select('*', { count: 'exact', head: true }),
         db.from('user_badges').select('*', { count: 'exact', head: true }),
+        db.from('events').select('*', { count: 'exact', head: true }),
+        db.from('success_stories').select('*', { count: 'exact', head: true }),
         db
             .from('posts')
             .select('id, author_name, content, created_at, user_id')
@@ -49,6 +55,16 @@ export async function GET() {
             .select('created_at')
             .gte('created_at', thirtyDaysAgo.toISOString())
             .order('created_at', { ascending: true }),
+        db
+            .from('events')
+            .select('id, title, description, event_type, created_by, event_date')
+            .order('event_date', { ascending: false })
+            .limit(20),
+        db
+            .from('success_stories')
+            .select('id, title, story, achievement_type, author_name, likes')
+            .order('created_at', { ascending: false })
+            .limit(20),
     ]);
 
     // Format historical users into a daily count for Recharts
@@ -76,10 +92,14 @@ export async function GET() {
             posts: postCount ?? 0,
             groups: groupCount ?? 0,
             badges: badgeCount ?? 0,
+            events: eventCount ?? 0,
+            stories: storyCount ?? 0,
         },
         recentPosts: recentPosts ?? [],
         recentUsers: recentUsers ?? [],
         groups: groupsList ?? [],
+        events: eventsList ?? [],
+        stories: storiesList ?? [],
         chartData
     });
 }

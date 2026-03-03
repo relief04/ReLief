@@ -6,11 +6,13 @@ import styles from './page.module.css';
 import { useToast } from '@/context/ToastContext';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-interface Stats { users: number; posts: number; groups: number; badges: number; }
+interface Stats { users: number; posts: number; groups: number; badges: number; events: number; stories: number; }
 interface RecentPost { id: number; author_name: string; content: string; created_at: string; user_id: string; }
 interface Group { id: number; name: string; description: string; created_at: string; }
 interface RecentUser { id: string; username: string; email: string; created_at: string; balance: number; is_banned?: boolean; }
 interface ChartData { date: string, users: number }
+interface AdminEvent { id: number; title: string; description: string; event_type: string; created_by: string; event_date: string; }
+interface AdminStory { id: number; title: string; story: string; achievement_type: string; author_name: string; likes: number; }
 
 export default function AdminPage() {
     const { toast, confirm } = useToast();
@@ -24,6 +26,8 @@ export default function AdminPage() {
     const [posts, setPosts] = useState<RecentPost[]>([]);
     const [users, setUsers] = useState<RecentUser[]>([]);
     const [groups, setGroups] = useState<Group[]>([]);
+    const [events, setEvents] = useState<AdminEvent[]>([]);
+    const [stories, setStories] = useState<AdminStory[]>([]);
     const [chartData, setChartData] = useState<ChartData[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -52,6 +56,8 @@ export default function AdminPage() {
             setPosts(data.recentPosts);
             setUsers(data.recentUsers);
             setGroups(data.groups ?? []);
+            setEvents(data.events ?? []);
+            setStories(data.stories ?? []);
             setChartData(data.chartData ?? []);
         }
         setLoading(false);
@@ -80,7 +86,25 @@ export default function AdminPage() {
         if (!confirmed) return;
         const res = await fetch(`/api/admin/posts/${id}`, { method: 'DELETE' });
         if (res.ok) showStatus('Post deleted successfully.', true);
-        else showStatus(`Failed to delete`, false);
+        else showStatus(`Failed to delete post`, false);
+        fetchData();
+    };
+
+    const handleDeleteEvent = async (id: number) => {
+        const confirmed = await confirm({ title: 'Delete Event', message: 'Delete this event forever?', confirmLabel: 'Delete', danger: true });
+        if (!confirmed) return;
+        const res = await fetch(`/api/admin/events/${id}`, { method: 'DELETE' });
+        if (res.ok) showStatus('Event deleted successfully.', true);
+        else showStatus(`Failed to delete event`, false);
+        fetchData();
+    };
+
+    const handleDeleteStory = async (id: number) => {
+        const confirmed = await confirm({ title: 'Delete Story', message: 'Delete this story forever?', confirmLabel: 'Delete', danger: true });
+        if (!confirmed) return;
+        const res = await fetch(`/api/admin/stories/${id}`, { method: 'DELETE' });
+        if (res.ok) showStatus('Story deleted successfully.', true);
+        else showStatus(`Failed to delete story`, false);
         fetchData();
     };
 
@@ -148,7 +172,9 @@ export default function AdminPage() {
         { icon: '👥', label: 'Total Users', value: stats?.users ?? 0 },
         { icon: '📝', label: 'Total Posts', value: stats?.posts ?? 0 },
         { icon: '🤝', label: 'Total Groups', value: stats?.groups ?? 0 },
-        { icon: '🏅', label: 'Badges Awarded', value: stats?.badges ?? 0 },
+        { icon: '🏅', label: 'Badges', value: stats?.badges ?? 0 },
+        { icon: '🗓️', label: 'Events', value: stats?.events ?? 0 },
+        { icon: '🌟', label: 'Stories', value: stats?.stories ?? 0 },
     ];
 
     return (
@@ -312,6 +338,70 @@ export default function AdminPage() {
                                     ))}
                                     {posts.length === 0 && (
                                         <tr><td colSpan={3} className={styles.empty}>No posts yet</td></tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* Stories */}
+                    <div className={styles.tableCard}>
+                        <h2 className={styles.tableTitle}>🌟 Success Stories Moderation</h2>
+                        <div className={styles.tableScroll}>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Author</th>
+                                        <th>Title</th>
+                                        <th>Likes</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {stories.map(story => (
+                                        <tr key={story.id}>
+                                            <td title={story.author_name}>{story.author_name || 'Unknown'}</td>
+                                            <td title={story.story}><b>{story.title}</b></td>
+                                            <td>{story.likes}</td>
+                                            <td>
+                                                <button className={styles.deleteBtn} onClick={() => handleDeleteStory(story.id)}>🗑️</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    {stories.length === 0 && (
+                                        <tr><td colSpan={4} className={styles.empty}>No stories yet</td></tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* Events */}
+                    <div className={styles.tableCard}>
+                        <h2 className={styles.tableTitle}>🗓️ Events Moderation</h2>
+                        <div className={styles.tableScroll}>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Event Title</th>
+                                        <th>Type</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {events.map(event => (
+                                        <tr key={event.id}>
+                                            <td>{new Date(event.event_date).toLocaleDateString()}</td>
+                                            <td title={event.description}><b>{event.title}</b></td>
+                                            <td>{event.event_type}</td>
+                                            <td>
+                                                <button className={styles.deleteBtn} onClick={() => handleDeleteEvent(event.id)}>🗑️</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    {events.length === 0 && (
+                                        <tr><td colSpan={4} className={styles.empty}>No events yet</td></tr>
                                     )}
                                 </tbody>
                             </table>
