@@ -31,9 +31,12 @@ export default function AdminPage() {
     const [chartData, setChartData] = useState<ChartData[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Editing States
     const [editingPostId, setEditingPostId] = useState<number | null>(null);
     const [editContent, setEditContent] = useState('');
+
+    const [editingGroupId, setEditingGroupId] = useState<number | null>(null);
+    const [editGroupName, setEditGroupName] = useState('');
+    const [editGroupDesc, setEditGroupDesc] = useState('');
 
     const [editingKarmaId, setEditingKarmaId] = useState<string | null>(null);
     const [karmaDelta, setKarmaDelta] = useState<number>(0);
@@ -108,6 +111,27 @@ export default function AdminPage() {
         fetchData();
     };
 
+    const handleUpdateGroup = async (id: number) => {
+        const res = await fetch(`/api/admin/groups/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: editGroupName, description: editGroupDesc }),
+        });
+        if (res.ok) showStatus('Group updated successfully.', true);
+        else showStatus(`Failed to update group`, false);
+        setEditingGroupId(null);
+        fetchData();
+    };
+
+    const handleDeleteGroup = async (id: number) => {
+        const confirmed = await confirm({ title: 'Delete Group', message: 'Delete this group forever?', confirmLabel: 'Delete', danger: true });
+        if (!confirmed) return;
+        const res = await fetch(`/api/admin/groups/${id}`, { method: 'DELETE' });
+        if (res.ok) showStatus('Group deleted successfully.', true);
+        else showStatus(`Failed to delete group`, false);
+        fetchData();
+    };
+
     // ── User Management ──────────────────────────────────────────────
     const handleSetupKarmaSubmit = async (id: string) => {
         if (!karmaDelta || karmaDelta === 0) {
@@ -131,8 +155,8 @@ export default function AdminPage() {
     const handleSuspendUser = async (id: string, currentlyBanned: boolean) => {
         const newStatus = !currentlyBanned;
         const confirmed = await confirm({
-            title: newStatus ? 'Suspend User' : 'Unsuspend User',
-            message: `Are you sure you want to ${newStatus ? 'suspend' : 'reinstate'} this user?`,
+            title: newStatus ? 'Ban User' : 'Unban User',
+            message: `Are you sure you want to ${newStatus ? 'ban' : 'unban'} this user?`,
             confirmLabel: 'Confirm',
             danger: newStatus
         });
@@ -143,8 +167,38 @@ export default function AdminPage() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ isBanned: newStatus }),
         });
-        if (res.ok) showStatus(`User ${newStatus ? 'suspended' : 'unsuspended'} successfully.`, true);
-        else showStatus(`Failed to change suspension state`, false);
+        if (res.ok) showStatus(`User ${newStatus ? 'banned' : 'unbanned'} successfully.`, true);
+        else showStatus(`Failed to change ban state`, false);
+        fetchData();
+    };
+
+    const handleResetUser = async (id: string) => {
+        const confirmed = await confirm({
+            title: 'Reset User Data',
+            message: 'Are you sure you want to reset this user? Their account will remain open, but all stats, karma, and activities will be wiped completely.',
+            confirmLabel: 'Reset Data',
+            danger: true
+        });
+        if (!confirmed) return;
+
+        const res = await fetch(`/api/admin/users/${id}/reset`, { method: 'POST' });
+        if (res.ok) showStatus('User data successfully reset to 0.', true);
+        else showStatus(`Failed to reset user`, false);
+        fetchData();
+    };
+
+    const handleDeleteUser = async (id: string) => {
+        const confirmed = await confirm({
+            title: 'Delete User',
+            message: 'Are you sure you want to permanently delete this user? All their data will be removed forever.',
+            confirmLabel: 'Delete Permanently',
+            danger: true
+        });
+        if (!confirmed) return;
+
+        const res = await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
+        if (res.ok) showStatus('User successfully deleted.', true);
+        else showStatus(`Failed to delete user`, false);
         fetchData();
     };
 
@@ -266,7 +320,7 @@ export default function AdminPage() {
                                             )}
                                         </td>
                                         <td>{new Date(u.created_at).toLocaleDateString()}</td>
-                                        <td>{u.is_banned ? '🚫 Suspended' : '✅ Active'}</td>
+                                        <td>{u.is_banned ? '🚫 Banned' : '✅ Active'}</td>
                                         <td>
                                             {editingKarmaId === u.id ? (
                                                 <span className={styles.actionGroup}>
@@ -279,8 +333,19 @@ export default function AdminPage() {
                                                     <button
                                                         className={`${styles.editBtn} ${u.is_banned ? styles.unbanBtn : styles.suspendBtn}`}
                                                         onClick={() => handleSuspendUser(u.id, !!u.is_banned)}
-                                                        title="Toggle Suspension"
-                                                    >{u.is_banned ? 'Unban' : 'Suspend'}</button>
+                                                        title="Toggle Banning"
+                                                    >{u.is_banned ? 'Unban' : 'Ban'}</button>
+                                                    <button
+                                                        className={styles.resetBtn}
+                                                        onClick={() => handleResetUser(u.id)}
+                                                        title="Reset User Data"
+                                                        style={{ backgroundColor: '#ff8c00', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 12px', cursor: 'pointer', fontSize: '13px', marginLeft: '8px' }}
+                                                    >🔄 Reset</button>
+                                                    <button
+                                                        className={styles.deleteBtn}
+                                                        onClick={() => handleDeleteUser(u.id)}
+                                                        title="Delete User Permanently"
+                                                    >🗑️ Delete</button>
                                                 </span>
                                             )}
                                         </td>
@@ -417,17 +482,43 @@ export default function AdminPage() {
                                     <tr>
                                         <th>Name</th>
                                         <th>Description</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {groups.map(g => (
                                         <tr key={g.id}>
-                                            <td title={g.name}><b>{g.name}</b></td>
-                                            <td title={g.description}>{g.description?.slice(0, 80) ?? '—'}</td>
+                                            <td title={g.name}>
+                                                {editingGroupId === g.id ? (
+                                                    <input className={styles.inlineInput} style={{ width: '100px' }} value={editGroupName} onChange={e => setEditGroupName(e.target.value)} />
+                                                ) : (
+                                                    <b>{g.name}</b>
+                                                )}
+                                            </td>
+                                            <td title={g.description}>
+                                                {editingGroupId === g.id ? (
+                                                    <input className={styles.inlineInput} value={editGroupDesc} onChange={e => setEditGroupDesc(e.target.value)} />
+                                                ) : (
+                                                    g.description?.slice(0, 80) ?? '—'
+                                                )}
+                                            </td>
+                                            <td>
+                                                {editingGroupId === g.id ? (
+                                                    <span className={styles.actionGroup}>
+                                                        <button className={styles.saveBtn} onClick={() => handleUpdateGroup(g.id)}>Save</button>
+                                                        <button className={styles.cancelBtn} onClick={() => setEditingGroupId(null)}>✕</button>
+                                                    </span>
+                                                ) : (
+                                                    <span className={styles.actionGroup}>
+                                                        <button className={styles.editBtn} onClick={() => { setEditingGroupId(g.id); setEditGroupName(g.name); setEditGroupDesc(g.description || ''); }}>✏️</button>
+                                                        <button className={styles.deleteBtn} onClick={() => handleDeleteGroup(g.id)}>🗑️</button>
+                                                    </span>
+                                                )}
+                                            </td>
                                         </tr>
                                     ))}
                                     {groups.length === 0 && (
-                                        <tr><td colSpan={2} className={styles.empty}>No groups yet</td></tr>
+                                        <tr><td colSpan={3} className={styles.empty}>No groups yet</td></tr>
                                     )}
                                 </tbody>
                             </table>
