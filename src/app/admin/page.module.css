@@ -302,6 +302,63 @@
     border-bottom: 3px solid var(--color-primary);
 }
 
+/* ── Sub Navigation Tabs ── */
+.contentSection {
+    margin-top: 1rem;
+}
+
+.subNav {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    background: var(--color-card-background);
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    flex-wrap: wrap;
+}
+
+.subTabBtn {
+    background: transparent;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text-300);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.subTabBtn:hover {
+    color: var(--color-text);
+    background: var(--color-bg-200);
+}
+
+.activeSubTab {
+    background: var(--color-primary);
+    color: white;
+    font-weight: 600;
+}
+
+.subContentArea {
+    width: 100%;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* ── Charts ── */
 .chartContainer {
     background: var(--color-card-background);

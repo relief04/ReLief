@@ -20,6 +20,7 @@ export default function AdminPage() {
 
     // Tab State
     const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'content'>('overview');
+    const [activeContentTab, setActiveContentTab] = useState<'posts' | 'stories' | 'events' | 'groups'>('posts');
 
     // Data States
     const [stats, setStats] = useState<Stats | null>(null);
@@ -362,167 +363,204 @@ export default function AdminPage() {
 
             {/* TAB: CONTENT */}
             {activeTab === 'content' && (
-                <div className={styles.tablesGrid}>
-                    {/* Posts */}
-                    <div className={styles.tableCard}>
-                        <h2 className={styles.tableTitle}>📝 Posts Moderation</h2>
-                        <div className={styles.tableScroll}>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Author</th>
-                                        <th>Content</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {posts.map(post => (
-                                        <tr key={post.id}>
-                                            <td title={post.author_name}>{post.author_name || 'Unknown'}</td>
-                                            <td>
-                                                {editingPostId === post.id ? (
-                                                    <input className={styles.inlineInput} value={editContent} onChange={e => setEditContent(e.target.value)} />
-                                                ) : (
-                                                    <span title={post.content}>{post.content?.slice(0, 50) ?? '—'}</span>
-                                                )}
-                                            </td>
-                                            <td>
-                                                {editingPostId === post.id ? (
-                                                    <span className={styles.actionGroup}>
-                                                        <button className={styles.saveBtn} onClick={() => handleUpdatePost(post.id)}>Save</button>
-                                                        <button className={styles.cancelBtn} onClick={() => setEditingPostId(null)}>✕</button>
-                                                    </span>
-                                                ) : (
-                                                    <span className={styles.actionGroup}>
-                                                        <button className={styles.editBtn} onClick={() => { setEditingPostId(post.id); setEditContent(post.content); }}>✏️</button>
-                                                        <button className={styles.deleteBtn} onClick={() => handleDeletePost(post.id)}>🗑️</button>
-                                                    </span>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    {posts.length === 0 && (
-                                        <tr><td colSpan={3} className={styles.empty}>No posts yet</td></tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                <div className={styles.contentSection}>
+                    <div className={styles.subNav}>
+                        <button
+                            className={`${styles.subTabBtn} ${activeContentTab === 'posts' ? styles.activeSubTab : ''}`}
+                            onClick={() => setActiveContentTab('posts')}
+                        >
+                            📝 Posts
+                        </button>
+                        <button
+                            className={`${styles.subTabBtn} ${activeContentTab === 'stories' ? styles.activeSubTab : ''}`}
+                            onClick={() => setActiveContentTab('stories')}
+                        >
+                            🌟 Success Stories
+                        </button>
+                        <button
+                            className={`${styles.subTabBtn} ${activeContentTab === 'events' ? styles.activeSubTab : ''}`}
+                            onClick={() => setActiveContentTab('events')}
+                        >
+                            🗓️ Events
+                        </button>
+                        <button
+                            className={`${styles.subTabBtn} ${activeContentTab === 'groups' ? styles.activeSubTab : ''}`}
+                            onClick={() => setActiveContentTab('groups')}
+                        >
+                            🤝 Groups
+                        </button>
                     </div>
 
-                    {/* Stories */}
-                    <div className={styles.tableCard}>
-                        <h2 className={styles.tableTitle}>🌟 Success Stories Moderation</h2>
-                        <div className={styles.tableScroll}>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Author</th>
-                                        <th>Title</th>
-                                        <th>Likes</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {stories.map(story => (
-                                        <tr key={story.id}>
-                                            <td title={story.author_name}>{story.author_name || 'Unknown'}</td>
-                                            <td title={story.story}><b>{story.title}</b></td>
-                                            <td>{story.likes}</td>
-                                            <td>
-                                                <button className={styles.deleteBtn} onClick={() => handleDeleteStory(story.id)}>🗑️</button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    {stories.length === 0 && (
-                                        <tr><td colSpan={4} className={styles.empty}>No stories yet</td></tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <div className={styles.subContentArea}>
+                        {/* Posts */}
+                        {activeContentTab === 'posts' && (
+                            <div className={styles.tableCard}>
+                                <h2 className={styles.tableTitle}>📝 Posts Moderation</h2>
+                                <div className={styles.tableScroll}>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Author</th>
+                                                <th>Content</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {posts.map(post => (
+                                                <tr key={post.id}>
+                                                    <td title={post.author_name}>{post.author_name || 'Unknown'}</td>
+                                                    <td>
+                                                        {editingPostId === post.id ? (
+                                                            <input className={styles.inlineInput} value={editContent} onChange={e => setEditContent(e.target.value)} />
+                                                        ) : (
+                                                            <span title={post.content}>{post.content?.slice(0, 50) ?? '—'}</span>
+                                                        )}
+                                                    </td>
+                                                    <td>
+                                                        {editingPostId === post.id ? (
+                                                            <span className={styles.actionGroup}>
+                                                                <button className={styles.saveBtn} onClick={() => handleUpdatePost(post.id)}>Save</button>
+                                                                <button className={styles.cancelBtn} onClick={() => setEditingPostId(null)}>✕</button>
+                                                            </span>
+                                                        ) : (
+                                                            <span className={styles.actionGroup}>
+                                                                <button className={styles.editBtn} onClick={() => { setEditingPostId(post.id); setEditContent(post.content); }}>✏️</button>
+                                                                <button className={styles.deleteBtn} onClick={() => handleDeletePost(post.id)}>🗑️</button>
+                                                            </span>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {posts.length === 0 && (
+                                                <tr><td colSpan={3} className={styles.empty}>No posts yet</td></tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
 
-                    {/* Events */}
-                    <div className={styles.tableCard}>
-                        <h2 className={styles.tableTitle}>🗓️ Events Moderation</h2>
-                        <div className={styles.tableScroll}>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Event Title</th>
-                                        <th>Type</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {events.map(event => (
-                                        <tr key={event.id}>
-                                            <td>{new Date(event.event_date).toLocaleDateString()}</td>
-                                            <td title={event.description}><b>{event.title}</b></td>
-                                            <td>{event.event_type}</td>
-                                            <td>
-                                                <button className={styles.deleteBtn} onClick={() => handleDeleteEvent(event.id)}>🗑️</button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    {events.length === 0 && (
-                                        <tr><td colSpan={4} className={styles.empty}>No events yet</td></tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                        {/* Stories */}
+                        {activeContentTab === 'stories' && (
+                            <div className={styles.tableCard}>
+                                <h2 className={styles.tableTitle}>🌟 Success Stories Moderation</h2>
+                                <div className={styles.tableScroll}>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Author</th>
+                                                <th>Title</th>
+                                                <th>Likes</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {stories.map(story => (
+                                                <tr key={story.id}>
+                                                    <td title={story.author_name}>{story.author_name || 'Unknown'}</td>
+                                                    <td title={story.story}><b>{story.title}</b></td>
+                                                    <td>{story.likes}</td>
+                                                    <td>
+                                                        <button className={styles.deleteBtn} onClick={() => handleDeleteStory(story.id)}>🗑️</button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {stories.length === 0 && (
+                                                <tr><td colSpan={4} className={styles.empty}>No stories yet</td></tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
 
-                    {/* Groups */}
-                    <div className={styles.tableCard}>
-                        <h2 className={styles.tableTitle}>🤝 Groups Ecosystem</h2>
-                        <div className={styles.tableScroll}>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Description</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {groups.map(g => (
-                                        <tr key={g.id}>
-                                            <td title={g.name}>
-                                                {editingGroupId === g.id ? (
-                                                    <input className={styles.inlineInput} style={{ width: '100px' }} value={editGroupName} onChange={e => setEditGroupName(e.target.value)} />
-                                                ) : (
-                                                    <b>{g.name}</b>
-                                                )}
-                                            </td>
-                                            <td title={g.description}>
-                                                {editingGroupId === g.id ? (
-                                                    <input className={styles.inlineInput} value={editGroupDesc} onChange={e => setEditGroupDesc(e.target.value)} />
-                                                ) : (
-                                                    g.description?.slice(0, 80) ?? '—'
-                                                )}
-                                            </td>
-                                            <td>
-                                                {editingGroupId === g.id ? (
-                                                    <span className={styles.actionGroup}>
-                                                        <button className={styles.saveBtn} onClick={() => handleUpdateGroup(g.id)}>Save</button>
-                                                        <button className={styles.cancelBtn} onClick={() => setEditingGroupId(null)}>✕</button>
-                                                    </span>
-                                                ) : (
-                                                    <span className={styles.actionGroup}>
-                                                        <button className={styles.editBtn} onClick={() => { setEditingGroupId(g.id); setEditGroupName(g.name); setEditGroupDesc(g.description || ''); }}>✏️</button>
-                                                        <button className={styles.deleteBtn} onClick={() => handleDeleteGroup(g.id)}>🗑️</button>
-                                                    </span>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    {groups.length === 0 && (
-                                        <tr><td colSpan={3} className={styles.empty}>No groups yet</td></tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                        {/* Events */}
+                        {activeContentTab === 'events' && (
+                            <div className={styles.tableCard}>
+                                <h2 className={styles.tableTitle}>🗓️ Events Moderation</h2>
+                                <div className={styles.tableScroll}>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Event Title</th>
+                                                <th>Type</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {events.map(event => (
+                                                <tr key={event.id}>
+                                                    <td>{new Date(event.event_date).toLocaleDateString()}</td>
+                                                    <td title={event.description}><b>{event.title}</b></td>
+                                                    <td>{event.event_type}</td>
+                                                    <td>
+                                                        <button className={styles.deleteBtn} onClick={() => handleDeleteEvent(event.id)}>🗑️</button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {events.length === 0 && (
+                                                <tr><td colSpan={4} className={styles.empty}>No events yet</td></tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Groups */}
+                        {activeContentTab === 'groups' && (
+                            <div className={styles.tableCard}>
+                                <h2 className={styles.tableTitle}>🤝 Groups Ecosystem</h2>
+                                <div className={styles.tableScroll}>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Description</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {groups.map(g => (
+                                                <tr key={g.id}>
+                                                    <td title={g.name}>
+                                                        {editingGroupId === g.id ? (
+                                                            <input className={styles.inlineInput} style={{ width: '100px' }} value={editGroupName} onChange={e => setEditGroupName(e.target.value)} />
+                                                        ) : (
+                                                            <b>{g.name}</b>
+                                                        )}
+                                                    </td>
+                                                    <td title={g.description}>
+                                                        {editingGroupId === g.id ? (
+                                                            <input className={styles.inlineInput} value={editGroupDesc} onChange={e => setEditGroupDesc(e.target.value)} />
+                                                        ) : (
+                                                            g.description?.slice(0, 80) ?? '—'
+                                                        )}
+                                                    </td>
+                                                    <td>
+                                                        {editingGroupId === g.id ? (
+                                                            <span className={styles.actionGroup}>
+                                                                <button className={styles.saveBtn} onClick={() => handleUpdateGroup(g.id)}>Save</button>
+                                                                <button className={styles.cancelBtn} onClick={() => setEditingGroupId(null)}>✕</button>
+                                                            </span>
+                                                        ) : (
+                                                            <span className={styles.actionGroup}>
+                                                                <button className={styles.editBtn} onClick={() => { setEditingGroupId(g.id); setEditGroupName(g.name); setEditGroupDesc(g.description || ''); }}>✏️</button>
+                                                                <button className={styles.deleteBtn} onClick={() => handleDeleteGroup(g.id)}>🗑️</button>
+                                                            </span>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {groups.length === 0 && (
+                                                <tr><td colSpan={3} className={styles.empty}>No groups yet</td></tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
