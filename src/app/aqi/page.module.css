@@ -4,13 +4,15 @@
 
 .page {
     min-height: 100vh;
-    background: var(--color-bg-50);
+    background: transparent;
 }
 
 /* ── Hero Section ─────────────────────────── */
 .heroSection {
-    background: linear-gradient(160deg, var(--color-bg-100) 0%, var(--color-bg-200) 100%);
-    border-bottom: 1px solid var(--color-border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
     padding: 3rem 1.5rem 2.5rem;
     position: relative;
     overflow: hidden;
@@ -243,13 +245,15 @@
     display: flex;
     gap: 2.5rem;
     align-items: center;
-    background: var(--color-card-background);
-    border: 1px solid var(--color-border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-xl);
     padding: 2.5rem;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 20px 60px var(--glass-shadow);
     transition: box-shadow 0.3s;
 }
 
@@ -559,14 +563,17 @@
 }
 
 .pollutantCard {
-    background: var(--color-card-background);
-    border: 1px solid var(--color-border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-md);
     padding: 1.25rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 16px var(--glass-shadow);
 }
 
 .pollutantCard:hover {
@@ -645,6 +652,8 @@
     gap: 0.3rem;
     text-align: center;
     transition: transform 0.2s;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .scaleCard:hover {
