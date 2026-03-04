@@ -12,15 +12,18 @@ import { LocateFixed, Share2, Wind, AlertTriangle, CheckCircle2, Thermometer, Dr
 
 const getAQITint = (status?: string) => {
     switch (status) {
-        case 'Good': return 'rgba(46, 204, 113, 0.05)';
-        case 'Moderate': return 'rgba(241, 196, 15, 0.05)';
-        case 'Unhealthy': return 'rgba(230, 126, 34, 0.05)';
-        case 'Hazardous': return 'rgba(231, 76, 60, 0.05)';
+        case 'Good': return 'rgba(80, 204, 170, 0.05)';
+        case 'Satisfactory': return 'rgba(206, 229, 160, 0.05)';
+        case 'Moderately Polluted': return 'rgba(255, 255, 102, 0.05)';
+        case 'Poor': return 'rgba(255, 153, 51, 0.05)';
+        case 'Very Poor': return 'rgba(255, 51, 51, 0.05)';
+        case 'Severe': return 'rgba(153, 0, 0, 0.05)';
         default: return 'var(--color-bg-100)';
     }
 };
 
 const AQIMap = dynamic(() => import('@/components/aqi/AQIMap'), { ssr: false });
+import { AQIHistoryGraph } from '@/components/aqi/AQIHistoryGraph';
 
 export default function AQIPage() {
     // Location Selector State
@@ -239,7 +242,7 @@ export default function AQIPage() {
                                     <div className={styles.aqiCirclePulse} data-status={data.status} />
                                     <div className={styles.aqiCircle} data-status={data.status}>
                                         <span className={styles.aqiValue}>{data.aqi}</span>
-                                        <span className={styles.aqiLabel}>US AQI</span>
+                                        <span className={styles.aqiLabel}>NAQI</span>
                                     </div>
                                 </div>
                                 <div className={styles.statusInfo}>
@@ -314,10 +317,12 @@ export default function AQIPage() {
                             const percentage = Math.min((val / stat.limit) * 100, 100);
 
                             // Simple severity mapping for bars
-                            let severity: 'Good' | 'Moderate' | 'Unhealthy' | 'Hazardous' = 'Good';
-                            if (percentage > 70) severity = 'Hazardous';
-                            else if (percentage > 40) severity = 'Unhealthy';
-                            else if (percentage > 15) severity = 'Moderate';
+                            let severity: string = 'Good';
+                            if (percentage > 80) severity = 'Severe';
+                            else if (percentage > 60) severity = 'Very Poor';
+                            else if (percentage > 40) severity = 'Poor';
+                            else if (percentage > 20) severity = 'Moderately Polluted';
+                            else if (percentage > 10) severity = 'Satisfactory';
 
                             return (
                                 <Card key={i} className={styles.statCard}>
@@ -336,8 +341,9 @@ export default function AQIPage() {
                         })}
                     </div>
 
-
-
+                    <div style={{ marginTop: '2rem' }}>
+                        <AQIHistoryGraph city={data.city} />
+                    </div>
 
                 </div>
             )}

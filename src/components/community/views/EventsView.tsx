@@ -66,10 +66,14 @@ export function EventsView() {
 
     const fetchEvents = useCallback(async () => {
         setLoading(true);
+
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+
         const { data: eventsData, error } = await supabase
             .from('events')
             .select('*')
-            .gte('event_date', new Date().toISOString())
+            .gte('event_date', startOfDay.toISOString())
             .order('event_date', { ascending: true });
 
         if (eventsData && !error) {
@@ -156,7 +160,20 @@ export function EventsView() {
         if (error) {
             setFormError(`Failed to create event: ${error.message}`);
         } else if (data) {
-            setEvents(prev => [{ ...data, participants: 0, participant_list: [], user_rsvp: null }, ...prev]
+            // Automatically RSVP the creator
+            await supabase.from('event_rsvps').insert([{
+                event_id: data.id,
+                user_id: user.id,
+                status: 'going'
+            }]);
+
+            const mySelf: Participant = {
+                user_id: user.id,
+                username: user.username || user.firstName || 'You',
+                avatar_url: user.imageUrl || null
+            };
+
+            setEvents(prev => [{ ...data, participants: 1, participant_list: [mySelf], user_rsvp: 'going' }, ...prev]
                 .sort((a, b) => new Date(a.event_date).getTime() - new Date(b.event_date).getTime()));
             setShowCreateModal(false);
             setNewEvent(EMPTY_FORM);

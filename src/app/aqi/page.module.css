@@ -169,23 +169,33 @@
 }
 
 .mapSection[data-status="Good"] {
-    box-shadow: 0 0 30px rgba(46, 204, 113, 0.15), 0 12px 40px var(--glass-shadow);
-    border-color: rgba(46, 204, 113, 0.3);
+    box-shadow: 0 0 30px rgba(80, 204, 170, 0.15), 0 12px 40px var(--glass-shadow);
+    border-color: rgba(80, 204, 170, 0.3);
 }
 
-.mapSection[data-status="Moderate"] {
-    box-shadow: 0 0 30px rgba(241, 196, 15, 0.15), 0 12px 40px var(--glass-shadow);
-    border-color: rgba(241, 196, 15, 0.3);
+.mapSection[data-status="Satisfactory"] {
+    box-shadow: 0 0 30px rgba(206, 229, 160, 0.15), 0 12px 40px var(--glass-shadow);
+    border-color: rgba(206, 229, 160, 0.3);
 }
 
-.mapSection[data-status="Unhealthy"] {
-    box-shadow: 0 0 30px rgba(230, 126, 34, 0.15), 0 12px 40px var(--glass-shadow);
-    border-color: rgba(230, 126, 34, 0.3);
+.mapSection[data-status="Moderately Polluted"] {
+    box-shadow: 0 0 30px rgba(255, 255, 102, 0.15), 0 12px 40px var(--glass-shadow);
+    border-color: rgba(255, 255, 102, 0.3);
 }
 
-.mapSection[data-status="Hazardous"] {
-    box-shadow: 0 0 30px rgba(231, 76, 60, 0.15), 0 12px 40px var(--glass-shadow);
-    border-color: rgba(231, 76, 60, 0.3);
+.mapSection[data-status="Poor"] {
+    box-shadow: 0 0 30px rgba(255, 153, 51, 0.15), 0 12px 40px var(--glass-shadow);
+    border-color: rgba(255, 153, 51, 0.3);
+}
+
+.mapSection[data-status="Very Poor"] {
+    box-shadow: 0 0 30px rgba(255, 51, 51, 0.15), 0 12px 40px var(--glass-shadow);
+    border-color: rgba(255, 51, 51, 0.3);
+}
+
+.mapSection[data-status="Severe"] {
+    box-shadow: 0 0 30px rgba(153, 0, 0, 0.15), 0 12px 40px var(--glass-shadow);
+    border-color: rgba(153, 0, 0, 0.3);
 }
 
 .mapSection::before {
@@ -289,19 +299,27 @@
 }
 
 .aqiCirclePulse[data-status="Good"] {
-    background-color: #2ecc71;
+    background-color: #50CCAA;
 }
 
-.aqiCirclePulse[data-status="Moderate"] {
-    background-color: #f1c40f;
+.aqiCirclePulse[data-status="Satisfactory"] {
+    background-color: #CEE5A0;
 }
 
-.aqiCirclePulse[data-status="Unhealthy"] {
-    background-color: #e67e22;
+.aqiCirclePulse[data-status="Moderately Polluted"] {
+    background-color: #FFFF66;
 }
 
-.aqiCirclePulse[data-status="Hazardous"] {
-    background-color: #e74c3c;
+.aqiCirclePulse[data-status="Poor"] {
+    background-color: #FF9933;
+}
+
+.aqiCirclePulse[data-status="Very Poor"] {
+    background-color: #FF3333;
+}
+
+.aqiCirclePulse[data-status="Severe"] {
+    background-color: #990000;
 }
 
 @keyframes pulseRing {
@@ -330,23 +348,33 @@
 }
 
 .aqiCircle[data-status="Good"] {
-    border-color: #2ecc71;
-    color: #2ecc71;
+    border-color: #50CCAA;
+    color: #50CCAA;
 }
 
-.aqiCircle[data-status="Moderate"] {
-    border-color: #f1c40f;
-    color: #f1c40f;
+.aqiCircle[data-status="Satisfactory"] {
+    border-color: #CEE5A0;
+    color: #CEE5A0;
 }
 
-.aqiCircle[data-status="Unhealthy"] {
-    border-color: #e67e22;
-    color: #e67e22;
+.aqiCircle[data-status="Moderately Polluted"] {
+    border-color: #FFFF66;
+    color: #FFFF66;
 }
 
-.aqiCircle[data-status="Hazardous"] {
-    border-color: #e74c3c;
-    color: #e74c3c;
+.aqiCircle[data-status="Poor"] {
+    border-color: #FF9933;
+    color: #FF9933;
+}
+
+.aqiCircle[data-status="Very Poor"] {
+    border-color: #FF3333;
+    color: #FF3333;
+}
+
+.aqiCircle[data-status="Severe"] {
+    border-color: #990000;
+    color: #990000;
 }
 
 .aqiValue {
@@ -371,19 +399,27 @@
 }
 
 .statusText[data-status="Good"] {
-    color: #2ecc71;
+    color: #50CCAA;
 }
 
-.statusText[data-status="Moderate"] {
-    color: #f1c40f;
+.statusText[data-status="Satisfactory"] {
+    color: #CEE5A0;
 }
 
-.statusText[data-status="Unhealthy"] {
-    color: #e67e22;
+.statusText[data-status="Moderately Polluted"] {
+    color: #FFFF66;
 }
 
-.statusText[data-status="Hazardous"] {
-    color: #e74c3c;
+.statusText[data-status="Poor"] {
+    color: #FF9933;
+}
+
+.statusText[data-status="Very Poor"] {
+    color: #FF3333;
+}
+
+.statusText[data-status="Severe"] {
+    color: #990000;
 }
 
 .shareBtn {
@@ -625,23 +661,33 @@
 }
 
 .pollutantBar[data-status="Good"] {
-    background: #2ecc71;
-    box-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+    background: #50CCAA;
+    box-shadow: 0 0 10px rgba(80, 204, 170, 0.3);
 }
 
-.pollutantBar[data-status="Moderate"] {
-    background: #f1c40f;
-    box-shadow: 0 0 10px rgba(241, 196, 15, 0.3);
+.pollutantBar[data-status="Satisfactory"] {
+    background: #CEE5A0;
+    box-shadow: 0 0 10px rgba(206, 229, 160, 0.3);
 }
 
-.pollutantBar[data-status="Unhealthy"] {
-    background: #e67e22;
-    box-shadow: 0 0 10px rgba(230, 126, 34, 0.3);
+.pollutantBar[data-status="Moderately Polluted"] {
+    background: #FFFF66;
+    box-shadow: 0 0 10px rgba(255, 255, 102, 0.3);
 }
 
-.pollutantBar[data-status="Hazardous"] {
-    background: #e74c3c;
-    box-shadow: 0 0 10px rgba(231, 76, 60, 0.3);
+.pollutantBar[data-status="Poor"] {
+    background: #FF9933;
+    box-shadow: 0 0 10px rgba(255, 153, 51, 0.3);
+}
+
+.pollutantBar[data-status="Very Poor"] {
+    background: #FF3333;
+    box-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
+}
+
+.pollutantBar[data-status="Severe"] {
+    background: #990000;
+    box-shadow: 0 0 10px rgba(153, 0, 0, 0.3);
 }
 
 
@@ -746,23 +792,33 @@
 }
 
 .forecastCircle[data-status="Good"] {
-    border-color: #2ecc71;
-    color: #2ecc71;
+    border-color: #50CCAA;
+    color: #50CCAA;
 }
 
-.forecastCircle[data-status="Moderate"] {
-    border-color: #f1c40f;
-    color: #f1c40f;
+.forecastCircle[data-status="Satisfactory"] {
+    border-color: #CEE5A0;
+    color: #CEE5A0;
 }
 
-.forecastCircle[data-status="Unhealthy"] {
-    border-color: #e67e22;
-    color: #e67e22;
+.forecastCircle[data-status="Moderately Polluted"] {
+    border-color: #FFFF66;
+    color: #FFFF66;
 }
 
-.forecastCircle[data-status="Hazardous"] {
-    border-color: #e74c3c;
-    color: #e74c3c;
+.forecastCircle[data-status="Poor"] {
+    border-color: #FF9933;
+    color: #FF9933;
+}
+
+.forecastCircle[data-status="Very Poor"] {
+    border-color: #FF3333;
+    color: #FF3333;
+}
+
+.forecastCircle[data-status="Severe"] {
+    border-color: #990000;
+    color: #990000;
 }
 
 .forecastStatus {
@@ -771,17 +827,25 @@
 }
 
 .forecastStatus[data-status="Good"] {
-    color: #2ecc71;
+    color: #50CCAA;
 }
 
-.forecastStatus[data-status="Moderate"] {
-    color: #f1c40f;
+.forecastStatus[data-status="Satisfactory"] {
+    color: #CEE5A0;
 }
 
-.forecastStatus[data-status="Unhealthy"] {
-    color: #e67e22;
+.forecastStatus[data-status="Moderately Polluted"] {
+    color: #FFFF66;
 }
 
-.forecastStatus[data-status="Hazardous"] {
-    color: #e74c3c;
+.forecastStatus[data-status="Poor"] {
+    color: #FF9933;
+}
+
+.forecastStatus[data-status="Very Poor"] {
+    color: #FF3333;
+}
+
+.forecastStatus[data-status="Severe"] {
+    color: #990000;
 }

@@ -218,3 +218,74 @@ a {
     background: white;
   }
 }
+
+/* Mobile Blocker Implementation */
+.desktop-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.mobile-blocker-wrapper {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+  background: var(--color-bg-100);
+  color: var(--color-text-100);
+  z-index: 9999;
+}
+
+.mobile-blocker-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  /* Premium animated float */
+  animation: float 3s ease-in-out infinite;
+}
+
+.mobile-blocker-title {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--color-primary);
+}
+
+.mobile-blocker-text {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  color: var(--color-text-200);
+  max-width: 400px;
+  line-height: 1.6;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* 
+ * 1024px is generally the breakpoint for tablets (iPad portrait) and below.
+ * We'll use 1024px and below to trigger the mobile blocker.
+ */
+@media screen and (max-width: 1024px) {
+  .desktop-content-wrapper {
+    display: none !important;
+  }
+
+  .mobile-blocker-wrapper {
+    display: flex !important;
+  }
+}

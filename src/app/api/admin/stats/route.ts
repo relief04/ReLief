@@ -44,9 +44,9 @@ export async function GET() {
                 .limit(10),
             db
                 .from('profiles')
-                .select('id, username, email, created_at, balance')
+                .select('id, username, email, created_at, balance, is_banned')
                 .order('created_at', { ascending: false })
-                .limit(10),
+                .limit(20),
             db
                 .from('groups')
                 .select('id, name, description, created_at')

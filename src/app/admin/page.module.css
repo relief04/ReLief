@@ -462,3 +462,172 @@
 .refreshBtn:hover {
     background: rgba(5, 150, 105, 0.1);
 }
+
+/* ── Profile Modal ── */
+.profileModalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.profileModal {
+    background: var(--color-card-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 700px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-xl);
+    animation: modalFadeIn 0.3s ease-out forwards;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.profileModalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.profileModalTitle {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.closeModalBtn {
+    background: transparent;
+    border: none;
+    color: var(--color-text-300);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.closeModalBtn:hover {
+    color: var(--color-danger);
+}
+
+.profileModalBody {
+    padding: 1.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.profileHero {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    background: var(--color-bg-50);
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+.profileHeroStat {
+    flex: 1;
+    min-width: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.profileHeroStatLabel {
+    font-size: 0.85rem;
+    color: var(--color-text-300);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.profileHeroStatValue {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--color-primary);
+}
+
+.profileSection {
+    background: var(--color-bg-50);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+}
+
+.profileSectionTitle {
+    margin: 0 0 1rem;
+    font-size: 1.1rem;
+    color: var(--color-text);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.karmaEditSection {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.karmaEditLabel {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+}
+
+.profileList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.profileListItem {
+    padding: 0.75rem;
+    background: var(--color-bg-100);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    border-left: 3px solid var(--color-primary);
+}
+
+.profileListItem small {
+    display: block;
+    color: var(--color-text-300);
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+}
+
+.loadingModal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    color: var(--color-text-300);
+    gap: 1rem;
+}

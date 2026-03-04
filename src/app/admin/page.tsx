@@ -43,7 +43,21 @@ export default function AdminPage() {
     const [karmaDelta, setKarmaDelta] = useState<number>(0);
 
     const [statusMsg, setStatusMsg] = useState<{ text: string; ok: boolean } | null>(null);
+    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+    const [selectedUserProfile, setSelectedUserProfile] = useState<any>(null);
+    const [isProfileLoading, setIsProfileLoading] = useState(false);
+    const [activeProfileTab, setActiveProfileTab] = useState<'posts' | 'badges' | 'points' | 'stories' | 'events' | 'groups'>('posts');
 
+    const [editingProfileStoryId, setEditingProfileStoryId] = useState<string | null>(null);
+    const [editProfileStoryTitle, setEditProfileStoryTitle] = useState('');
+    const [editProfileStoryType, setEditProfileStoryType] = useState('');
+
+    const [editingProfileEventId, setEditingProfileEventId] = useState<string | null>(null);
+    const [editProfileEventStatus, setEditProfileEventStatus] = useState('');
+
+    const [editingProfileGroupUserId, setEditingProfileGroupUserId] = useState<string | null>(null);
+    const [editingProfileGroupId, setEditingProfileGroupId] = useState<string | null>(null);
+    const [editProfileGroupRole, setEditProfileGroupRole] = useState('');
     const showStatus = (text: string, ok: boolean) => {
         toast(text, ok ? 'success' : 'error');
     };
@@ -134,6 +148,104 @@ export default function AdminPage() {
     };
 
     // ── User Management ──────────────────────────────────────────────
+    const fetchUserProfileData = async (userId: string) => {
+        setIsProfileLoading(true);
+        try {
+            const res = await fetch(`/api/admin/users/${userId}/profile`);
+            const data = await res.json();
+            if (data.success) {
+                setSelectedUserProfile(data.user_data);
+            } else {
+                showStatus(`Failed to load profile: ${data.error}`, false);
+                if (!selectedUserProfile) setIsProfileModalOpen(false);
+            }
+        } catch (e) {
+            showStatus('An error occurred.', false);
+        }
+        setIsProfileLoading(false);
+    };
+
+    const handleViewProfile = async (id: string) => {
+        setIsProfileModalOpen(true);
+        setSelectedUserProfile(null);
+        setKarmaDelta(0);
+        await fetchUserProfileData(id);
+    };
+
+    const handleUpdateProfileStory = async (storyId: string) => {
+        const res = await fetch(`/api/admin/stories/${storyId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: editProfileStoryTitle, achievement_type: editProfileStoryType }),
+        });
+        if (res.ok) {
+            showStatus('Story updated successfully.', true);
+            setEditingProfileStoryId(null);
+            if (selectedUserProfile?.profile?.id) await fetchUserProfileData(selectedUserProfile.profile.id);
+        } else showStatus('Failed to update story.', false);
+    };
+
+    const handleDeleteProfileStory = async (storyId: string) => {
+        const confirmed = await confirm({ title: 'Delete Story', message: 'Delete this success story?', confirmLabel: 'Delete', danger: true });
+        if (!confirmed) return;
+        const res = await fetch(`/api/admin/stories/${storyId}`, { method: 'DELETE' });
+        if (res.ok) {
+            showStatus('Story deleted.', true);
+            if (selectedUserProfile?.profile?.id) await fetchUserProfileData(selectedUserProfile.profile.id);
+        } else showStatus('Failed to delete story.', false);
+    };
+
+    const handleUpdateProfileEvent = async (rsvpId: string) => {
+        const res = await fetch(`/api/admin/events/rsvp/${rsvpId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: editProfileEventStatus }),
+        });
+        if (res.ok) {
+            showStatus('RSVP updated successfully.', true);
+            setEditingProfileEventId(null);
+            if (selectedUserProfile?.profile?.id) await fetchUserProfileData(selectedUserProfile.profile.id);
+        } else showStatus('Failed to update RSVP.', false);
+    };
+
+    const handleDeleteProfileEvent = async (rsvpId: string) => {
+        const confirmed = await confirm({ title: 'Remove RSVP', message: 'Remove user from this event?', confirmLabel: 'Remove', danger: true });
+        if (!confirmed) return;
+        const res = await fetch(`/api/admin/events/rsvp/${rsvpId}`, { method: 'DELETE' });
+        if (res.ok) {
+            showStatus('RSVP removed.', true);
+            if (selectedUserProfile?.profile?.id) await fetchUserProfileData(selectedUserProfile.profile.id);
+        } else showStatus('Failed to remove RSVP.', false);
+    };
+
+    const handleUpdateProfileGroup = async (userId: string, groupId: string) => {
+        const res = await fetch(`/api/admin/groups/members`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, group_id: groupId, role: editProfileGroupRole }),
+        });
+        if (res.ok) {
+            showStatus('Group role updated successfully.', true);
+            setEditingProfileGroupId(null);
+            setEditingProfileGroupUserId(null);
+            if (selectedUserProfile?.profile?.id) await fetchUserProfileData(selectedUserProfile.profile.id);
+        } else showStatus('Failed to update group role.', false);
+    };
+
+    const handleDeleteProfileGroup = async (userId: string, groupId: string) => {
+        const confirmed = await confirm({ title: 'Remove from Group', message: 'Remove user from this group?', confirmLabel: 'Remove', danger: true });
+        if (!confirmed) return;
+        const res = await fetch(`/api/admin/groups/members`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, group_id: groupId }),
+        });
+        if (res.ok) {
+            showStatus('Removed from group.', true);
+            if (selectedUserProfile?.profile?.id) await fetchUserProfileData(selectedUserProfile.profile.id);
+        } else showStatus('Failed to remove from group.', false);
+    };
+
     const handleSetupKarmaSubmit = async (id: string) => {
         if (!karmaDelta || karmaDelta === 0) {
             setEditingKarmaId(null);
@@ -145,8 +257,19 @@ export default function AdminPage() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ karmaDelta }),
         });
-        if (res.ok) showStatus(`Karma modified successfully.`, true);
-        else showStatus(`Failed to update karma`, false);
+        if (res.ok) {
+            showStatus(`Karma modified successfully.`, true);
+            if (isProfileModalOpen) {
+                // Refresh modal data seamlessly
+                const profileRes = await fetch(`/api/admin/users/${id}/profile`);
+                if (profileRes.ok) {
+                    const data = await profileRes.json();
+                    setSelectedUserProfile(data.user_data);
+                }
+            }
+        } else {
+            showStatus(`Failed to update karma`, false);
+        }
 
         setEditingKarmaId(null);
         setKarmaDelta(0);
@@ -168,9 +291,13 @@ export default function AdminPage() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ isBanned: newStatus }),
         });
-        if (res.ok) showStatus(`User ${newStatus ? 'banned' : 'unbanned'} successfully.`, true);
-        else showStatus(`Failed to change ban state`, false);
-        fetchData();
+        if (res.ok) {
+            showStatus(`User ${newStatus ? 'banned' : 'unbanned'} successfully.`, true);
+            fetchData();
+        } else {
+            const data = await res.json().catch(() => ({}));
+            showStatus(`Failed: ${data.error || 'Server error'}`, false);
+        }
     };
 
     const handleResetUser = async (id: string) => {
@@ -183,9 +310,13 @@ export default function AdminPage() {
         if (!confirmed) return;
 
         const res = await fetch(`/api/admin/users/${id}/reset`, { method: 'POST' });
-        if (res.ok) showStatus('User data successfully reset to 0.', true);
-        else showStatus(`Failed to reset user`, false);
-        fetchData();
+        if (res.ok) {
+            showStatus('User data successfully reset to 0.', true);
+            fetchData();
+        } else {
+            const data = await res.json().catch(() => ({}));
+            showStatus(`Failed to reset: ${data.error || 'Server error'}`, false);
+        }
     };
 
     const handleDeleteUser = async (id: string) => {
@@ -294,7 +425,6 @@ export default function AdminPage() {
                                 <tr>
                                     <th>Username</th>
                                     <th>Email</th>
-                                    <th>Karma Balance</th>
                                     <th>Joined</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -305,55 +435,33 @@ export default function AdminPage() {
                                     <tr key={u.id}>
                                         <td title={u.username}>{u.username || 'N/A'}</td>
                                         <td title={u.email}>{u.email || '—'}</td>
-                                        <td>
-                                            {editingKarmaId === u.id ? (
-                                                <div className={styles.inputKarmaLabel}>
-                                                    <input
-                                                        type="number"
-                                                        className={styles.karmaInput}
-                                                        value={karmaDelta}
-                                                        onChange={(e) => setKarmaDelta(Number(e.target.value))}
-                                                        placeholder="+/- 0"
-                                                    /> KP
-                                                </div>
-                                            ) : (
-                                                <span>{u.balance ?? 0} KP</span>
-                                            )}
-                                        </td>
                                         <td>{new Date(u.created_at).toLocaleDateString()}</td>
                                         <td>{u.is_banned ? '🚫 Banned' : '✅ Active'}</td>
                                         <td>
-                                            {editingKarmaId === u.id ? (
-                                                <span className={styles.actionGroup}>
-                                                    <button className={styles.saveBtn} onClick={() => handleSetupKarmaSubmit(u.id)}>Save</button>
-                                                    <button className={styles.cancelBtn} onClick={() => setEditingKarmaId(null)}>✕</button>
-                                                </span>
-                                            ) : (
-                                                <span className={styles.actionGroup}>
-                                                    <button className={styles.editBtn} onClick={() => { setEditingKarmaId(u.id); setKarmaDelta(0); }} title="Modify Karma">✨ Karma</button>
-                                                    <button
-                                                        className={`${styles.editBtn} ${u.is_banned ? styles.unbanBtn : styles.suspendBtn}`}
-                                                        onClick={() => handleSuspendUser(u.id, !!u.is_banned)}
-                                                        title="Toggle Banning"
-                                                    >{u.is_banned ? 'Unban' : 'Ban'}</button>
-                                                    <button
-                                                        className={styles.resetBtn}
-                                                        onClick={() => handleResetUser(u.id)}
-                                                        title="Reset User Data"
-                                                        style={{ backgroundColor: '#ff8c00', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 12px', cursor: 'pointer', fontSize: '13px', marginLeft: '8px' }}
-                                                    >🔄 Reset</button>
-                                                    <button
-                                                        className={styles.deleteBtn}
-                                                        onClick={() => handleDeleteUser(u.id)}
-                                                        title="Delete User Permanently"
-                                                    >🗑️ Delete</button>
-                                                </span>
-                                            )}
+                                            <span className={styles.actionGroup}>
+                                                <button className={styles.editBtn} onClick={() => handleViewProfile(u.id)} title="View User Profile">👤 Profile</button>
+                                                <button
+                                                    className={`${styles.editBtn} ${u.is_banned ? styles.unbanBtn : styles.suspendBtn}`}
+                                                    onClick={() => handleSuspendUser(u.id, !!u.is_banned)}
+                                                    title="Toggle Banning"
+                                                >{u.is_banned ? 'Unban' : 'Ban'}</button>
+                                                <button
+                                                    className={styles.resetBtn}
+                                                    onClick={() => handleResetUser(u.id)}
+                                                    title="Reset User Data"
+                                                    style={{ backgroundColor: '#ff8c00', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 12px', cursor: 'pointer', fontSize: '13px', marginLeft: '8px' }}
+                                                >🔄 Reset</button>
+                                                <button
+                                                    className={styles.deleteBtn}
+                                                    onClick={() => handleDeleteUser(u.id)}
+                                                    title="Delete User Permanently"
+                                                >🗑️ Delete</button>
+                                            </span>
                                         </td>
                                     </tr>
                                 ))}
                                 {users.length === 0 && (
-                                    <tr><td colSpan={6} className={styles.empty}>No users yet</td></tr>
+                                    <tr><td colSpan={5} className={styles.empty}>No users yet</td></tr>
                                 )}
                             </tbody>
                         </table>
@@ -560,6 +668,282 @@ export default function AdminPage() {
                                     </table>
                                 </div>
                             </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Profile Modal */}
+            {isProfileModalOpen && (
+                <div className={styles.profileModalOverlay} onClick={() => setIsProfileModalOpen(false)}>
+                    <div className={styles.profileModal} onClick={(e) => e.stopPropagation()}>
+                        <div className={styles.profileModalHeader}>
+                            <h2 className={styles.profileModalTitle}>User Profile Details</h2>
+                            <button className={styles.closeModalBtn} onClick={() => setIsProfileModalOpen(false)}>✕</button>
+                        </div>
+                        {isProfileLoading ? (
+                            <div className={styles.loadingModal}>
+                                <span>⌛ Fetching Data...</span>
+                            </div>
+                        ) : selectedUserProfile ? (
+                            <div className={styles.profileModalBody}>
+                                <div className={styles.profileHero}>
+                                    <div className={styles.profileHeroStat}>
+                                        <span className={styles.profileHeroStatLabel}>Username</span>
+                                        <span className={styles.profileHeroStatValue}>{selectedUserProfile.profile.username || '—'}</span>
+                                    </div>
+                                    <div className={styles.profileHeroStat}>
+                                        <span className={styles.profileHeroStatLabel}>Balance</span>
+                                        <span className={styles.profileHeroStatValue}>{selectedUserProfile.profile.balance} KP</span>
+                                    </div>
+                                    <div className={styles.profileHeroStat}>
+                                        <span className={styles.profileHeroStatLabel}>Carbon Savings</span>
+                                        <span className={styles.profileHeroStatValue}>{Number(selectedUserProfile.profile.carbon_savings || 0).toFixed(2)} KG</span>
+                                    </div>
+                                    <div className={styles.profileHeroStat}>
+                                        <span className={styles.profileHeroStatLabel}>Streak</span>
+                                        <span className={styles.profileHeroStatValue}>{selectedUserProfile.profile.streak || 0} 🔥</span>
+                                    </div>
+                                </div>
+
+                                <div className={styles.profileSection}>
+                                    <h3 className={styles.profileSectionTitle}>✨ Modify Karma points</h3>
+                                    <div className={styles.karmaEditSection} style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>Current</span>
+                                            <span style={{ fontWeight: 'bold' }}>{selectedUserProfile.profile.balance} KP</span>
+                                        </div>
+                                        <div style={{ fontSize: '1.5rem', color: 'var(--color-text-muted)' }}>+</div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <input
+                                                type="number"
+                                                className={styles.karmaInput}
+                                                value={karmaDelta || ''}
+                                                onChange={(e) => setKarmaDelta(Number(e.target.value))}
+                                                placeholder="+/- 0"
+                                                style={{ width: '100px', fontSize: '1rem', padding: '0.5rem', textAlign: 'center' }}
+                                            />
+                                        </div>
+                                        <div style={{ fontSize: '1.5rem', color: 'var(--color-text-muted)' }}>=</div>
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>New Balance</span>
+                                            <span style={{ fontWeight: 'bold', color: karmaDelta > 0 ? 'var(--color-success)' : karmaDelta < 0 ? 'var(--color-error)' : 'inherit' }}>
+                                                {(selectedUserProfile.profile.balance || 0) + (karmaDelta || 0)} KP
+                                            </span>
+                                        </div>
+                                        <button
+                                            className={styles.saveBtn}
+                                            onClick={() => handleSetupKarmaSubmit(selectedUserProfile.profile.id)}
+                                            style={{ padding: '0.5rem 1rem', marginLeft: 'auto' }}
+                                            disabled={!karmaDelta}
+                                        >Update</button>
+                                    </div>
+                                </div>
+
+                                <div className={styles.contentSection} style={{ marginTop: '1rem' }}>
+                                    <div className={styles.subNav} style={{ paddingBottom: '0.5rem', borderBottom: '1px solid var(--color-border)' }}>
+                                        <button
+                                            className={`${styles.subTabBtn} ${activeProfileTab === 'posts' ? styles.activeSubTab : ''}`}
+                                            onClick={() => setActiveProfileTab('posts')}
+                                        >
+                                            📝 Posts
+                                        </button>
+                                        <button
+                                            className={`${styles.subTabBtn} ${activeProfileTab === 'badges' ? styles.activeSubTab : ''}`}
+                                            onClick={() => setActiveProfileTab('badges')}
+                                        >
+                                            🏅 Badges
+                                        </button>
+                                        <button
+                                            className={`${styles.subTabBtn} ${activeProfileTab === 'points' ? styles.activeSubTab : ''}`}
+                                            onClick={() => setActiveProfileTab('points')}
+                                        >
+                                            💰 Points
+                                        </button>
+                                        <button
+                                            className={`${styles.subTabBtn} ${activeProfileTab === 'stories' ? styles.activeSubTab : ''}`}
+                                            onClick={() => setActiveProfileTab('stories')}
+                                        >
+                                            🌟 Stories
+                                        </button>
+                                        <button
+                                            className={`${styles.subTabBtn} ${activeProfileTab === 'events' ? styles.activeSubTab : ''}`}
+                                            onClick={() => setActiveProfileTab('events')}
+                                        >
+                                            🗓️ Events
+                                        </button>
+                                        <button
+                                            className={`${styles.subTabBtn} ${activeProfileTab === 'groups' ? styles.activeSubTab : ''}`}
+                                            onClick={() => setActiveProfileTab('groups')}
+                                        >
+                                            🤝 Groups
+                                        </button>
+                                    </div>
+
+                                    <div className={styles.subContentArea} style={{ marginTop: '1rem' }}>
+                                        {activeProfileTab === 'posts' && (
+                                            <div className={styles.profileSection}>
+                                                <h3 className={styles.profileSectionTitle}>📝 Recent Posts</h3>
+                                                <div className={styles.profileList}>
+                                                    {selectedUserProfile.posts?.length > 0 ? selectedUserProfile.posts.map((post: any) => (
+                                                        <div key={post.id} className={styles.profileListItem}>
+                                                            {post.content}
+                                                            <small>{new Date(post.created_at).toLocaleString()}</small>
+                                                        </div>
+                                                    )) : <div className={styles.empty}>No recent posts</div>}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {activeProfileTab === 'badges' && (
+                                            <div className={styles.profileSection}>
+                                                <h3 className={styles.profileSectionTitle}>🏅 Earned Badges</h3>
+                                                <div className={styles.profileList}>
+                                                    {selectedUserProfile.badges?.length > 0 ? selectedUserProfile.badges.map((b: any) => (
+                                                        <div key={b.id} className={styles.profileListItem}>
+                                                            {b.badges?.name || 'Unknown Badge'}
+                                                            <small>{new Date(b.earned_at).toLocaleString()}</small>
+                                                        </div>
+                                                    )) : <div className={styles.empty}>No badges earned</div>}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {activeProfileTab === 'points' && (
+                                            <div className={styles.profileSection}>
+                                                <h3 className={styles.profileSectionTitle}>💰 Points History</h3>
+                                                <div className={styles.profileList}>
+                                                    {selectedUserProfile.pointsHistory?.length > 0 ? selectedUserProfile.pointsHistory.map((ph: any) => (
+                                                        <div key={ph.id} className={styles.profileListItem}>
+                                                            {ph.amount > 0 ? `+${ph.amount}` : ph.amount} KP — {ph.reason}
+                                                            <small>{new Date(ph.created_at).toLocaleString()}</small>
+                                                        </div>
+                                                    )) : <div className={styles.empty}>No points history</div>}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {activeProfileTab === 'stories' && (
+                                            <div className={styles.profileSection}>
+                                                <h3 className={styles.profileSectionTitle}>🌟 Shared Stories</h3>
+                                                <div className={styles.profileList}>
+                                                    {selectedUserProfile.stories?.length > 0 ? selectedUserProfile.stories.map((story: any) => (
+                                                        <div key={story.id} className={styles.profileListItem} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            {editingProfileStoryId === story.id ? (
+                                                                <div style={{ flex: 1, marginRight: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                                                    <input className={styles.inlineInput} value={editProfileStoryTitle} onChange={e => setEditProfileStoryTitle(e.target.value)} placeholder="Title" />
+                                                                    <input className={styles.inlineInput} value={editProfileStoryType} onChange={e => setEditProfileStoryType(e.target.value)} placeholder="Achievement Type" />
+                                                                </div>
+                                                            ) : (
+                                                                <div>
+                                                                    <b>{story.title}</b> — {story.achievement_type}
+                                                                    <small>{new Date(story.created_at).toLocaleString()}</small>
+                                                                </div>
+                                                            )}
+                                                            <div className={styles.actionGroup}>
+                                                                {editingProfileStoryId === story.id ? (
+                                                                    <>
+                                                                        <button className={styles.saveBtn} onClick={() => handleUpdateProfileStory(story.id)}>Save</button>
+                                                                        <button className={styles.cancelBtn} onClick={() => setEditingProfileStoryId(null)}>✕</button>
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <button className={styles.editBtn} onClick={() => { setEditingProfileStoryId(story.id); setEditProfileStoryTitle(story.title); setEditProfileStoryType(story.achievement_type); }}>✏️</button>
+                                                                        <button className={styles.deleteBtn} onClick={() => handleDeleteProfileStory(story.id)}>🗑️</button>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    )) : <div className={styles.empty}>No success stories shared</div>}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {activeProfileTab === 'events' && (
+                                            <div className={styles.profileSection}>
+                                                <h3 className={styles.profileSectionTitle}>🗓️ Event RSVPs</h3>
+                                                <div className={styles.profileList}>
+                                                    {selectedUserProfile.events?.length > 0 ? selectedUserProfile.events.map((rsvp: any) => (
+                                                        <div key={rsvp.id} className={styles.profileListItem} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            {editingProfileEventId === rsvp.id ? (
+                                                                <div style={{ flex: 1, marginRight: '1rem' }}>
+                                                                    <b>{rsvp.events?.title || 'Unknown Event'}</b> — Status:
+                                                                    <select className={styles.inlineInput} style={{ width: 'auto', marginLeft: '0.5rem' }} value={editProfileEventStatus} onChange={e => setEditProfileEventStatus(e.target.value)}>
+                                                                        <option value="going">going</option>
+                                                                        <option value="interested">interested</option>
+                                                                    </select>
+                                                                </div>
+                                                            ) : (
+                                                                <div>
+                                                                    <b>{rsvp.events?.title || 'Unknown Event'}</b> — Status: {rsvp.status}
+                                                                    <small>{new Date(rsvp.created_at).toLocaleString()}</small>
+                                                                </div>
+                                                            )}
+                                                            <div className={styles.actionGroup}>
+                                                                {editingProfileEventId === rsvp.id ? (
+                                                                    <>
+                                                                        <button className={styles.saveBtn} onClick={() => handleUpdateProfileEvent(rsvp.id)}>Save</button>
+                                                                        <button className={styles.cancelBtn} onClick={() => setEditingProfileEventId(null)}>✕</button>
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <button className={styles.editBtn} onClick={() => { setEditingProfileEventId(rsvp.id); setEditProfileEventStatus(rsvp.status); }}>✏️</button>
+                                                                        <button className={styles.deleteBtn} onClick={() => handleDeleteProfileEvent(rsvp.id)}>🗑️</button>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    )) : <div className={styles.empty}>No event RSVPs</div>}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {activeProfileTab === 'groups' && (
+                                            <div className={styles.profileSection}>
+                                                <h3 className={styles.profileSectionTitle}>🤝 Joined Groups</h3>
+                                                <div className={styles.profileList}>
+                                                    {selectedUserProfile.groups?.length > 0 ? selectedUserProfile.groups.map((groupMember: any) => {
+                                                        const memberKey = groupMember.user_id + '_' + groupMember.group_id;
+                                                        const isEditing = editingProfileGroupUserId === groupMember.user_id && editingProfileGroupId === groupMember.group_id;
+                                                        return (
+                                                            <div key={memberKey} className={styles.profileListItem} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                {isEditing ? (
+                                                                    <div style={{ flex: 1, marginRight: '1rem' }}>
+                                                                        <b>{groupMember.groups?.name || 'Unknown Group'}</b> — Role:
+                                                                        <select className={styles.inlineInput} style={{ width: 'auto', marginLeft: '0.5rem' }} value={editProfileGroupRole} onChange={e => setEditProfileGroupRole(e.target.value)}>
+                                                                            <option value="member">member</option>
+                                                                            <option value="admin">admin</option>
+                                                                        </select>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div>
+                                                                        <b>{groupMember.groups?.name || 'Unknown Group'}</b> — Role: {groupMember.role}
+                                                                        <small>Joined: {new Date(groupMember.joined_at).toLocaleString()}</small>
+                                                                    </div>
+                                                                )}
+                                                                <div className={styles.actionGroup}>
+                                                                    {isEditing ? (
+                                                                        <>
+                                                                            <button className={styles.saveBtn} onClick={() => handleUpdateProfileGroup(groupMember.user_id, groupMember.group_id)}>Save</button>
+                                                                            <button className={styles.cancelBtn} onClick={() => { setEditingProfileGroupId(null); setEditingProfileGroupUserId(null); }}>✕</button>
+                                                                        </>
+                                                                    ) : (
+                                                                        <>
+                                                                            <button className={styles.editBtn} onClick={() => { setEditingProfileGroupUserId(groupMember.user_id); setEditingProfileGroupId(groupMember.group_id); setEditProfileGroupRole(groupMember.role); }}>✏️</button>
+                                                                            <button className={styles.deleteBtn} onClick={() => handleDeleteProfileGroup(groupMember.user_id, groupMember.group_id)}>🗑️</button>
+                                                                        </>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    }) : <div className={styles.empty}>Not a member of any groups</div>}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className={styles.loadingModal}>User data not found</div>
                         )}
                     </div>
                 </div>

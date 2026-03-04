@@ -1,7 +1,7 @@
 export interface AQIData {
     city: string;
     aqi: number;
-    status: 'Good' | 'Moderate' | 'Unhealthy' | 'Hazardous';
+    status: 'Good' | 'Satisfactory' | 'Moderately Polluted' | 'Poor' | 'Very Poor' | 'Severe';
     pollutants: {
         pm25: number;
         pm10: number;
@@ -32,7 +32,7 @@ export interface AQIForecastDay {
     date: string;
     avgAQI: number;
     maxAQI: number;
-    status: AQIData['status'];
+    status: string;
 }
 
 interface GeocodingResult {
@@ -57,89 +57,74 @@ const getStatusAndRecommendation = (aqi: number): { status: AQIData['status'], a
         };
     } else if (aqi <= 100) {
         return {
-            status: 'Moderate',
+            status: 'Satisfactory',
             advice: {
-                general: "Air quality is acceptable for most people.",
+                general: "Air quality is acceptable. Enjoy normal activities.",
                 sensitive: "Unusually sensitive people should consider reducing prolonged or heavy exertion."
             },
             habits: ["Reduce car usage", "Avoid burning waste", "Keep indoor plants"]
         };
     } else if (aqi <= 200) {
         return {
-            status: 'Unhealthy',
+            status: 'Moderately Polluted',
             advice: {
-                general: "Everyone may begin to experience health effects. Wear a mask outdoors.",
-                sensitive: "Members of sensitive groups may experience more serious health effects. Avoid outdoor exertion."
+                general: "Breathing discomfort to the people with lungs, asthma and heart diseases.",
+                sensitive: "Avoid outdoor exertion and wear a basic mask."
             },
-            habits: ["Wear N95 mask outdoors", "Use public transport", "Run air purifier indoors"]
+            habits: ["Wear mask outdoors", "Use public transport", "Avoid heavy traffic areas"]
+        };
+    } else if (aqi <= 300) {
+        return {
+            status: 'Poor',
+            advice: {
+                general: "Breathing discomfort to most people on prolonged exposure.",
+                sensitive: "Remain indoors and keep activity levels low."
+            },
+            habits: ["Wear N95 mask outdoors", "Run air purifier indoors", "Limit outdoor time"]
+        };
+    } else if (aqi <= 400) {
+        return {
+            status: 'Very Poor',
+            advice: {
+                general: "Respiratory illness on prolonged exposure. Avoid strenuous outdoor activities.",
+                sensitive: "Avoid all outdoor exertion. Sensitive groups should remain indoors."
+            },
+            habits: ["Stay indoors", "Seal windows/doors", "Use high-quality air purifier", "Avoid strenuous exercise"]
         };
     } else {
         return {
-            status: 'Hazardous',
+            status: 'Severe',
             advice: {
-                general: "Health warnings of emergency conditions. The entire population is more likely to be affected.",
-                sensitive: "Avoid all outdoor exertion. Stay indoors and keep activity levels low."
+                general: "Health warnings of emergency conditions. Severe respiratory impacts even on healthy people.",
+                sensitive: "Avoid all physical activity outdoors. Stay strictly indoors."
             },
-            habits: ["Stay indoors strictly", "Seal windows/doors", "Use high-quality air purifier", "Avoid strenuous exercise"]
+            habits: ["Stay indoors strictly", "Use N95 mask even for short trips", "Keep air purifier constantly on", "Avoid burning anything"]
         };
     }
 };
 
-const getWeatherCondition = (code: number): string => {
-    // WMO Weather interpretation codes
-    const codes: Record<number, string> = {
-        0: 'Clear sky',
-        1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
-        45: 'Fog', 48: 'Depositing rime fog',
-        51: 'Light Drizzle', 53: 'Moderate Drizzle', 55: 'Dense Drizzle',
-        61: 'Slight Rain', 63: 'Moderate Rain', 65: 'Heavy Rain',
-        71: 'Slight Snow', 73: 'Moderate Snow', 75: 'Heavy Snow',
-        80: 'Slight Rain Showers', 81: 'Moderate Rain Showers', 82: 'Violent Rain Showers',
-        95: 'Thunderstorm', 96: 'Thunderstorm with heavy hail'
-    };
-    return codes[code] || 'Unknown';
+const cleanLocationString = (str: string) => {
+    return str.replace(/\([^)]*\)/g, '').trim();
 };
 
-
-
-// --- OpenWeather Integration ---
-interface OpenWeatherAirPollutionResponse {
-    list: {
-        dt: number;
-        main: { aqi: number };
-        components: {
-            co: number;
-            no: number;
-            no2: number;
-            o3: number;
-            so2: number;
-            pm2_5: number;
-            pm10: number;
-            nh3: number;
-        };
-    }[];
-}
-
-// Helper to convert PM2.5 (μg/m³) to US EPA AQI (0-500)
-// using the official breakpoints from AirNow
-const calculateUS_EPA_AQI_from_PM25 = (c: number): number => {
+// Helper to convert PM2.5 (μg/m³) to Indian NAQI (0-500)
+// using the official breakpoints from CPCB India
+const calculateIndian_NAQI_from_PM25 = (c: number): number => {
     let AQI = 0;
     let bplo = 0, bphi = 0, ilo = 0, ihi = 0;
 
-    if (c <= 12.0) {
-        bplo = 0.0; bphi = 12.0; ilo = 0; ihi = 50;
-    } else if (c <= 35.4) {
-        bplo = 12.1; bphi = 35.4; ilo = 51; ihi = 100;
-    } else if (c <= 55.4) {
-        bplo = 35.5; bphi = 55.4; ilo = 101; ihi = 150;
-    } else if (c <= 150.4) {
-        bplo = 55.5; bphi = 150.4; ilo = 151; ihi = 200;
-    } else if (c <= 250.4) {
-        bplo = 150.5; bphi = 250.4; ilo = 201; ihi = 300;
-    } else if (c <= 350.4) {
-        bplo = 250.5; bphi = 350.4; ilo = 301; ihi = 400;
-    } else if (c <= 500.4) {
-        bplo = 350.5; bphi = 500.4; ilo = 401; ihi = 500;
+    if (c <= 30.0) {
+        bplo = 0.0; bphi = 30.0; ilo = 0; ihi = 50;
+    } else if (c <= 60.0) {
+        bplo = 31.0; bphi = 60.0; ilo = 51; ihi = 100;
+    } else if (c <= 90.0) {
+        bplo = 61.0; bphi = 90.0; ilo = 101; ihi = 200;
+    } else if (c <= 120.0) {
+        bplo = 91.0; bphi = 120.0; ilo = 201; ihi = 300;
+    } else if (c <= 250.0) {
+        bplo = 121.0; bphi = 250.0; ilo = 301; ihi = 400;
+    } else if (c <= 500.0) {
+        bplo = 251.0; bphi = 500.0; ilo = 401; ihi = 500;
     } else {
         return 500; // Max out at 500
     }
@@ -148,150 +133,89 @@ const calculateUS_EPA_AQI_from_PM25 = (c: number): number => {
     return AQI;
 };
 
-const getOpenWeatherData = async (lat: number, lon: number): Promise<AQIData | null> => {
-    const token = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
-    if (!token) {
-        console.warn("OpenWeather Token not found in environment variables.");
-        return null;
+const fetchWAQIData = async (url: string, fallbackName?: string): Promise<AQIData> => {
+    const token = process.env.NEXT_PUBLIC_AQICN_API_KEY;
+    if (!token) throw new Error("AQICN Token not found in environment variables.");
+
+    const res = await fetch(`${url}/?token=${token}`);
+    if (!res.ok) throw new Error(`WAQI API error: ${res.statusText}`);
+
+    const json = await res.json();
+    if (json.status !== "ok") throw new Error(json.data || "Unknown WAQI Error");
+
+    const w = json.data;
+    const { status, advice, habits } = getStatusAndRecommendation(w.aqi);
+
+    // Some endpoints may not return forecast data
+    const forecast: AQIForecastDay[] = [];
+    if (w.forecast?.daily?.pm25) {
+        w.forecast.daily.pm25.slice(0, 3).forEach((f: any) => {
+            // Convert their PM2.5 forecast cleanly into NAQI statuses
+            const aq = calculateIndian_NAQI_from_PM25(f.avg);
+            const maxAq = calculateIndian_NAQI_from_PM25(f.max);
+            const { status: fStatus } = getStatusAndRecommendation(aq);
+            forecast.push({
+                date: f.day,
+                avgAQI: aq,
+                maxAQI: maxAq,
+                status: fStatus
+            });
+        });
     }
 
-    try {
-        console.log(`Fetching OpenWeather Air Pollution for ${lat}, ${lon}`);
-
-        // Fetch Current Pollution
-        const res = await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${token}`);
-        if (!res.ok) {
-            console.warn(`OpenWeather API error: ${res.statusText}`);
-            return null;
-        }
-
-        const json: OpenWeatherAirPollutionResponse = await res.json();
-        const currentData = json.list[0];
-
-        if (!currentData) return null;
-
-        // Fetch Forecast
-        let forecast: AQIForecastDay[] = [];
-        try {
-            const forecastRes = await fetch(`https://api.openweathermap.org/data/2.5/air_pollution/forecast?lat=${lat}&lon=${lon}&appid=${token}`);
-            if (forecastRes.ok) {
-                const forecastJson: OpenWeatherAirPollutionResponse = await forecastRes.json();
-
-                // Group forecast by day and find daily max/avg PM2.5 to calculate AQI
-                const dailyMap = new Map<string, { sumPM: number, maxPM: number, count: number }>();
-                const todayStr = new Date().toLocaleDateString('en-CA');
-
-                forecastJson.list.forEach(f => {
-                    const dateStr = new Date(f.dt * 1000).toLocaleDateString('en-CA');
-                    if (dateStr >= todayStr) {
-                        if (!dailyMap.has(dateStr)) dailyMap.set(dateStr, { sumPM: 0, maxPM: 0, count: 0 });
-                        const dayData = dailyMap.get(dateStr)!;
-                        const pm25 = f.components.pm2_5;
-
-                        dayData.sumPM += pm25;
-                        if (pm25 > dayData.maxPM) dayData.maxPM = pm25;
-                        dayData.count += 1;
-                    }
-                });
-
-                // Extract top 3 future days
-                const sortedDays = Array.from(dailyMap.keys()).sort();
-                forecast = sortedDays.slice(0, 3).map(day => {
-                    const dayData = dailyMap.get(day)!;
-                    const avgPM = dayData.sumPM / dayData.count;
-
-                    const avgAQI = calculateUS_EPA_AQI_from_PM25(avgPM);
-                    const maxAQI = calculateUS_EPA_AQI_from_PM25(dayData.maxPM);
-                    const { status } = getStatusAndRecommendation(avgAQI);
-
-                    return {
-                        date: day,
-                        avgAQI: avgAQI,
-                        maxAQI: maxAQI,
-                        status
-                    };
-                });
-            }
-        } catch (e) {
-            console.warn("Failed to fetch OpenWeather forecast", e);
-        }
-
-        // Calculate accurate US EPA AQI from OpenWeather's raw pm2.5 concentration μg/m3
-        const epaAQI = calculateUS_EPA_AQI_from_PM25(currentData.components.pm2_5);
-        const { status, advice, habits } = getStatusAndRecommendation(epaAQI);
-
-        return {
-            city: "OpenWeather Station", // Needs to be overridden by generic fallback
-            aqi: epaAQI,
-            status,
-            pollutants: {
-                pm25: currentData.components.pm2_5 || 0,
-                pm10: currentData.components.pm10 || 0,
-                o3: currentData.components.o3 || 0,
-                no2: currentData.components.no2 || 0
-            },
-            weather: {
-                temperature: 0,
-                humidity: 0,
-                windSpeed: 0,
-                apparentTemperature: 0,
-                condition: 'Local Station Data',
-                isDay: true
-            },
-            advice,
-            habits,
-            forecast
-        };
-
-    } catch (e) {
-        if (e instanceof Error && e.name !== 'AbortError') {
-            console.error("OpenWeather Fetch Error", e);
-        }
-        return null;
-    }
-};
-
-const fetchUnifiedData = async (latitude: number, longitude: number, fallbackName: string): Promise<AQIData> => {
-    console.log(`Unified Fetch: ${latitude}, ${longitude} | Fallback Name: ${fallbackName}`);
-
-    // 1. Try OpenWeather for Air Pollution
-    const owData = await getOpenWeatherData(latitude, longitude);
-
-    // 2. Always fetch Weather from Open-Meteo because it's better (has conditions like "Cloudy", "Rain")
-    const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m`);
-    const weatherJson = await weatherRes.json();
-    const omWeather = weatherJson.current;
-
-    const weatherObj = {
-        temperature: omWeather.temperature_2m,
-        humidity: omWeather.relative_humidity_2m,
-        windSpeed: omWeather.wind_speed_10m,
-        apparentTemperature: omWeather.apparent_temperature,
-        condition: getWeatherCondition(omWeather.weather_code),
-        isDay: !!omWeather.is_day
+    // Try to get weather from Open Meteo for better conditions, fallback to WAQI basic if needed
+    let weatherObj = {
+        temperature: w.iaqi.t?.v || 0,
+        humidity: w.iaqi.h?.v || 0,
+        windSpeed: w.iaqi.w?.v || 0,
+        apparentTemperature: w.iaqi.t?.v || 0,
+        condition: 'Unknown',
+        isDay: true
     };
 
-    if (owData) {
-        console.log(`Using OpenWeather API Data.`);
-        return {
-            ...owData,
-            weather: weatherObj,
-            city: fallbackName, // Use the requested name (search/geo) 
-            coordinates: {
-                lat: latitude,
-                lon: longitude
+    try {
+        if (w.city.geo && w.city.geo.length === 2) {
+            const [lat, lon] = w.city.geo;
+            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m`);
+            if (weatherRes.ok) {
+                const weatherJson = await weatherRes.json();
+                const omWeather = weatherJson.current;
+                weatherObj = {
+                    temperature: omWeather.temperature_2m,
+                    humidity: omWeather.relative_humidity_2m,
+                    windSpeed: omWeather.wind_speed_10m,
+                    apparentTemperature: omWeather.apparent_temperature,
+                    condition: 'Available',
+                    isDay: !!omWeather.is_day
+                };
             }
-        };
-    }
+        }
+    } catch (e) { console.warn("Open Meteo fallback failed", e); }
 
-    console.error("OpenWeather returned null, and no fallback is permitted by user configuration.");
-    throw new Error('API failed to return data for this location.');
+    const cityName = cleanLocationString(w.city.name) || fallbackName || "Local Station";
+
+    return {
+        city: cityName,
+        aqi: w.aqi,
+        status,
+        pollutants: {
+            pm25: w.iaqi.pm25?.v || 0,
+            pm10: w.iaqi.pm10?.v || 0,
+            o3: w.iaqi.o3?.v || 0,
+            no2: w.iaqi.no2?.v || 0
+        },
+        weather: weatherObj,
+        advice,
+        habits,
+        forecast,
+        coordinates: w.city.geo ? { lat: w.city.geo[0], lon: w.city.geo[1] } : undefined
+    };
 };
 
 export const getAQIData = async (city: string): Promise<AQIData> => {
     try {
         const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`);
-        const geoData: GeocodingResult = await geoRes.json();
+        const geoData = await geoRes.json();
 
         if (!geoData.results || geoData.results.length === 0) {
             throw new Error('City not found');
@@ -300,7 +224,7 @@ export const getAQIData = async (city: string): Promise<AQIData> => {
         const { latitude, longitude, name, country, admin1 } = geoData.results[0];
         const displayName = `${name}, ${admin1 || ''} ${country ? `(${country})` : ''}`;
 
-        return await fetchUnifiedData(latitude, longitude, displayName);
+        return await fetchWAQIData(`https://api.waqi.info/feed/geo:${latitude};${longitude}`, displayName);
 
     } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError' && error.message !== 'City not found') {
@@ -312,19 +236,7 @@ export const getAQIData = async (city: string): Promise<AQIData> => {
 
 export const getAQIDataByCoords = async (latitude: number, longitude: number): Promise<AQIData> => {
     try {
-        let displayName = "Your Location";
-        try {
-            const reverseRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
-            const reverseData = await reverseRes.json();
-            if (reverseData.city || reverseData.locality) {
-                displayName = `${reverseData.city || reverseData.locality}, ${reverseData.principalSubdivision || ''}`;
-                console.log("Reverse Geocoded Name:", displayName);
-            }
-        } catch (e) {
-            console.warn("Reverse geocoding failed");
-        }
-
-        return await fetchUnifiedData(latitude, longitude, displayName);
+        return await fetchWAQIData(`https://api.waqi.info/feed/geo:${latitude};${longitude}`);
     } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError') {
             console.error("Error fetching data by coords:", error);

@@ -7,7 +7,7 @@ import { GroupDetailView } from './GroupDetailView';
 import { Card } from '@/components/ui/Card';
 import { supabase } from '@/lib/supabaseClient';
 import { SkeletonLoader } from '@/components/community/SkeletonLoader';
-import { checkAndAwardBadges } from '@/lib/badgesServer';
+import { createGroupAction, updateGroupAction, deleteGroupAction, joinGroupAction, leaveGroupAction } from '@/lib/groupsServerActions';
 import { useToast } from '@/context/ToastContext';
 import { useRefresh } from '@/context/RefreshContext';
 import styles from './GroupsView.module.css';
@@ -103,18 +103,9 @@ export function GroupsView() {
 
         // 1. Edit or Create Group
         if (editingGroup) {
-            const { error: updateError } = await supabase
-                .from('groups')
-                .update({
-                    name: newGroup.name,
-                    description: newGroup.description,
-                    group_type: newGroup.group_type,
-                    is_private: newGroup.is_private,
-                })
-                .eq('id', editingGroup.id)
-                .eq('created_by', user.id);
+            const res = await updateGroupAction(editingGroup.id, newGroup);
 
-            if (!updateError) {
+            if (res.success) {
                 const updatedGroup = { ...editingGroup, ...newGroup };
                 setGroups(groups.map(g => g.id === editingGroup.id ? updatedGroup : g));
                 if (selectedGroup?.id === editingGroup.id) {
@@ -124,52 +115,25 @@ export function GroupsView() {
                 setEditingGroup(null);
                 setNewGroup({ name: '', description: '', group_type: 'general', is_private: false });
             } else {
-                setFormError(`Failed to update group: ${updateError.message}`);
+                setFormError(`Failed to update group: ${res.error}`);
             }
         } else {
-            const { data: groupData, error: groupError } = await supabase
-                .from('groups')
-                .insert([{
-                    name: newGroup.name,
-                    description: newGroup.description,
-                    group_type: newGroup.group_type,
-                    is_private: newGroup.is_private,
-                    created_by: user.id,
-                    member_count: 1, // Creator is first member
-                    avatar_url: null
-                }])
-                .select()
-                .single();
+            const res = await createGroupAction(newGroup);
 
-            if (groupData && !groupError) {
-                // 2. Add creator as admin
-                const { error: memberError } = await supabase
-                    .from('group_members')
-                    .insert([{
-                        group_id: groupData.id,
-                        user_id: user.id,
-                        role: 'admin'
-                    }]);
+            if (res.success && res.groupData) {
+                const newGroupWithMeta: Group = {
+                    ...res.groupData,
+                    is_member: true,
+                    user_role: 'admin'
+                } as Group;
 
-                if (!memberError) {
-                    const newGroupWithMeta = {
-                        ...groupData,
-                        is_member: true,
-                        user_role: 'admin'
-                    };
-                    setGroups([newGroupWithMeta, ...groups]);
-                    setShowCreateModal(false);
-                    setNewGroup({ name: '', description: '', group_type: 'general', is_private: false });
-
-                    // Check for badges
-                    await checkAndAwardBadges(user.id);
-                    triggerRefresh('group');
-                } else {
-                    setFormError("Group created, but failed to join as admin.");
-                }
+                setGroups([newGroupWithMeta, ...groups]);
+                setShowCreateModal(false);
+                setNewGroup({ name: '', description: '', group_type: 'general', is_private: false });
+                triggerRefresh('group');
             } else {
-                console.error("Error creating group:", JSON.stringify(groupError, null, 2));
-                setFormError(`Failed to create group: ${groupError?.message || 'Unknown error'}`);
+                console.error("Error creating group:", res.error);
+                setFormError(`Failed to create group: ${res.error || 'Unknown error'}`);
             }
         }
         setSubmitting(false);
@@ -203,13 +167,10 @@ export function GroupsView() {
         // Optimistic remove
         setGroups(groups.filter(g => g.id !== groupId));
 
-        const { error } = await supabase
-            .from('groups')
-            .delete()
-            .eq('id', groupId);
+        const res = await deleteGroupAction(groupId);
 
-        if (error) {
-            console.error("Error deleting group:", error);
+        if (!res.success) {
+            console.error("Error deleting group:", res.error);
             fetchGroups(); // Revert on error
         } else {
             // If we are currently viewing this group, close the detail view
@@ -223,69 +184,34 @@ export function GroupsView() {
     const handleJoin = async (groupId: string) => {
         if (!user) return;
 
-        const groupToJoin = groups.find(g => g.id === groupId);
-        const roleToAssign = groupToJoin?.created_by === user.id ? 'admin' : 'member';
+        const res = await joinGroupAction(groupId);
 
-        const { error } = await supabase
-            .from('group_members')
-            .insert({
-                group_id: groupId,
-                user_id: user.id,
-                role: roleToAssign
-            });
-
-        if (!error) {
+        if (res.success) {
+            const groupToJoin = groups.find(g => g.id === groupId);
             const updatedGroup = {
                 ...groupToJoin!,
                 is_member: true,
                 member_count: (groupToJoin?.member_count || 0) + 1,
-                user_role: roleToAssign
+                user_role: res.role as string
             };
             setGroups(groups.map(g =>
                 g.id === groupId ? updatedGroup : g
             ));
-            await supabase.rpc('increment_group_member_count', { group_id_param: groupId });
 
             // Auto-open the group after joining
             setSelectedGroup(updatedGroup);
-
-            // Check for badges
-            await checkAndAwardBadges(user.id);
             triggerRefresh('group');
+        } else {
+            console.error("Error joining group:", res.error);
         }
     };
 
     const handleLeave = async (groupId: string) => {
         if (!user) return;
 
-        const groupToLeave = groups.find(g => g.id === groupId);
+        const res = await leaveGroupAction(groupId);
 
-        // Before deleting our membership, if we are an admin, see if we need to promote someone else
-        if (groupToLeave?.user_role === 'admin') {
-            const { data: otherMembers } = await supabase
-                .from('group_members')
-                .select('user_id')
-                .eq('group_id', groupId)
-                .neq('user_id', user.id)
-                .limit(1);
-
-            if (otherMembers && otherMembers.length > 0) {
-                // Promote the first random person found to admin
-                await supabase
-                    .from('group_members')
-                    .update({ role: 'admin' })
-                    .eq('group_id', groupId)
-                    .eq('user_id', otherMembers[0].user_id);
-            }
-        }
-
-        const { error } = await supabase
-            .from('group_members')
-            .delete()
-            .eq('group_id', groupId)
-            .eq('user_id', user.id);
-
-        if (!error) {
+        if (res.success) {
             setGroups(groups.map(g =>
                 g.id === groupId
                     ? { ...g, is_member: false, member_count: g.member_count - 1, user_role: undefined }
@@ -294,6 +220,8 @@ export function GroupsView() {
             // Close the group detail view and return to groups list
             setSelectedGroup(null);
             triggerRefresh('group');
+        } else {
+            console.error("Error leaving group:", res.error);
         }
     };
 

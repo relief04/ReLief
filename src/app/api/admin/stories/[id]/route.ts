@@ -41,3 +41,44 @@ export async function DELETE(
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
+
+export async function PUT(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const user = await currentUser();
+        const email = user?.emailAddresses?.[0]?.emailAddress;
+
+        if (!user || !isAdminEmail(email)) {
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        }
+
+        const resolvedParams = await params;
+        const storyId = resolvedParams.id;
+
+        if (!storyId) {
+            return NextResponse.json({ error: 'Story ID is required' }, { status: 400 });
+        }
+
+        const body = await request.json();
+        const { title, achievement_type } = body;
+
+        const supabaseAdmin = createAdminClient();
+
+        const { error: updateError } = await supabaseAdmin
+            .from('success_stories')
+            .update({ title, achievement_type })
+            .eq('id', storyId);
+
+        if (updateError) {
+            console.error('Error updating story:', updateError);
+            return NextResponse.json({ error: updateError.message }, { status: 500 });
+        }
+
+        return NextResponse.json({ success: true, message: 'Story updated successfully' });
+    } catch (error) {
+        console.error('Error in update story API:', error);
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    }
+}

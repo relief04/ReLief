@@ -25,11 +25,13 @@ interface AQIMapProps {
 
 const getStatusColor = (status?: string) => {
     switch (status) {
-        case 'Good': return '#2ecc71';
-        case 'Moderate': return '#f1c40f';
-        case 'Unhealthy': return '#e67e22';
-        case 'Hazardous': return '#e74c3c';
-        default: return '#10b981';
+        case 'Good': return '#50CCAA'; // Dark Green
+        case 'Satisfactory': return '#CEE5A0'; // Light Green
+        case 'Moderately Polluted': return '#FFFF66'; // Yellow
+        case 'Poor': return '#FF9933'; // Orange
+        case 'Very Poor': return '#FF3333'; // Red
+        case 'Severe': return '#990000'; // Dark Red
+        default: return '#50CCAA';
     }
 };
 
@@ -112,12 +114,14 @@ export default function AQIMap({ lat, lon, zoom = 10, status }: AQIMapProps) {
 
             {/* Custom Legend */}
             <div className={styles.legend}>
-                <div className={styles.legendTitle}>AQI Levels</div>
+                <div className={styles.legendTitle}>NAQI Levels</div>
                 {[
-                    { label: 'Good (0-50)', color: '#2ecc71' },
-                    { label: 'Moderate (51-100)', color: '#f1c40f' },
-                    { label: 'Unhealthy (101-200)', color: '#e67e22' },
-                    { label: 'Hazardous (200+)', color: '#e74c3c' }
+                    { label: 'Good (0-50)', color: '#50CCAA' },
+                    { label: 'Satisfactory (51-100)', color: '#CEE5A0' },
+                    { label: 'Mod. Polluted (101-200)', color: '#FFFF66' },
+                    { label: 'Poor (201-300)', color: '#FF9933' },
+                    { label: 'Very Poor (301-400)', color: '#FF3333' },
+                    { label: 'Severe (401-500)', color: '#990000' }
                 ].map((item, i) => (
                     <div key={i} className={styles.legendItem}>
                         <div className={styles.colorBar} style={{ backgroundColor: item.color }} />
