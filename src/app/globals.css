@@ -277,10 +277,10 @@ a {
 }
 
 /* 
- * 1024px is generally the breakpoint for tablets (iPad portrait) and below.
- * We'll use 1024px and below to trigger the mobile blocker.
+ * 768px breakpoint — blocks real mobile viewports but allows
+ * "Request Desktop Site" mode (which uses ~980px+ viewport width).
  */
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 768px) {
   .desktop-content-wrapper {
     display: none !important;
   }
