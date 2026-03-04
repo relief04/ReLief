@@ -1,352 +1,343 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import { getAQIData, getAQIDataByCoords, AQIData } from '@/lib/aqi';
 import { INDIA_LOCATIONS } from '@/lib/india-locations';
-
+import { LocateFixed, Share2, Wind, AlertTriangle, Thermometer, Droplets, Gauge, RefreshCw, MapPin, CheckCircle2 } from 'lucide-react';
 import styles from './page.module.css';
-import { LocateFixed, Share2, Wind, AlertTriangle, CheckCircle2, Thermometer, Droplets, Sun, Moon, Search } from 'lucide-react';
-
-const getAQITint = (status?: string) => {
-    switch (status) {
-        case 'Good': return 'rgba(80, 204, 170, 0.05)';
-        case 'Satisfactory': return 'rgba(206, 229, 160, 0.05)';
-        case 'Moderately Polluted': return 'rgba(255, 255, 102, 0.05)';
-        case 'Poor': return 'rgba(255, 153, 51, 0.05)';
-        case 'Very Poor': return 'rgba(255, 51, 51, 0.05)';
-        case 'Severe': return 'rgba(153, 0, 0, 0.05)';
-        default: return 'var(--color-bg-100)';
-    }
-};
 
 const AQIMap = dynamic(() => import('@/components/aqi/AQIMap'), { ssr: false });
-import { AQIHistoryGraph } from '@/components/aqi/AQIHistoryGraph';
+
+interface AQIData {
+    city: string;
+    aqi: number;
+    status: string;
+    pollutants: { pm25: number | null; pm10: number | null; o3: number | null; no2: number | null; so2: number | null; co: number | null; };
+    weather: { temperature: number | null; humidity: number | null; windSpeed: number | null; apparentTemperature: number | null; condition: string; isDay: boolean; };
+    advice: { general: string; sensitive: string; };
+    habits: string[];
+    coordinates: { lat: number; lon: number };
+    stationName: string;
+    updatedAt: string;
+}
+
+const STATUS_CONFIG: Record<string, { color: string; bg: string; emoji: string; gradient: string }> = {
+    'Good': { color: '#10b981', bg: 'rgba(16,185,129,0.12)', emoji: '😊', gradient: 'linear-gradient(135deg, #10b981, #34d399)' },
+    'Satisfactory': { color: '#84cc16', bg: 'rgba(132,204,22,0.12)', emoji: '🙂', gradient: 'linear-gradient(135deg, #84cc16, #a3e635)' },
+    'Moderately Polluted': { color: '#eab308', bg: 'rgba(234,179,8,0.12)', emoji: '😐', gradient: 'linear-gradient(135deg, #eab308, #facc15)' },
+    'Poor': { color: '#f97316', bg: 'rgba(249,115,22,0.12)', emoji: '😷', gradient: 'linear-gradient(135deg, #f97316, #fb923c)' },
+    'Very Poor': { color: '#ef4444', bg: 'rgba(239,68,68,0.12)', emoji: '😨', gradient: 'linear-gradient(135deg, #ef4444, #f87171)' },
+    'Severe': { color: '#7c3aed', bg: 'rgba(124,58,237,0.12)', emoji: '🚨', gradient: 'linear-gradient(135deg, #7c3aed, #a855f7)' },
+};
+
+const getWeatherEmoji = (code: number, isDay: boolean) => {
+    if (code === 0) return isDay ? '☀️' : '🌙';
+    if (code <= 3) return isDay ? '⛅' : '🌤️';
+    if (code <= 49) return '🌫️';
+    if (code <= 69) return '🌧️';
+    if (code <= 79) return '❄️';
+    if (code <= 82) return '🌧️';
+    if (code <= 99) return '⛈️';
+    return '🌡️';
+};
 
 export default function AQIPage() {
-    // Location Selector State
-    const [selectedState, setSelectedState] = useState('');
-    const [selectedCity, setSelectedCity] = useState('');
-
-    // Data State
+    const [selectedState, setSelectedState] = useState('Delhi');
+    const [selectedCity, setSelectedCity] = useState('New Delhi');
     const [data, setData] = useState<AQIData | null>(null);
-    const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [copied, setCopied] = useState(false);
+    const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-    // Derived list of cities based on selected state
     const availableCities = selectedState
         ? INDIA_LOCATIONS.find(s => s.name === selectedState)?.cities || []
         : [];
 
-    useEffect(() => {
-        // Default to New Delhi on load
-        fetchData('New Delhi', 'Delhi');
-        setSelectedState('Delhi');
-        setSelectedCity('New Delhi');
-    }, []);
-
-    const fetchData = async (cityQuery: string, stateContext?: string) => {
+    const fetchAQI = useCallback(async (params: { city?: string; lat?: number; lon?: number }) => {
         setLoading(true);
         setError('');
-
-        const cleanCity = cityQuery.replace(/\(.*\)/, '').trim();
-
         try {
-            // Attempt 1
-            const query = `${cleanCity}, India`;
-            const result = await getAQIData(query);
+            const url = params.lat !== undefined && params.lon !== undefined
+                ? `/api/aqi?lat=${params.lat}&lon=${params.lon}`
+                : `/api/aqi?city=${encodeURIComponent(params.city || '')}`;
 
-            setData(result);
-            if (result.coordinates) {
-                setCoords(result.coordinates);
-            }
+            const res = await fetch(url);
+            const json = await res.json();
 
-            return;
-        } catch {
-            console.log("Attempt 1 failed");
-            if (stateContext) {
-                try {
-                    // Attempt 2: City, State
-                    const val = await getAQIData(`${cleanCity}, ${stateContext}`);
-                    setData(val);
-                    if (val.coordinates) setCoords(val.coordinates);
-                    return;
-                } catch { }
-            }
-            try {
-                // Attempt 3: Just City
-                const res = await getAQIData(cleanCity);
-                setData(res);
-                if (res.coordinates) setCoords(res.coordinates);
-            } catch (finalErr) {
-                setError(`Could not find data for "${cleanCity}".`);
-                setData(null);
-            }
+            if (!res.ok) throw new Error(json.error || 'Failed to fetch AQI data');
+            setData(json);
+            setLastUpdated(new Date());
+        } catch (err: any) {
+            setError(err.message || 'Failed to load AQI data. Please try again.');
+            setData(null);
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        fetchAQI({ city: 'New Delhi, India' });
+    }, [fetchAQI]);
 
     const handleSearch = () => {
-        if (selectedCity) {
-            // Pass selectedState as context
-            fetchData(selectedCity, selectedState);
-        }
+        if (selectedCity) fetchAQI({ city: `${selectedCity}, ${selectedState}, India` });
     };
 
-    const handleCurrentLocation = () => {
-        if (!navigator.geolocation) {
-            setError("Geolocation is not supported by your browser.");
-            return;
-        }
-
+    const handleGeolocate = () => {
+        if (!navigator.geolocation) { setError('Geolocation not supported by your browser.'); return; }
         setLoading(true);
-        setError('');
-
         navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                try {
-                    const { latitude, longitude } = position.coords;
-                    setCoords({ lat: latitude, lon: longitude });
-                    const result = await getAQIDataByCoords(latitude, longitude);
-                    setData(result);
-                    // Clear selectors to indicate custom location
-                    setSelectedState('');
-                    setSelectedCity('');
-                } catch (err) {
-                    setError("Failed to fetch data for your location.");
-                    console.error(err);
-                } finally {
-                    setLoading(false);
-                }
-            },
-            (err) => {
-                setError("Unable to retrieve your location. Please check your permissions.");
-                setLoading(false);
-            }
+            (pos) => fetchAQI({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+            () => { setError('Could not get your location. Please check browser permissions.'); setLoading(false); }
         );
     };
 
     const handleShare = async () => {
         if (!data) return;
-        const text = `Air Quality in ${data.city} is currently ${data.aqi} AQI (${data.status}). Check it out on ReLief!`;
-        try {
-            await navigator.clipboard.writeText(text);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch (err) {
-            console.error("Failed to copy", err);
-        }
+        const text = `Air Quality in ${data.city}: ${data.aqi} AQI (${data.status}) — checked on ReLief 🌿`;
+        await navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
     };
 
+    const cfg = data ? (STATUS_CONFIG[data.status] || STATUS_CONFIG['Good']) : null;
+
+    const pollutantList = data ? [
+        { label: 'PM 2.5', val: data.pollutants.pm25, unit: 'μg/m³', limit: 250, desc: 'Fine Particles' },
+        { label: 'PM 10', val: data.pollutants.pm10, unit: 'μg/m³', limit: 350, desc: 'Respirable Dust' },
+        { label: 'O₃', val: data.pollutants.o3, unit: 'ppb', limit: 180, desc: 'Ozone' },
+        { label: 'NO₂', val: data.pollutants.no2, unit: 'ppb', limit: 200, desc: 'Nitrogen Dioxide' },
+        { label: 'SO₂', val: data.pollutants.so2, unit: 'ppb', limit: 150, desc: 'Sulfur Dioxide' },
+        { label: 'CO', val: data.pollutants.co, unit: 'ppm', limit: 10, desc: 'Carbon Monoxide' },
+    ] : [];
+
     return (
-        <div className={styles.container} style={{ '--aqi-tint': getAQITint(data?.status) } as React.CSSProperties}>
-            <header className={styles.header}>
-                <h1>India Air & Weather Watch</h1>
-                <p>Monitor real-time air quality and historical trends across India.</p>
-            </header>
-
-            {/* 3-Level Location Selector */}
-            <Card className={styles.selectorCard}>
-                <div className={styles.selectorGrid}>
-
-
-                    <div className={styles.selectGroup}>
-                        <label>State</label>
-                        <select
-                            className={styles.selectInput}
-                            value={selectedState}
-                            onChange={(e) => {
-                                setSelectedState(e.target.value);
-                                setSelectedCity(''); // Reset city when state changes
-                            }}
-                        >
-                            <option value="">Select State</option>
-                            {INDIA_LOCATIONS.map(s => (
-                                <option key={s.name} value={s.name}>{s.name}</option>
-                            ))}
-                        </select>
+        <div className={styles.page}>
+            {/* Hero Header */}
+            <div className={styles.heroSection} style={cfg ? { '--status-color': cfg.color, '--status-bg': cfg.bg } as React.CSSProperties : {}}>
+                <div className={styles.heroContent}>
+                    <div className={styles.heroTitleRow}>
+                        <span className={styles.heroIcon}>🌬️</span>
+                        <div>
+                            <h1 className={styles.heroTitle}>Air Quality Monitor</h1>
+                            <p className={styles.heroSubtitle}>Real-time AQI, weather & health insights across India</p>
+                        </div>
                     </div>
 
-                    <div className={styles.selectGroup}>
-                        <label>City / Area</label>
-                        <select
-                            className={styles.selectInput}
-                            value={selectedCity}
-                            onChange={(e) => setSelectedCity(e.target.value)}
-                            disabled={!selectedState}
-                        >
-                            <option value="">Select City</option>
-                            {availableCities.map(c => (
-                                <option key={c} value={c}>{c}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className={styles.buttonGroup}>
-                        <Button
-                            variant="outline"
-                            onClick={handleCurrentLocation}
-                            isLoading={loading}
-                            className={styles.locationBtn}
-                            title="Use Current Location"
-                        >
-                            <LocateFixed size={18} /> Locate Me
-                        </Button>
-                        <Button
-                            variant="primary"
-                            isLoading={loading}
-                            onClick={handleSearch}
-                            disabled={!selectedCity}
-                            className={styles.searchBtn}
-                        >
-                            <Search size={18} /> View Analysis
-                        </Button>
+                    {/* Location Selector */}
+                    <div className={styles.selectorRow}>
+                        <div className={styles.selectorGroup}>
+                            <label className={styles.selectorLabel}>State</label>
+                            <select
+                                className={styles.selectorInput}
+                                value={selectedState}
+                                onChange={e => { setSelectedState(e.target.value); setSelectedCity(''); }}
+                            >
+                                <option value="">Select State</option>
+                                {INDIA_LOCATIONS.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
+                            </select>
+                        </div>
+                        <div className={styles.selectorGroup}>
+                            <label className={styles.selectorLabel}>City</label>
+                            <select
+                                className={styles.selectorInput}
+                                value={selectedCity}
+                                onChange={e => setSelectedCity(e.target.value)}
+                                disabled={!selectedState}
+                            >
+                                <option value="">Select City</option>
+                                {availableCities.map(c => <option key={c} value={c}>{c}</option>)}
+                            </select>
+                        </div>
+                        <div className={styles.selectorActions}>
+                            <button className={styles.locateBtn} onClick={handleGeolocate} title="Use my location">
+                                <LocateFixed size={16} /> Locate Me
+                            </button>
+                            <button className={styles.searchBtn} onClick={handleSearch} disabled={!selectedCity || loading}>
+                                {loading ? <RefreshCw size={16} className={styles.spin} /> : <Gauge size={16} />}
+                                Analyze
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </Card>
+            </div>
 
-            {error && <p className={styles.errorMsg}>{error}</p>}
+            <div className={styles.mainContent}>
+                {error && (
+                    <div className={styles.errorBox}>
+                        <AlertTriangle size={18} />
+                        <span>{error}</span>
+                    </div>
+                )}
 
-            {data && (
-                <div className={styles.dashboard}>
+                {loading && !data && (
+                    <div className={styles.loadingState}>
+                        <div className={styles.loadingCircle} />
+                        <p>Fetching air quality data…</p>
+                    </div>
+                )}
 
-                    {/* Map Section */}
-                    {coords && (
-                        <div className={styles.mapSection} data-status={data.status}>
-                            <div className={styles.mapWrapper}>
-                                <AQIMap lat={coords.lat} lon={coords.lon} status={data.status} />
+                {data && cfg && (
+                    <>
+                        {/* AQI Hero Card */}
+                        <div className={styles.aqiHeroCard} style={{ '--status-color': cfg.color, '--status-gradient': cfg.gradient } as React.CSSProperties}>
+                            <div className={styles.aqiHeroLeft}>
+                                <div className={styles.aqiBigCircle} style={{ background: cfg.gradient, boxShadow: `0 0 60px ${cfg.color}50` }}>
+                                    <span className={styles.aqiBigNum}>{data.aqi}</span>
+                                    <span className={styles.aqiBigLabel}>NAQI</span>
+                                </div>
+                            </div>
+                            <div className={styles.aqiHeroRight}>
+                                <div className={styles.cityRow}>
+                                    <MapPin size={18} style={{ color: cfg.color }} />
+                                    <span className={styles.cityName}>{data.city}</span>
+                                </div>
+                                <div className={styles.statusBadge} style={{ background: cfg.bg, color: cfg.color, borderColor: cfg.color + '40' }}>
+                                    <span>{cfg.emoji}</span>
+                                    <span>{data.status}</span>
+                                </div>
+                                <p className={styles.stationInfo}>📡 Station: {data.stationName || data.city}</p>
+                                {lastUpdated && <p className={styles.updatedAt}>🕐 {lastUpdated.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</p>}
+                                <div className={styles.heroActions}>
+                                    <button className={styles.refreshBtn} onClick={() => handleSearch()} disabled={loading}>
+                                        <RefreshCw size={14} /> Refresh
+                                    </button>
+                                    <button className={styles.shareAction} onClick={handleShare}>
+                                        {copied ? <CheckCircle2 size={14} color="#10b981" /> : <Share2 size={14} />}
+                                        {copied ? 'Copied!' : 'Share'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    )}
 
-                    <div className={styles.mainGrid}>
-                        {/* AQI CARD */}
-                        <Card className={styles.mainCard} hoverEffect>
-                            <div className={styles.cardHeader}>
-                                <h2>Air Quality</h2>
-                                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                                    <span className={styles.liveBadge}>● LIVE</span>
-                                    <Button variant="ghost" size="sm" onClick={handleShare} className={styles.shareBtn}>
-                                        {copied ? <CheckCircle2 size={16} /> : <Share2 size={16} />}
-                                        {copied ? 'Copied' : 'Share'}
-                                    </Button>
-                                </div>
-                            </div>
-                            <div className={styles.contentRow}>
-                                <div className={styles.aqiCircleWrapper}>
-                                    <div className={styles.aqiCirclePulse} data-status={data.status} />
-                                    <div className={styles.aqiCircle} data-status={data.status}>
-                                        <span className={styles.aqiValue}>{data.aqi}</span>
-                                        <span className={styles.aqiLabel}>NAQI</span>
+                        <div className={styles.twoCol}>
+                            {/* Health Advice */}
+                            <div className={styles.adviceCard}>
+                                <h3 className={styles.cardTitle}>💡 Health Advice</h3>
+                                <div className={styles.adviceItem}>
+                                    <div className={styles.adviceIcon} style={{ color: '#10b981' }}><Wind size={20} /></div>
+                                    <div>
+                                        <div className={styles.adviceGroup}>General Public</div>
+                                        <p className={styles.adviceText}>{data.advice.general}</p>
                                     </div>
                                 </div>
-                                <div className={styles.statusInfo}>
-                                    <h3>{data.city}</h3>
-                                    <div className={styles.statusText} data-status={data.status}>{data.status}</div>
+                                <div className={styles.adviceItem} style={{ borderColor: '#f9731620' }}>
+                                    <div className={styles.adviceIcon} style={{ color: '#f97316' }}><AlertTriangle size={20} /></div>
+                                    <div>
+                                        <div className={styles.adviceGroup} style={{ color: '#f97316' }}>Sensitive Groups</div>
+                                        <p className={styles.adviceText}>{data.advice.sensitive}</p>
+                                    </div>
+                                </div>
+                                <div className={styles.habitsRow}>
+                                    {data.habits.map((h, i) => (
+                                        <span key={i} className={styles.habitChip}>🌿 {h}</span>
+                                    ))}
                                 </div>
                             </div>
 
-                            <div className={styles.healthSplit}>
-                                <div className={styles.healthCard}>
-                                    <h4><Wind size={16} /> General Public</h4>
-                                    <p>{data.advice.general}</p>
-                                </div>
-                                <div className={styles.healthCard + ' ' + styles.healthSensitive}>
-                                    <h4><AlertTriangle size={16} /> Sensitive Groups</h4>
-                                    <p>{data.advice.sensitive}</p>
-                                </div>
-                            </div>
-                        </Card>
-
-                        {/* WEATHER CARD */}
-                        <Card className={styles.mainCard} hoverEffect>
-                            <div className={styles.cardHeader}>
-                                <h2>Weather</h2>
-                                <div className={styles.liveBadge}>LIVE</div>
-                            </div>
-                            <div className={styles.weatherContent}>
+                            {/* Weather Card */}
+                            <div className={styles.weatherCard}>
+                                <h3 className={styles.cardTitle}>⛅ Current Weather</h3>
                                 <div className={styles.weatherMain}>
-                                    <div className={styles.weatherIconLarge}>
-                                        {data.weather.isDay ? <Sun size={48} className={styles.sunIcon} /> : <Moon size={48} className={styles.moonIcon} />}
+                                    <div className={styles.weatherEmoji}>
+                                        {data.weather.temperature !== null
+                                            ? getWeatherEmoji(0, data.weather.isDay)
+                                            : '🌡️'}
                                     </div>
-                                    <div className={styles.tempDisplay}>
-                                        <div className={styles.tempVal}>{data.weather.temperature}°C</div>
-                                        <div className={styles.condition}>{data.weather.condition}</div>
+                                    <div className={styles.weatherTempBlock}>
+                                        <div className={styles.weatherTemp}>{data.weather.temperature ?? '--'}°C</div>
+                                        <div className={styles.weatherCondition}>{data.weather.condition}</div>
                                     </div>
                                 </div>
-
-                                <div className={styles.weatherDetailsGrid}>
-                                    <div className={styles.weatherDetailItem}>
-                                        <div className={styles.detailTitle}>
-                                            <Droplets size={16} /> Humidity
-                                        </div>
-                                        <div className={styles.detailValue}>{data.weather.humidity}%</div>
+                                <div className={styles.weatherStats}>
+                                    <div className={styles.weatherStat}>
+                                        <Thermometer size={16} className={styles.weatherStatIcon} />
+                                        <span className={styles.weatherStatLabel}>Feels Like</span>
+                                        <span className={styles.weatherStatVal}>{data.weather.apparentTemperature ?? '--'}°C</span>
                                     </div>
-                                    <div className={styles.weatherDetailItem}>
-                                        <div className={styles.detailTitle}>
-                                            <Wind size={16} /> Wind
-                                        </div>
-                                        <div className={styles.detailValue}>{data.weather.windSpeed} <span className={styles.unit}>km/h</span></div>
+                                    <div className={styles.weatherStat}>
+                                        <Droplets size={16} className={styles.weatherStatIcon} />
+                                        <span className={styles.weatherStatLabel}>Humidity</span>
+                                        <span className={styles.weatherStatVal}>{data.weather.humidity ?? '--'}%</span>
                                     </div>
-                                    <div className={styles.weatherDetailItem}>
-                                        <div className={styles.detailTitle}>
-                                            <Thermometer size={16} /> Feels Like
-                                        </div>
-                                        <div className={styles.detailValue}>{data.weather.apparentTemperature}°C</div>
+                                    <div className={styles.weatherStat}>
+                                        <Wind size={16} className={styles.weatherStatIcon} />
+                                        <span className={styles.weatherStatLabel}>Wind</span>
+                                        <span className={styles.weatherStatVal}>{data.weather.windSpeed ?? '--'} km/h</span>
                                     </div>
                                 </div>
                             </div>
-                        </Card>
-                    </div>
+                        </div>
 
+                        {/* Pollutants Grid */}
+                        <div className={styles.pollutantsSection}>
+                            <h3 className={styles.sectionTitle}>🧪 Pollutant Levels</h3>
+                            <div className={styles.pollutantsGrid}>
+                                {pollutantList.map((p, i) => {
+                                    const val = p.val ?? 0;
+                                    const pct = Math.min((val / p.limit) * 100, 100);
+                                    const col = pct > 80 ? '#7c3aed' : pct > 60 ? '#ef4444' : pct > 40 ? '#f97316' : pct > 20 ? '#eab308' : '#10b981';
+                                    return (
+                                        <div key={i} className={styles.pollutantCard}>
+                                            <div className={styles.pollutantTop}>
+                                                <span className={styles.pollutantLabel}>{p.label}</span>
+                                                <span className={styles.pollutantSub}>{p.desc}</span>
+                                            </div>
+                                            <div className={styles.pollutantValue} style={{ color: col }}>
+                                                {p.val !== null ? p.val.toFixed(1) : '--'}
+                                                <span className={styles.pollutantUnit}>{p.unit}</span>
+                                            </div>
+                                            <div className={styles.pollutantBar}>
+                                                <div className={styles.pollutantFill} style={{ width: `${pct}%`, background: col, boxShadow: `0 0 8px ${col}60` }} />
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
 
-
-                    <div className={styles.statsGrid}>
-                        {[
-                            { label: 'PM 2.5', val: data.pollutants.pm25, sub: 'Fine Particles', limit: 120 },
-                            { label: 'PM 10', val: data.pollutants.pm10, sub: 'Respirable', limit: 250 },
-                            { label: 'O₃', val: data.pollutants.o3, sub: 'Ozone', limit: 180 },
-                            { label: 'NO₂', val: data.pollutants.no2, sub: 'Nitrogen Dioxide', limit: 200 }
-                        ].map((stat, i) => {
-                            const val = stat.val || 0;
-                            const percentage = Math.min((val / stat.limit) * 100, 100);
-
-                            // Simple severity mapping for bars
-                            let severity: string = 'Good';
-                            if (percentage > 80) severity = 'Severe';
-                            else if (percentage > 60) severity = 'Very Poor';
-                            else if (percentage > 40) severity = 'Poor';
-                            else if (percentage > 20) severity = 'Moderately Polluted';
-                            else if (percentage > 10) severity = 'Satisfactory';
-
-                            return (
-                                <Card key={i} className={styles.statCard}>
-                                    <h4>{stat.label}</h4>
-                                    <div className={styles.pollutantVal}>{val || '--'}</div>
-                                    <div className={styles.pollutantBarContainer}>
-                                        <div
-                                            className={styles.pollutantBar}
-                                            data-status={severity}
-                                            style={{ width: `${percentage}%` }}
-                                        />
+                        {/* AQI Scale */}
+                        <div className={styles.scaleSection}>
+                            <h3 className={styles.sectionTitle}>📊 India NAQI Scale</h3>
+                            <div className={styles.scaleGrid}>
+                                {[
+                                    { range: '0–50', label: 'Good', color: '#10b981', emoji: '😊' },
+                                    { range: '51–100', label: 'Satisfactory', color: '#84cc16', emoji: '🙂' },
+                                    { range: '101–200', label: 'Mod. Polluted', color: '#eab308', emoji: '😐' },
+                                    { range: '201–300', label: 'Poor', color: '#f97316', emoji: '😷' },
+                                    { range: '301–400', label: 'Very Poor', color: '#ef4444', emoji: '😨' },
+                                    { range: '401–500', label: 'Severe', color: '#7c3aed', emoji: '🚨' },
+                                ].map((s, i) => (
+                                    <div
+                                        key={i}
+                                        className={styles.scaleCard}
+                                        style={{
+                                            background: `${s.color}10`,
+                                            borderColor: `${s.color}30`,
+                                            outline: data.status === s.label ? `2px solid ${s.color}` : 'none'
+                                        }}
+                                    >
+                                        <span className={styles.scaleEmoji}>{s.emoji}</span>
+                                        <span className={styles.scaleRange} style={{ color: s.color }}>{s.range}</span>
+                                        <span className={styles.scaleLabel}>{s.label}</span>
                                     </div>
-                                    <p>{stat.sub}</p>
-                                </Card>
-                            );
-                        })}
-                    </div>
+                                ))}
+                            </div>
+                        </div>
 
-                    <div style={{ marginTop: '2rem' }}>
-                        <AQIHistoryGraph city={data.city} />
-                    </div>
-
-                </div>
-            )}
+                        {/* Map */}
+                        {data.coordinates && (
+                            <div className={styles.mapSection}>
+                                <h3 className={styles.sectionTitle}>🗺️ Monitoring Station Map</h3>
+                                <div className={styles.mapWrapper}>
+                                    <AQIMap lat={data.coordinates.lat} lon={data.coordinates.lon} status={data.status} />
+                                </div>
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
         </div>
     );
 }
