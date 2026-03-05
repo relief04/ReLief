@@ -435,7 +435,7 @@ export default function AdminPage() {
                     <div className={styles.chartContainer}>
                         <h2 className={styles.tableTitle}>📈 Platform Growth (Last 30 Days)</h2>
                         <ResponsiveContainer width="100%" height={280}>
-                            <LineChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                            <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
                                 <XAxis dataKey="date" stroke="var(--color-text-300)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(tick) => {
                                     const d = new Date(tick);
@@ -443,7 +443,13 @@ export default function AdminPage() {
                                 }} />
                                 <YAxis stroke="var(--color-text-300)" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} />
                                 <Tooltip
-                                    contentStyle={{ backgroundColor: 'var(--color-card-background)', borderColor: 'var(--color-border)', borderRadius: '8px' }}
+                                    contentStyle={{
+                                        backgroundColor: 'var(--glass-bg)',
+                                        backdropFilter: 'blur(8px)',
+                                        borderColor: 'var(--glass-border)',
+                                        borderRadius: '8px',
+                                        color: 'var(--color-text)'
+                                    }}
                                     itemStyle={{ color: 'var(--color-primary)' }}
                                 />
                                 <Line type="monotone" dataKey="users" stroke="var(--color-primary)" strokeWidth={3} dot={{ fill: 'var(--color-primary)', r: 4 }} activeDot={{ r: 6 }} />
