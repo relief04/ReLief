@@ -73,6 +73,7 @@ export function EventsView() {
         const { data: eventsData, error } = await supabase
             .from('events')
             .select('*')
+            .is('group_id', null)
             .gte('event_date', startOfDay.toISOString())
             .order('event_date', { ascending: true });
 

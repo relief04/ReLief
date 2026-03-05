@@ -30,6 +30,8 @@ export async function POST(
             .update({
                 balance: 0,
                 streak: 0,
+                longest_streak: 0,
+                last_login_date: null,
                 carbon_total: 0,
                 carbon_savings: 0,
                 is_banned: false,
@@ -45,15 +47,28 @@ export async function POST(
         // Note: With ON DELETE CASCADE, deleting a profile does this, but since we are KEEPING 
         // the profile active and just wiping the data, we must do this manually.
 
-        await Promise.all([
-            db.from('activities').delete().eq('user_id', userId),
-            db.from('posts').delete().eq('user_id', userId),
-            db.from('points_history').delete().eq('user_id', userId),
-            db.from('user_challenges').delete().eq('user_id', userId),
-            db.from('user_rewards').delete().eq('user_id', userId),
-            db.from('user_badges').delete().eq('user_id', userId),
-            db.from('carbon_budgets').delete().eq('user_id', userId),
-        ]);
+        const tablesToDelete = [
+            'activities',
+            'posts',
+            'points_history',
+            'user_challenges',
+            'user_rewards',
+            'user_badges',
+            'carbon_budgets',
+            'user_quiz_progress',
+            'user_quiz_answers',
+            'certificates',
+            'login_history',
+            'event_rsvps'
+        ];
+
+        for (const table of tablesToDelete) {
+            try {
+                await db.from(table).delete().eq('user_id', userId);
+            } catch (e) {
+                console.error(`Failed to delete from ${table}:`, e);
+            }
+        }
 
         return NextResponse.json({ success: true, message: 'User data has been completely reset.' });
     } catch (err: any) {

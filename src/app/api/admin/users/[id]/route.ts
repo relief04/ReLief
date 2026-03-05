@@ -30,6 +30,17 @@ export async function DELETE(
         'friendships',
         'notifications',
         'success_stories',
+        'story_likes',
+        'activities',
+        'points_history',
+        'user_challenges',
+        'user_rewards',
+        'user_badges',
+        'carbon_budgets',
+        'user_quiz_progress',
+        'user_quiz_answers',
+        'certificates',
+        'login_history',
     ];
 
     for (const table of relatedTables) {
@@ -41,7 +52,19 @@ export async function DELETE(
     // Also clean friendships where user is the friend
     try { await db.from('friendships').delete().eq('friend_id', userId); } catch { }
 
-    // Now delete the profile (cascading tables like activities, user_rewards etc. will auto-delete)
+    // Try deleting from Clerk first so we don't have orphan auth users
+    try {
+        const { clerkClient } = await import('@clerk/nextjs/server');
+        const client = await clerkClient();
+        await client.users.deleteUser(userId);
+    } catch (e: any) {
+        // If the user doesn't exist in Clerk (404), we still want to delete DB data
+        if (e.status !== 404) {
+            console.error('Failed to delete user from Clerk:', e);
+        }
+    }
+
+    // Now delete the profile
     const { error } = await db
         .from('profiles')
         .delete()
