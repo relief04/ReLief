@@ -50,7 +50,9 @@ export async function POST(
             db.from('posts').delete().eq('user_id', userId),
             db.from('points_history').delete().eq('user_id', userId),
             db.from('user_challenges').delete().eq('user_id', userId),
-            db.from('user_rewards').delete().eq('user_id', userId)
+            db.from('user_rewards').delete().eq('user_id', userId),
+            db.from('user_badges').delete().eq('user_id', userId),
+            db.from('carbon_budgets').delete().eq('user_id', userId),
         ]);
 
         return NextResponse.json({ success: true, message: 'User data has been completely reset.' });
