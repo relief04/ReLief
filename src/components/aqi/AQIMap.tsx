@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, useMap, Marker } from 'react-leaflet';
+import { MapContainer, TileLayer, useMap, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import styles from './AQIMap.module.css';
-import { Plus, Minus, Info } from 'lucide-react';
+import { Plus, Minus } from 'lucide-react';
 
 // Fix for default marker icons in Next.js
 // @ts-ignore
@@ -21,17 +21,19 @@ interface AQIMapProps {
     lon: number;
     zoom?: number;
     status?: string;
+    aqi?: number;
+    city?: string;
 }
 
 const getStatusColor = (status?: string) => {
     switch (status) {
-        case 'Good': return '#50CCAA'; // Dark Green
-        case 'Satisfactory': return '#CEE5A0'; // Light Green
-        case 'Moderately Polluted': return '#FFFF66'; // Yellow
-        case 'Poor': return '#FF9933'; // Orange
-        case 'Very Poor': return '#FF3333'; // Red
-        case 'Severe': return '#990000'; // Dark Red
-        default: return '#50CCAA';
+        case 'Good': return '#10b981';
+        case 'Satisfactory': return '#84cc16';
+        case 'Moderately Polluted': return '#eab308';
+        case 'Poor': return '#f97316';
+        case 'Very Poor': return '#ef4444';
+        case 'Severe': return '#7c3aed';
+        default: return '#10b981';
     }
 };
 
@@ -43,8 +45,8 @@ function MapUpdater({ lat, lon }: { lat: number; lon: number }) {
     return null;
 }
 
-export default function AQIMap({ lat, lon, zoom = 10, status }: AQIMapProps) {
-    const token = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
+export default function AQIMap({ lat, lon, zoom = 10, status, aqi, city }: AQIMapProps) {
+    const aqicnToken = process.env.NEXT_PUBLIC_AQICN_API_KEY;
     const [theme, setTheme] = useState('light');
     const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
 
@@ -64,27 +66,28 @@ export default function AQIMap({ lat, lon, zoom = 10, status }: AQIMapProps) {
         return () => observer.disconnect();
     }, []);
 
-    if (!token) {
-        return <div className="p-4 bg-red-100 text-red-700 rounded">Error: OpenWeather API Key not found.</div>;
-    }
-
     const cartoTileUrl = theme === 'dark'
         ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
         : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
 
     const color = getStatusColor(status);
 
-    // Custom pulsing marker
+    // Custom AQI badge marker showing the AQI value
+    const aqiLabel = aqi !== undefined ? aqi.toString() : '?';
     const customIcon = L.divIcon({
         className: 'custom-aqi-marker',
         html: `
-            <div class="${styles.markerContainer}" style="--marker-color: ${color}">
-                <div class="${styles.markerPulse}"></div>
-                <div class="${styles.markerCenter}"></div>
+            <div class="${styles.aqiMarker}" style="--marker-color: ${color}">
+                <div class="${styles.aqiMarkerPulse}"></div>
+                <div class="${styles.aqiMarkerBadge}" style="background: ${color}; box-shadow: 0 2px 12px ${color}80;">
+                    <span class="${styles.aqiMarkerValue}">${aqiLabel}</span>
+                </div>
+                <div class="${styles.aqiMarkerArrow}" style="border-top-color: ${color};"></div>
             </div>
         `,
-        iconSize: [24, 24],
-        iconAnchor: [12, 12],
+        iconSize: [56, 68],
+        iconAnchor: [28, 68],
+        popupAnchor: [0, -68],
     });
 
     return (
@@ -102,13 +105,36 @@ export default function AQIMap({ lat, lon, zoom = 10, status }: AQIMapProps) {
                     url={cartoTileUrl}
                 />
 
-                <TileLayer
-                    opacity={0.5}
-                    url={`https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${token}`}
-                    attribution='&copy; <a href="https://openweathermap.org/">OpenWeatherMap</a>'
-                />
+                {aqicnToken && (
+                    <TileLayer
+                        opacity={0.6}
+                        url={`https://tiles.aqicn.org/tiles/usepa-aqi/{z}/{x}/{y}.png?token=${aqicnToken}`}
+                        attribution='&copy; <a href="https://aqicn.org/">AQICN</a>'
+                    />
+                )}
 
-                <Marker position={[lat, lon]} icon={customIcon} />
+                <Marker position={[lat, lon]} icon={customIcon}>
+                    {(aqi !== undefined || city) && (
+                        <Popup>
+                            <div style={{ textAlign: 'center', fontFamily: 'inherit', padding: '4px 0' }}>
+                                {city && <strong style={{ fontSize: '0.95rem', display: 'block', marginBottom: '4px' }}>{city}</strong>}
+                                {aqi !== undefined && (
+                                    <span style={{
+                                        display: 'inline-block',
+                                        background: color,
+                                        color: '#fff',
+                                        padding: '2px 10px',
+                                        borderRadius: '12px',
+                                        fontWeight: 700,
+                                        fontSize: '0.85rem'
+                                    }}>
+                                        AQI: {aqi} — {status || 'Unknown'}
+                                    </span>
+                                )}
+                            </div>
+                        </Popup>
+                    )}
+                </Marker>
                 <MapUpdater lat={lat} lon={lon} />
             </MapContainer>
 
@@ -116,12 +142,12 @@ export default function AQIMap({ lat, lon, zoom = 10, status }: AQIMapProps) {
             <div className={styles.legend}>
                 <div className={styles.legendTitle}>NAQI Levels</div>
                 {[
-                    { label: 'Good (0-50)', color: '#50CCAA' },
-                    { label: 'Satisfactory (51-100)', color: '#CEE5A0' },
-                    { label: 'Mod. Polluted (101-200)', color: '#FFFF66' },
-                    { label: 'Poor (201-300)', color: '#FF9933' },
-                    { label: 'Very Poor (301-400)', color: '#FF3333' },
-                    { label: 'Severe (401-500)', color: '#990000' }
+                    { label: 'Good (0-50)', color: '#10b981' },
+                    { label: 'Satisfactory (51-100)', color: '#84cc16' },
+                    { label: 'Mod. Polluted (101-200)', color: '#eab308' },
+                    { label: 'Poor (201-300)', color: '#f97316' },
+                    { label: 'Very Poor (301-400)', color: '#ef4444' },
+                    { label: 'Severe (401-500)', color: '#7c3aed' }
                 ].map((item, i) => (
                     <div key={i} className={styles.legendItem}>
                         <div className={styles.colorBar} style={{ backgroundColor: item.color }} />

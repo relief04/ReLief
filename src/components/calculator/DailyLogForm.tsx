@@ -11,9 +11,10 @@ import { Button } from '@/components/ui/Button';
 interface DailyLogFormProps {
     onCalculate: (result: CalculationResult) => void;
     baseDiet?: any;
+    initialData?: any;
 }
 
-export const DailyLogForm: React.FC<DailyLogFormProps> = ({ onCalculate, baseDiet }) => {
+export const DailyLogForm: React.FC<DailyLogFormProps> = ({ onCalculate, baseDiet, initialData }) => {
     const [trips, setTrips] = useState<Trip[]>([]);
     const [electricity, setElectricity] = useState<UsageLevel>('typical');
     const [water, setWater] = useState<UsageLevel>('typical');
@@ -22,6 +23,41 @@ export const DailyLogForm: React.FC<DailyLogFormProps> = ({ onCalculate, baseDie
     const [dietDifferent, setDietDifferent] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
     const [selectedAppliances, setSelectedAppliances] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (initialData) {
+            if (initialData.food?.mealsPerDay) setMeals(initialData.food.mealsPerDay);
+
+            if (initialData.food?.diet) {
+                const dietMap: Record<string, DietType> = {
+                    'vegan': 'vegan',
+                    'vegetarian': 'vegetarian',
+                    'pescatarian': 'vegetarian',
+                    'meat_no_beef': 'omnivore',
+                    'meat_high': 'meat',
+                };
+                setMealType(dietMap[initialData.food.diet] || 'omnivore');
+            }
+
+            if (initialData.transport?.mainMode && initialData.transport?.dailyDistanceKm) {
+                const modeMap: Record<string, string> = {
+                    'car': 'car', 'two_wheeler': 'motorbike', 'bus': 'bus',
+                    'metro': 'train', 'train': 'train', 'bicycle': 'bicycle', 'walking': 'walking'
+                };
+                setTrips([{
+                    id: Math.random().toString(36).substring(2, 9),
+                    mode: (modeMap[initialData.transport.mainMode] || 'car') as any,
+                    distance: initialData.transport.dailyDistanceKm
+                }]);
+            }
+
+            if (initialData.household?.electricity?.kwh) {
+                const kwh = initialData.household.electricity.kwh;
+                if (kwh < 150) setElectricity('low');
+                else if (kwh > 400) setElectricity('high');
+            }
+        }
+    }, [initialData]);
 
     const handleAddTrip = () => {
         const newTrip: Trip = {

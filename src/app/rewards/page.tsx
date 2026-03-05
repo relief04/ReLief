@@ -370,7 +370,7 @@ export default function RewardsPage() {
 
                                 {isClaimable && (
                                     <button className={styles.claimButton}>
-                                        {reward.cost} KP
+                                        {reward.cost} IP
                                     </button>
                                 )}
                             </div>

@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/Card';
 import styles from './page.module.css';
 import { useRealtimeLeaderboard } from '@/lib/useRealtime';
 
-type RankingType = 'carbon_savings' | 'streak' | 'karma_points' | 'badges';
+type RankingType = 'carbon_savings' | 'streak' | 'impact_points' | 'badges';
 
 interface LeaderboardEntry {
     rank: number;
@@ -32,7 +32,7 @@ export default function LeaderboardPage() {
         const columnMap = {
             carbon_savings: 'carbon_savings',
             streak: 'streak',
-            karma_points: 'balance',
+            impact_points: 'balance',
             badges: 'badge_count'
         };
         const column = columnMap[rankingType];
@@ -72,7 +72,7 @@ export default function LeaderboardPage() {
                 return 'CO₂ Saved';
             case 'streak':
                 return 'Day Streak';
-            case 'karma_points':
+            case 'impact_points':
                 return 'Points';
             case 'badges':
                 return 'Badges Earned';
@@ -85,8 +85,8 @@ export default function LeaderboardPage() {
                 return `${score.toFixed(1)} kg`;
             case 'streak':
                 return `${score} days`;
-            case 'karma_points':
-                return `${score} KP`;
+            case 'impact_points':
+                return `${score} IP`;
             case 'badges':
                 return `${score} 🏅`;
         }
@@ -117,8 +117,8 @@ export default function LeaderboardPage() {
                     🔥 Streak
                 </button>
                 <button
-                    className={`${styles.typeButton} ${rankingType === 'karma_points' ? styles.typeActive : ''}`}
-                    onClick={() => setRankingType('karma_points')}
+                    className={`${styles.typeButton} ${rankingType === 'impact_points' ? styles.typeActive : ''}`}
+                    onClick={() => setRankingType('impact_points')}
                 >
                     💎 Points
                 </button>

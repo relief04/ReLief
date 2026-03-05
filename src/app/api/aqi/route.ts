@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const AQICN_TOKEN = process.env.NEXT_PUBLIC_AQICN_API_KEY;
+const OPENWEATHER_KEY = process.env.OPENWEATHER_API_KEY;
 
 function getStatusAndRecommendation(aqi: number) {
     if (aqi <= 50) return { status: 'Good', general: "Air quality is satisfactory. Enjoy outdoor activities!", sensitive: "Air quality is great. No restrictions.", habits: ["Open windows for fresh air", "Go for a run or walk", "Plant more trees"] };
@@ -27,12 +28,32 @@ export async function GET(request: NextRequest) {
         if (lat && lon) {
             latitude = parseFloat(lat);
             longitude = parseFloat(lon);
-        } else if (city) {
-            // Geocode the city
-            const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`);
-            const geoData = await geoRes.json();
 
-            if (!geoData.results?.length) {
+            // Reverse geocode to get city name from coordinates
+            try {
+                const nomRes = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=10`, {
+                    headers: { 'User-Agent': 'ReLief-AQI/1.0' }
+                });
+                if (nomRes.ok) {
+                    const nomData = await nomRes.json();
+                    const addr = nomData.address || {};
+                    const city = addr.city || addr.town || addr.village || addr.county || '';
+                    const state = addr.state || '';
+                    if (city) cityName = `${city}${state ? ', ' + state : ''}`;
+                }
+            } catch { }
+        } else if (city) {
+            // Geocode the city — try full query first, then just city name as fallback
+            let geoData: any = null;
+            const queries = [city, city.split(',')[0].trim()];
+
+            for (const q of queries) {
+                const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=1&language=en&format=json`);
+                geoData = await geoRes.json();
+                if (geoData.results?.length) break;
+            }
+
+            if (!geoData?.results?.length) {
                 return NextResponse.json({ error: `City "${city}" not found` }, { status: 404 });
             }
 
@@ -56,7 +77,7 @@ export async function GET(request: NextRequest) {
         const aqi = w.aqi;
         const { status, general, sensitive, habits } = getStatusAndRecommendation(aqi);
 
-        // Fetch weather from Open-Meteo
+        // Fetch weather from OpenWeatherMap
         let weather = {
             temperature: w.iaqi?.t?.v ?? null,
             humidity: w.iaqi?.h?.v ?? null,
@@ -67,22 +88,28 @@ export async function GET(request: NextRequest) {
             isDay: true
         };
 
-        try {
-            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m&timezone=auto`);
-            if (weatherRes.ok) {
-                const wj = await weatherRes.json();
-                const cur = wj.current;
-                weather = {
-                    temperature: cur.temperature_2m,
-                    humidity: cur.relative_humidity_2m,
-                    windSpeed: cur.wind_speed_10m,
-                    apparentTemperature: cur.apparent_temperature,
-                    condition: getWeatherCondition(cur.weather_code),
-                    weatherCode: cur.weather_code,
-                    isDay: !!cur.is_day
-                };
-            }
-        } catch { }
+        if (OPENWEATHER_KEY) {
+            try {
+                const weatherRes = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${OPENWEATHER_KEY}`);
+                if (weatherRes.ok) {
+                    const ow = await weatherRes.json();
+                    const sunriseTs = ow.sys?.sunrise ?? 0;
+                    const sunsetTs = ow.sys?.sunset ?? 0;
+                    const nowTs = Math.floor(Date.now() / 1000);
+                    weather = {
+                        temperature: ow.main?.temp ?? null,
+                        humidity: ow.main?.humidity ?? null,
+                        windSpeed: ow.wind?.speed ? Math.round(ow.wind.speed * 3.6 * 10) / 10 : null, // m/s → km/h
+                        apparentTemperature: ow.main?.feels_like ?? null,
+                        condition: ow.weather?.[0]?.description
+                            ? ow.weather[0].description.charAt(0).toUpperCase() + ow.weather[0].description.slice(1)
+                            : 'Clear',
+                        weatherCode: ow.weather?.[0]?.id ?? 0,
+                        isDay: nowTs >= sunriseTs && nowTs < sunsetTs
+                    };
+                }
+            } catch { }
+        }
 
         // Extract pollutants
         const pollutants = {

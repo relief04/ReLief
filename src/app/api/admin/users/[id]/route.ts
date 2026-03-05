@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { createAdminClient } from '@/lib/supabaseAdmin';
-import { isAdminEmail } from '@/lib/admin';
+import { checkIsAdmin } from '@/lib/admin';
 
 // DELETE /api/admin/users/[id] — delete a user profile (bypasses RLS via service role)
 export async function DELETE(
@@ -10,7 +10,8 @@ export async function DELETE(
 ) {
     const user = await currentUser();
     const email = user?.emailAddresses?.[0]?.emailAddress;
-    if (!user || !isAdminEmail(email)) {
+    const isAdmin = await checkIsAdmin(user?.id, email);
+    if (!isAdmin) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

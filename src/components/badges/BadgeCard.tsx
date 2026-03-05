@@ -87,11 +87,11 @@ export const BadgeCard: React.FC<BadgeCardProps> = ({
                     </div>
                 )}
 
-                {/* Karma Reward */}
-                {badge.karma_reward > 0 && (
+                {/* Impact Reward */}
+                {badge.impact_reward > 0 && (
                     <div className={styles.reward}>
                         <span className={styles.rewardIcon}>💎</span>
-                        <span className={styles.rewardText}>+{badge.karma_reward} KP</span>
+                        <span className={styles.rewardText}>+{badge.impact_reward} IP</span>
                     </div>
                 )}
             </div>

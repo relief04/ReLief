@@ -34,7 +34,7 @@ export default function FeaturesPage() {
         },
         {
             icon: <Award size={32} />,
-            title: "Green Karma Rewards",
+            title: "Green Impact Rewards",
             desc: "Earn points for every action. Unlock badges, levels, and digital certificates."
         },
         {

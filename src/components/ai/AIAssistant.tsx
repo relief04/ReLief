@@ -43,7 +43,7 @@ export function AIAssistant() {
 
     const quickActions = [
         "Explain ReLief Features",
-        "How to earn Karma?",
+        "How to earn Impact?",
         "What is Eco Streak?",
         "Calculate my footprint"
     ];

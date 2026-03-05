@@ -48,7 +48,7 @@ export default function PremiumRewardCard({ reward, onClick, userPoints }: Premi
                     <Lock size={18} className="text-gray-400" />
                 </div>
                 <span className="text-xs font-bold text-gray-500 bg-white/80 dark:bg-black/50 px-2 py-1 rounded-md mb-1">
-                    {reward.unlockCondition || `${cost} KP required`}
+                    {reward.unlockCondition || `${cost} IP required`}
                 </span>
                 {cost > 0 && cost > userPoints && (
                     <div className="w-24 h-1 bg-gray-300 rounded-full overflow-hidden mt-1">

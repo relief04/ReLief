@@ -81,7 +81,7 @@ export default function PrivacyPage() {
                                     <div className={styles.gridList}>
                                         {[
                                             { title: "Account Information", desc: "Name, email, profile photo, username, and authentication data via Clerk." },
-                                            { title: "Sustainability Data", desc: "Transportation, energy, food, shopping logs, eco-streaks, quiz responses, and Karma points." },
+                                            { title: "Sustainability Data", desc: "Transportation, energy, food, shopping logs, eco-streaks, quiz responses, and Impact points." },
                                             { title: "Utility Bill Data (AI)", desc: "Images of utility bills, extracted metrics (kWh/therms), and carbon calculations." },
                                             { title: "Community Content", desc: "Posts, comments, group participation, event RSVPs, and shared achievements." },
                                             { title: "Location Data", desc: "Approximate location for AQI, local events, and leaderboards. (No precise GPS unless authorized)." },

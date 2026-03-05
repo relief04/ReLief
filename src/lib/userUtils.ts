@@ -102,14 +102,14 @@ export async function logPointsHistory(userId: string, amount: number, action: s
 /**
  * Updates the user's stats: carbon_total, carbon_savings, and balance (Points).
  */
-export async function updateUserStats(userId: string, emission: number, karmaToAdd: number, savingsToAdd: number = 0, action?: string, source?: string) {
+export async function updateUserStats(userId: string, emission: number, impactToAdd: number, savingsToAdd: number = 0, action?: string, source?: string) {
     // 1. Get current stats
     const profile = await getUserProfile(userId);
     if (!profile) return { error: 'Profile not found' };
 
     const newTotal = (profile.carbon_total || 0) + emission;
     const newSavings = (profile.carbon_savings || 0) + savingsToAdd;
-    const newBalance = (profile.balance || 0) + karmaToAdd;
+    const newBalance = (profile.balance || 0) + impactToAdd;
 
     const { error } = await supabase
         .from('profiles')
@@ -120,8 +120,8 @@ export async function updateUserStats(userId: string, emission: number, karmaToA
         })
         .eq('id', userId);
 
-    if (!error && karmaToAdd > 0 && action && source) {
-        await logPointsHistory(userId, karmaToAdd, action, source);
+    if (!error && impactToAdd > 0 && action && source) {
+        await logPointsHistory(userId, impactToAdd, action, source);
     }
 
     return { error };

@@ -38,7 +38,7 @@ export default function CommunityPage() {
                             { icon: <Users />, title: "Join Eco Groups", desc: "Connect with schools, neighborhoods, or corporate teams." },
                             { icon: <Zap />, title: "Participate in Challenges", desc: "Push your limits with monthly environmental goals." },
                             { icon: <Share2 />, title: "Share Stories", desc: "Post your achievements and inspire others to act." },
-                            { icon: <Heart />, title: "Support Others", desc: "Engage with likes and comments to earn karma points." },
+                            { icon: <Heart />, title: "Support Others", desc: "Engage with likes and comments to earn impact points." },
                             { icon: <Calendar />, title: "Attend Events", desc: "Find local sustainability meetups and workshops." },
                             { icon: <HandHeart />, title: "Collective Impact", desc: "Together, small actions become powerful change." }
                         ].map((item, i) => (

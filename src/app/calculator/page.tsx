@@ -39,6 +39,7 @@ export default function CalculatorPage() {
         loading: true,
         todayLogData: null as any | null
     });
+    const [onboardingData, setOnboardingData] = useState<any | null>(null);
     const { user } = useUser();
     const { triggerRefresh } = useRefresh();
 
@@ -51,13 +52,25 @@ export default function CalculatorPage() {
             const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
             // Fetch all relevant activities for the month in one go
-            const { data: activities, error: fetchError } = await supabase
-                .from('activities')
-                .select('type, description, created_at, impact, metadata')
-                .eq('user_id', user.id)
-                .gte('created_at', startOfMonth);
+            const [activitiesRes, profileRes] = await Promise.all([
+                supabase
+                    .from('activities')
+                    .select('type, description, created_at, impact, metadata')
+                    .eq('user_id', user.id)
+                    .gte('created_at', startOfMonth),
+                supabase
+                    .from('profiles')
+                    .select('onboarding_data')
+                    .eq('id', user.id)
+                    .single()
+            ]);
 
-            if (fetchError) throw fetchError;
+            if (activitiesRes.error) throw activitiesRes.error;
+
+            const activities = activitiesRes.data;
+            if (profileRes.data?.onboarding_data) {
+                setOnboardingData(profileRes.data.onboarding_data);
+            }
 
             const todayLog = activities?.find((a: { type: string; created_at: string; description: string }) =>
                 a.type === 'calculator' && a.created_at >= startOfDay
@@ -200,7 +213,7 @@ export default function CalculatorPage() {
 
             if (activityError) throw activityError;
 
-            const earnedKarma = scannedData ? 30 : 20; // Extra karma for scanning bills!
+            const earnedImpact = scannedData ? 30 : 20; // Extra Impact for scanning bills!
 
             // Calculate savings against baseline
             // If it's a weekly calculation (manual or shopping bill), we compare against weekly baseline
@@ -211,7 +224,7 @@ export default function CalculatorPage() {
             await updateUserStats(
                 user.id,
                 result.total,
-                earnedKarma,
+                earnedImpact,
                 savings,
                 scannedData ? `Scanned ${scannedData.bill_type} bill` : 'Logged Daily Footprint',
                 scannedData ? 'AI Scanner' : 'Calculator'
@@ -225,10 +238,10 @@ export default function CalculatorPage() {
             let badgeMessage = "";
             if (badgeResult.success && badgeResult.newBadges && badgeResult.newBadges.length > 0) {
                 const names = badgeResult.newBadges.map(b => b.name).join(", ");
-                badgeMessage = `\n\n🏆 New Badges Earned: ${names}! (+${badgeResult.totalKarma} KP)`;
+                badgeMessage = `\n\n🏆 New Badges Earned: ${names}! (+${badgeResult.totalImpact} IP)`;
             }
 
-            toast(`Saved! You earned ${earnedKarma} KP! ${scannedData ? '🎉 Bonus for scanning bill!' : ''} ${newStreak ? `Streak: ${newStreak} days!` : ''}${badgeMessage}`, "success");
+            toast(`Saved! You earned ${earnedImpact} IP! ${scannedData ? '🎉 Bonus for scanning bill!' : ''} ${newStreak ? `Streak: ${newStreak} days!` : ''}${badgeMessage}`, "success");
 
             // Trigger global refresh so dashboard/profile update without reloading
             triggerRefresh('activity');
@@ -310,6 +323,7 @@ export default function CalculatorPage() {
                                     <DailyLogForm
                                         onCalculate={(res) => setResult(res)}
                                         baseDiet={inputs.dietType}
+                                        initialData={onboardingData}
                                     />
                                 )}
                             </Card>

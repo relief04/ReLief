@@ -277,14 +277,14 @@ export default function DashboardPage() {
                     <span className={styles.miniVal} style={{ color: '#4caf50' }}>{data.carbonSavings.toFixed(1)} <small>kg</small></span>
                 </div>
                 <div
-                    className={`${styles.miniStat} ${styles.statKarma} cursor-pointer hover:border-yellow-400 hover:shadow-lg transition-all`}
+                    className={`${styles.miniStat} ${styles.statImpact} cursor-pointer hover:border-yellow-400 hover:shadow-lg transition-all`}
                     onClick={() => setIsPointsModalOpen(true)}
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => e.key === 'Enter' && setIsPointsModalOpen(true)}
                 >
-                    <span className={styles.miniLabel}>Karma Balance</span>
-                    <span className={styles.miniVal} style={{ color: '#ffc107' }}>{data.balance} <small>KP</small></span>
+                    <span className={styles.miniLabel}>Impact Balance</span>
+                    <span className={styles.miniVal} style={{ color: '#ffc107' }}>{data.balance} <small>IP</small></span>
                 </div>
                 <div className={`${styles.miniStat} ${styles.statStreak}`}>
                     <span className={styles.miniLabel}>Daily Streak</span>

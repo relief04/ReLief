@@ -119,7 +119,7 @@ export default function RewardDetailsDrawer({ isOpen, onClose, reward, onAction,
                                 disabled={isProcessing}
                                 className="w-full py-3.5 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-400 hover:to-orange-500 text-white font-bold shadow-lg shadow-orange-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
                             >
-                                {isProcessing ? 'Processing...' : reward.cost > 0 ? `Claim Reward (-${cost} KP)` : 'Claim Achievement'}
+                                {isProcessing ? 'Processing...' : reward.cost > 0 ? `Claim Reward (-${cost} IP)` : 'Claim Achievement'}
                             </button>
                         ) : isOwned ? (
                             <button

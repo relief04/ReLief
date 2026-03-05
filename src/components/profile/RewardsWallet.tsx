@@ -135,7 +135,7 @@ export default function RewardsWallet({ isOpen, onClose, userId }: RewardsWallet
                             <Star className="text-yellow-500" size={18} />
                             <span className="text-sm font-medium text-yellow-700 dark:text-yellow-400">Points</span>
                         </div>
-                        <div className="text-2xl font-bold text-gray-900 dark:text-white">{userPoints} KP</div>
+                        <div className="text-2xl font-bold text-gray-900 dark:text-white">{userPoints} IP</div>
                     </div>
                     <div className="p-4 rounded-xl bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/30">
                         <div className="flex items-center gap-3 mb-1">

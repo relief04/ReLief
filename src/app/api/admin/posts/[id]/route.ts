@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { createAdminClient } from '@/lib/supabaseAdmin';
-import { isAdminEmail } from '@/lib/admin';
+import { checkIsAdmin } from '@/lib/admin';
 
 async function verifyAdmin() {
     const user = await currentUser();
     const email = user?.emailAddresses?.[0]?.emailAddress;
-    if (!user || !isAdminEmail(email)) return null;
+    const isAdmin = await checkIsAdmin(user?.id, email);
+    if (!isAdmin) return null;
     return user;
 }
 

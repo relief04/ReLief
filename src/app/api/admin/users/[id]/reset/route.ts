@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { createAdminClient } from '@/lib/supabaseAdmin';
-import { isAdminEmail } from '@/lib/admin';
+import { checkIsAdmin } from '@/lib/admin';
 
 export async function POST(
     request: Request,
@@ -11,7 +11,8 @@ export async function POST(
         const user = await currentUser();
         const email = user?.emailAddresses?.[0]?.emailAddress;
 
-        if (!user || !isAdminEmail(email)) {
+        const isAdmin = await checkIsAdmin(user?.id, email);
+        if (!isAdmin) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 

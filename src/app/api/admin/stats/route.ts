@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { createAdminClient } from '@/lib/supabaseAdmin';
-import { isAdminEmail } from '@/lib/admin';
+import { checkIsAdmin } from '@/lib/admin';
 
 export async function GET() {
     const user = await currentUser();
     const email = user?.emailAddresses?.[0]?.emailAddress;
 
-    if (!user || !isAdminEmail(email)) {
+    const isAdmin = await checkIsAdmin(user?.id, email);
+    if (!isAdmin) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -44,7 +45,7 @@ export async function GET() {
                 .limit(10),
             db
                 .from('profiles')
-                .select('id, username, email, created_at, balance, is_banned')
+                .select('id, username, email, created_at, balance, is_banned, is_admin')
                 .order('created_at', { ascending: false })
                 .limit(20),
             db

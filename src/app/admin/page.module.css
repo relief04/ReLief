@@ -149,19 +149,23 @@
 .tableCard {
     background: var(--color-card-background);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    padding: 0;
     box-shadow: var(--shadow-sm);
+    overflow: hidden;
 }
 
 .tableTitle {
-    font-size: 1rem;
+    font-size: 1.15rem;
     font-weight: 700;
-    color: var(--color-primary);
-    margin: 0 0 1rem;
+    color: var(--color-text);
+    padding: 1.5rem 1.5rem 1rem;
+    margin: 0;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg-50);
 }
 
 .tableScroll {
@@ -171,26 +175,28 @@
 .tableCard table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.82rem;
-    min-width: 360px;
+    font-size: 0.9rem;
+    min-width: 800px;
 }
 
 .tableCard th {
     text-align: left;
-    padding: 0.5rem 0.75rem;
-    color: var(--color-text-300);
+    padding: 1rem 1.5rem;
+    color: var(--color-text-secondary);
     font-weight: 600;
     text-transform: uppercase;
+    font-size: 0.75rem;
     letter-spacing: 0.05em;
-    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg-50);
+    border-bottom: 2px solid var(--color-border);
     white-space: nowrap;
 }
 
 .tableCard td {
-    padding: 0.6rem 0.75rem;
-    color: var(--color-text-secondary);
+    padding: 1rem 1.5rem;
+    color: var(--color-text);
     border-bottom: 1px solid var(--color-border);
-    max-width: 180px;
+    max-width: 250px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -201,13 +207,13 @@
 }
 
 .tableCard tr:hover td {
-    background: var(--color-background-hover);
+    background: rgba(16, 185, 129, 0.03);
 }
 
 .empty {
     text-align: center;
     color: var(--color-text-300);
-    padding: 1.5rem 0 !important;
+    padding: 3rem 0 !important;
 }
 
 /* ── Action controls ── */
@@ -220,15 +226,22 @@
 .editBtn,
 .deleteBtn,
 .saveBtn,
-.cancelBtn {
+.cancelBtn,
+.promoteBtn,
+.demoteBtn,
+.resetBtn {
     border: none;
-    border-radius: var(--radius-sm);
-    padding: 0.3rem 0.6rem;
+    border-radius: var(--radius-md);
+    padding: 0.4rem 0.8rem;
     font-size: 0.8rem;
     cursor: pointer;
     font-weight: 600;
-    transition: opacity 0.15s;
+    transition: all 0.2s;
     white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .editBtn {
@@ -241,12 +254,13 @@
 }
 
 .deleteBtn {
-    background: rgba(239, 68, 68, 0.1);
+    background: #fee2e2;
     color: #ef4444;
 }
 
 .deleteBtn:hover {
-    background: rgba(239, 68, 68, 0.2);
+    background: #fecaca;
+    transform: translateY(-1px);
 }
 
 .saveBtn {
@@ -270,6 +284,41 @@
 
 .cancelBtn:hover {
     opacity: 0.75;
+}
+
+.promoteBtn {
+    background: #10b981;
+    color: white;
+}
+
+.promoteBtn:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.demoteBtn {
+    background: #ef4444;
+    color: white;
+}
+
+.demoteBtn:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
+.resetBtn {
+    background: #f59e0b;
+    color: white;
+}
+
+.resetBtn:hover {
+    background: #d97706;
+    transform: translateY(-1px);
+}
+
+.actionsCell {
+    max-width: unset !important;
+    overflow: visible !important;
 }
 
 /* ── Tabs ── */
@@ -370,13 +419,13 @@
     height: 350px;
 }
 
-.inputKarmaLabel {
+.inputImpactLabel {
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
 }
 
-.karmaInput {
+.impactInput {
     width: 60px;
     padding: 0.25rem;
     border: 1px solid var(--color-border);
@@ -386,17 +435,23 @@
 }
 
 .suspendBtn {
-    background: rgba(234, 179, 8, 0.1);
-    color: #eab308;
+    background: #fef08a;
+    color: #ca8a04;
 }
 
 .suspendBtn:hover {
-    background: rgba(234, 179, 8, 0.2);
+    background: #fde047;
+    transform: translateY(-1px);
 }
 
 .unbanBtn {
-    background: rgba(34, 197, 94, 0.1);
-    color: #22c55e;
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.unbanBtn:hover {
+    background: #bbf7d0;
+    transform: translateY(-1px);
 }
 
 .inlineInput {
@@ -588,14 +643,14 @@
     gap: 0.5rem;
 }
 
-.karmaEditSection {
+.impactEditSection {
     display: flex;
     align-items: center;
     gap: 1rem;
     margin-top: 0.5rem;
 }
 
-.karmaEditLabel {
+.impactEditLabel {
     font-size: 0.95rem;
     color: var(--color-text-secondary);
 }

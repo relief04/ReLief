@@ -41,7 +41,7 @@ export interface RewardTransaction {
     timestamp: string;
 }
 
-export interface KarmaLedger {
+export interface ImpactLedger {
     id: string;
     userId: string;
     amount: number; // Positive for earning, Negative for spending

@@ -108,7 +108,7 @@ Access your forest from the Forest page in the navigation menu.`,
 
     // REWARDS & POINTS
     {
-        id: 'karma-points-overview',
+        id: 'impact-points-overview',
         category: 'rewards',
         title: 'Points & Rewards System',
         content: `Points are ReLief's virtual currency earned through eco-friendly actions.
@@ -131,7 +131,7 @@ Access your forest from the Forest page in the navigation menu.`,
 - Track earning history in Profile
 
 Points have no real-world monetary value and are for gamification only.`,
-        keywords: ['karma', 'points', 'rewards', 'earn', 'spend', 'balance', 'kp', 'currency']
+        keywords: ['impact', 'points', 'rewards', 'earn', 'spend', 'balance', 'ip', 'currency']
     },
 
     // QUIZ SYSTEM
@@ -192,7 +192,7 @@ Examples include:
 - Activities count (e.g., log 50 activities)
 - Carbon saved (e.g., save 100 kg CO₂)
 - Streak days (e.g., 30-day streak)
-- Karma earned (e.g., earn 5000 KP)
+- Impact earned (e.g., earn 5000 IP)
 
 **Badge Rewards:**
 - Each badge awards Points
@@ -353,7 +353,7 @@ Access your profile from the navigation menu or by clicking your avatar.`,
 - Action-specific guidance
 
 **Managing Recommendations:**
-- Mark as completed (earn KP)
+- Mark as completed (earn IP)
 - Dismiss if not applicable
 - New recommendations generated regularly
 
@@ -378,17 +378,17 @@ Recommendations appear on your Dashboard and Profile.`,
 **How to Redeem:**
 1. Go to Marketplace page
 2. Browse available items
-3. Check KP cost for each item
-4. Click "Redeem" if you have enough KP
+3. Check IP cost for each item
+4. Click "Redeem" if you have enough IP
 5. Item is added to your inventory
 
 **Balance Check:**
-- Current KP shown at top of Marketplace
+- Current IP shown at top of Marketplace
 - Items you can't afford are indicated
-- Earn more KP through quizzes and activities
+- Earn more IP through quizzes and activities
 
 All items are virtual and have no real-world monetary value.`,
-        keywords: ['marketplace', 'redeem', 'shop', 'buy', 'items', 'rewards', 'spend', 'karma']
+        keywords: ['marketplace', 'redeem', 'shop', 'buy', 'items', 'rewards', 'spend', 'impact']
     },
 
     // GENERAL PLATFORM

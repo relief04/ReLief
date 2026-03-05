@@ -58,8 +58,8 @@ export default function NextRewardHighlight({ nextReward, userPoints }: NextRewa
                         </div>
                     </div>
                     <div className="flex justify-between text-xs font-medium text-gray-400 mt-2">
-                        <span>{userPoints} KP</span>
-                        <span>{nextReward.cost} KP</span>
+                        <span>{userPoints} IP</span>
+                        <span>{nextReward.cost} IP</span>
                     </div>
                 </div>
 

@@ -74,12 +74,12 @@ export async function detectAndAwardBadges(
                 newBadgeIds.push(badge.id);
 
                 // Award points
-                if (badge.karma_reward > 0) {
-                    await supabase.rpc('add_karma_points', {
+                if (badge.impact_reward > 0) {
+                    await supabase.rpc('add_impact_points', {
                         p_user_id: userId,
-                        p_points: badge.karma_reward
+                        p_points: badge.impact_reward
                     });
-                    await logPointsHistory(userId, badge.karma_reward, `Earned Badge: ${badge.name}`, 'Badges');
+                    await logPointsHistory(userId, badge.impact_reward, `Earned Badge: ${badge.name}`, 'Badges');
                 }
 
                 console.log(`✅ Badge awarded: ${badge.name} to user ${userId}`);
@@ -193,7 +193,7 @@ export async function getUserStatsForBadges(userId: string): Promise<UserStatsFo
             challenges_completed: challengesCompleted || 0,
             shares_count: profile?.shares_count || 0,
             badges_earned: profile?.badges_earned || 0,
-            karma_earned: profile?.balance || 0,
+            impact_earned: profile?.balance || 0,
 
             // Action-specific counts (would need to query activities table with filters)
             bike_commutes: 0,
@@ -228,7 +228,7 @@ export async function getUserStatsForBadges(userId: string): Promise<UserStatsFo
             challenges_completed: 0,
             shares_count: 0,
             badges_earned: 0,
-            karma_earned: 0,
+            impact_earned: 0,
             bike_commutes: 0,
             transit_uses: 0,
             trees_planted_virtual: 0,

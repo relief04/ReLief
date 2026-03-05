@@ -20,7 +20,7 @@ export type RequirementType =
     | 'badges_earned'
     | 'quizzes_completed'
     | 'items_redeemed'
-    | 'karma_earned'
+    | 'impact_earned'
     | 'aqi_checks'
     | 'relax_sessions'
     | 'user_rank'
@@ -41,7 +41,7 @@ export interface Badge {
     requirement_type: RequirementType;
     requirement_value: number;
     rarity: BadgeRarity;
-    karma_reward: number;
+    impact_reward: number;
     created_at?: string;
 }
 
@@ -122,7 +122,7 @@ export function formatBadgeProgress(progress: BadgeProgress): string {
         case 'carbon_saved': return `${current.toFixed(1)} / ${required} kg CO₂`;
         case 'streak_days': return `${current} / ${required} days`;
         case 'activities_count': return `${current} / ${required} actions`;
-        case 'karma_earned': return `${current} / ${required} KP`;
+        case 'impact_earned': return `${current} / ${required} IP`;
         default: return `${current} / ${required}`;
     }
 }
@@ -136,7 +136,7 @@ export interface UserStatsForBadges {
     challenges_completed: number;
     shares_count: number;
     badges_earned: number;
-    karma_earned: number;
+    impact_earned: number;
     [key: string]: number;
 }
 

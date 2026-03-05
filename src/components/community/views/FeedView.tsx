@@ -275,7 +275,7 @@ export function FeedView({ selectedHashtag, onHashtagClick }: FeedViewProps) {
 
             // Refresh user badges/points after posting
             if (user?.id) await checkAndAwardBadges(user.id);
-            toast("Post created successfully! You earned karma points. 🌿", 'success');
+            toast("Post created successfully! You earned impact points. 🌿", 'success');
             // Trigger global refresh for other pages
             triggerRefresh('post');
         }

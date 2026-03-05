@@ -73,7 +73,7 @@ export function PointsHistoryModal({ isOpen, onClose, userId }: PointsHistoryMod
                         <Award className={styles.headerIcon} />
                         <div>
                             <div className={styles.totalLabel}>Current Balance</div>
-                            <div className={styles.totalValue}>{totalPoints} KP</div>
+                            <div className={styles.totalValue}>{totalPoints} IP</div>
                         </div>
                     </div>
                 </div>
@@ -109,7 +109,7 @@ export function PointsHistoryModal({ isOpen, onClose, userId }: PointsHistoryMod
                                         </div>
                                     </div>
                                     <div className={styles.itemAmount}>
-                                        +{entry.amount} <span className={styles.kp}>KP</span>
+                                        +{entry.amount} <span className={styles.kp}>IP</span>
                                     </div>
                                 </div>
                             ))}

@@ -300,7 +300,7 @@ export default function ProfilePage() {
                         >
                             <div className={styles.statHeader}>
                                 <div className={`${styles.statIcon} ${styles.iconYellow}`}><Award size={20} /></div>
-                                Trivia Points
+                                Impact Points
                             </div>
                             <div className={`${styles.statValue} ${styles.textYellow}`}>{profileData?.balance || 0}</div>
                         </div>

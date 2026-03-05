@@ -1,12 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
-import dynamic from 'next/dynamic';
 import { INDIA_LOCATIONS } from '@/lib/india-locations';
 import { LocateFixed, Share2, Wind, AlertTriangle, Thermometer, Droplets, Gauge, RefreshCw, MapPin, CheckCircle2 } from 'lucide-react';
 import styles from './page.module.css';
 
-const AQIMap = dynamic(() => import('@/components/aqi/AQIMap'), { ssr: false });
 
 interface AQIData {
     city: string;
@@ -87,9 +85,22 @@ export default function AQIPage() {
     const handleGeolocate = () => {
         if (!navigator.geolocation) { setError('Geolocation not supported by your browser.'); return; }
         setLoading(true);
+        setError('');
         navigator.geolocation.getCurrentPosition(
-            (pos) => fetchAQI({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
-            () => { setError('Could not get your location. Please check browser permissions.'); setLoading(false); }
+            (pos) => {
+                setSelectedState('');
+                setSelectedCity('');
+                fetchAQI({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+            },
+            (err) => {
+                let msg = 'Could not get your location.';
+                if (err.code === 1) msg = 'Location permission denied. Please allow location access in your browser settings.';
+                else if (err.code === 2) msg = 'Location unavailable. Please try again or select a city manually.';
+                else if (err.code === 3) msg = 'Location request timed out. Please try again.';
+                setError(msg);
+                setLoading(false);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
         );
     };
 
@@ -118,7 +129,6 @@ export default function AQIPage() {
             <div className={styles.heroSection} style={cfg ? { '--status-color': cfg.color, '--status-bg': cfg.bg } as React.CSSProperties : {}}>
                 <div className={styles.heroContent}>
                     <div className={styles.heroTitleRow}>
-                        <span className={styles.heroIcon}>🌬️</span>
                         <div>
                             <h1 className={styles.heroTitle}>Air Quality Monitor</h1>
                             <p className={styles.heroSubtitle}>Real-time AQI, weather & health insights across India</p>
@@ -326,15 +336,6 @@ export default function AQIPage() {
                             </div>
                         </div>
 
-                        {/* Map */}
-                        {data.coordinates && (
-                            <div className={styles.mapSection}>
-                                <h3 className={styles.sectionTitle}>🗺️ Monitoring Station Map</h3>
-                                <div className={styles.mapWrapper}>
-                                    <AQIMap lat={data.coordinates.lat} lon={data.coordinates.lon} status={data.status} />
-                                </div>
-                            </div>
-                        )}
                     </>
                 )}
             </div>

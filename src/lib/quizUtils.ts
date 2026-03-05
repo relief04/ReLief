@@ -172,7 +172,7 @@ export async function submitQuizAnswer(
     // Award Points via RPC
     try {
         if (isCorrect) {
-            await supabase.rpc('add_karma_points', {
+            await supabase.rpc('add_impact_points', {
                 p_user_id: userId,
                 p_points: 10 // 10 KP per correct answer
             });
@@ -180,7 +180,7 @@ export async function submitQuizAnswer(
         }
 
         if (completed && passed) {
-            await supabase.rpc('add_karma_points', {
+            await supabase.rpc('add_impact_points', {
                 p_user_id: userId,
                 p_points: 100 // 100 KP bonus for passing a level
             });

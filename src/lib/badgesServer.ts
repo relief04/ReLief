@@ -45,7 +45,7 @@ export async function checkAndAwardBadges(userId: string) {
             bills_count: billCount || 0,
             streak_days: profile?.streak || 0,
             carbon_saved: Number(profile?.carbon_savings || 0),
-            karma_earned: profile?.balance || 0,
+            impact_earned: profile?.balance || 0,
             teams_joined: teamCount || 0,
             badges_earned: earnedBadgeIds.size
         };
@@ -64,7 +64,7 @@ export async function checkAndAwardBadges(userId: string) {
             return { success: true, newBadges: [] };
         }
 
-        // 4. Award Badges and KP
+        // 4. Award Badges and IP
         console.log(`Awarding ${newEarnedBadges.length} new badges!`);
 
         const badgePromises = newEarnedBadges.map(badge =>
@@ -74,8 +74,8 @@ export async function checkAndAwardBadges(userId: string) {
             })
         );
 
-        const totalKarma = newEarnedBadges.reduce((sum, b) => sum + (b.karma_reward || 0), 0);
-        const newBalance = (profile?.balance || 0) + totalKarma;
+        const totalImpact = newEarnedBadges.reduce((sum, b) => sum + (b.impact_reward || 0), 0);
+        const newBalance = (profile?.balance || 0) + totalImpact;
         const newBadgeCount = (stats.badges_earned || 0) + newEarnedBadges.length;
 
         await Promise.all([
@@ -88,8 +88,8 @@ export async function checkAndAwardBadges(userId: string) {
 
         // Log points history for each badge awarded
         for (const badge of newEarnedBadges) {
-            if (badge.karma_reward > 0) {
-                await logPointsHistory(userId, badge.karma_reward, `Earned Badge: ${badge.name}`, 'Badges');
+            if (badge.impact_reward > 0) {
+                await logPointsHistory(userId, badge.impact_reward, `Earned Badge: ${badge.name}`, 'Badges');
             }
         }
 
@@ -99,7 +99,7 @@ export async function checkAndAwardBadges(userId: string) {
             }
         }
 
-        return { success: true, newBadges: newEarnedBadges, totalKarma };
+        return { success: true, newBadges: newEarnedBadges, totalImpact };
     } catch (error) {
         console.error('Error in checkAndAwardBadges:', error);
         return { success: false, error };

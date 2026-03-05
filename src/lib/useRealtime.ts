@@ -97,7 +97,7 @@ export function useRealtimeSubscription<T>(
 /**
  * Hook for real-time leaderboard updates
  */
-export function useRealtimeLeaderboard(rankingType: 'carbon_savings' | 'streak' | 'karma_points' | 'badges') {
+export function useRealtimeLeaderboard(rankingType: 'carbon_savings' | 'streak' | 'impact_points' | 'badges') {
     const [leaderboard, setLeaderboard] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -105,7 +105,7 @@ export function useRealtimeLeaderboard(rankingType: 'carbon_savings' | 'streak' 
         const columnMap = {
             carbon_savings: 'carbon_savings',
             streak: 'streak',
-            karma_points: 'balance',
+            impact_points: 'balance',
             badges: 'badge_count'
         };
 

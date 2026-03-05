@@ -132,7 +132,8 @@ export default function OnboardingPage() {
                     avatar_url: user.imageUrl,
                     monthly_budget: Math.round(monthlyBudget),
                     daily_limit: Math.round(dailyLimit),
-                    carbon_total: Math.round(yearlyKg), // storing annual baseline
+                    carbon_total: 0, // Start the user's footprint fresh at 0
+                    onboarding_data: data, // Save choices for Calculator defaults
                     onboarding_completed: true,
                 }, { onConflict: 'id' });
 

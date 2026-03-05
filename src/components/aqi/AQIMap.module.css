@@ -1,5 +1,77 @@
 /* AQIMap.module.css */
 
+/* ── AQI Badge Marker ────────────────────── */
+.aqiMarker {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 56px;
+    height: 68px;
+}
+
+.aqiMarkerPulse {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--marker-color, #10b981);
+    opacity: 0.35;
+    animation: pulseAqi 2s ease-out infinite;
+    z-index: 0;
+}
+
+@keyframes pulseAqi {
+    0% {
+        transform: scale(0.6);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(2.5);
+        opacity: 0;
+    }
+}
+
+.aqiMarkerBadge {
+    position: relative;
+    z-index: 2;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    transition: transform 0.2s;
+}
+
+.aqiMarkerBadge:hover {
+    transform: scale(1.1);
+}
+
+.aqiMarkerValue {
+    font-size: 1rem;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    line-height: 1;
+}
+
+.aqiMarkerArrow {
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 10px solid;
+    margin-top: -2px;
+    z-index: 2;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
+}
+
+/* ── Legacy Marker (fallback) ────────────── */
 .markerContainer {
     position: relative;
     width: 24px;
@@ -42,7 +114,7 @@
     }
 }
 
-/* Custom Map Overlay Controls */
+/* ── Custom Map Overlay Controls ─────────── */
 .legend {
     position: absolute;
     bottom: 20px;
@@ -64,6 +136,7 @@
     letter-spacing: 0.05em;
     margin-bottom: 8px;
     color: var(--color-text-secondary);
+    font-size: 0.75rem;
 }
 
 .legendItem {
@@ -71,6 +144,7 @@
     align-items: center;
     gap: 8px;
     margin-bottom: 4px;
+    font-size: 0.8rem;
 }
 
 .colorBar {
@@ -79,7 +153,7 @@
     border-radius: 3px;
 }
 
-/* Custom Zoom Buttons */
+/* ── Custom Zoom Buttons ─────────────────── */
 .controls {
     position: absolute;
     top: 20px;

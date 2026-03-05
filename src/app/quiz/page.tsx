@@ -5,6 +5,7 @@ import { useUser } from '@clerk/nextjs';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useToast } from '@/context/ToastContext';
+import { useRefresh } from '@/context/RefreshContext';
 import styles from './page.module.css';
 import {
     getQuizLevels,
@@ -25,6 +26,7 @@ type ViewType = 'dashboard' | 'quiz' | 'result' | 'certificate';
 export default function QuizPage() {
     const { user } = useUser();
     const { toast } = useToast();
+    const { triggerRefresh } = useRefresh();
     const [view, setView] = useState<ViewType>('dashboard');
     const [levels, setLevels] = useState<QuizLevel[]>([]);
     const [completedLevelIds, setCompletedLevelIds] = useState<number[]>([]);
@@ -115,6 +117,7 @@ export default function QuizPage() {
         if (totalAnswered >= 10) {
             // Quiz complete
             setView('result');
+            triggerRefresh('quiz');
 
             // If passed all 3 levels and no certificate yet, generate one
             if (updatedProgress.passed) {

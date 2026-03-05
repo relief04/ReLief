@@ -7,28 +7,7 @@
     background: transparent;
 }
 
-/* ── Hero Section ─────────────────────────── */
-.heroSection {
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--glass-border);
-    padding: 3rem 1.5rem 2.5rem;
-    position: relative;
-    overflow: hidden;
-}
 
-.heroSection::before {
-    content: '';
-    position: absolute;
-    top: -80px;
-    right: -80px;
-    width: 320px;
-    height: 320px;
-    border-radius: 50%;
-    background: radial-gradient(circle, var(--status-color, rgba(16, 185, 129, 0.15)) 0%, transparent 70%);
-    pointer-events: none;
-}
 
 .heroContent {
     max-width: 1200px;

@@ -1,0 +1,3 @@
+﻿.next/dev/types/app/api/admin/users/[id]/karma/route.ts(2,24): error TS2307: Cannot find module '../../../../../../../../../src/app/api/admin/users/[id]/karma/route.js' or its corresponding type declarations.
+.next/dev/types/app/api/admin/users/[id]/karma/route.ts(7,29): error TS2307: Cannot find module '../../../../../../../../../src/app/api/admin/users/[id]/karma/route.js' or its corresponding type declarations.
+.next/types/validator.ts(341,39): error TS2307: Cannot find module '../../src/app/api/admin/users/[id]/karma/route.js' or its corresponding type declarations.

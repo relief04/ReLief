@@ -82,7 +82,7 @@ export default function RewardCard({ reward, view, onAction, isProcessing }: Rew
                 <div className="text-sm font-semibold">
                     {reward.isPurchasable ? (
                         <span className="flex items-center text-yellow-600 dark:text-yellow-500">
-                            <span className="mr-1">💎</span> {reward.cost} KP
+                            <span className="mr-1">💎</span> {reward.cost} IP
                         </span>
                     ) : (
                         <span className="text-gray-500 dark:text-gray-400 text-xs italic">

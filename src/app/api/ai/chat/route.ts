@@ -32,9 +32,9 @@ ReLief is an eco-platform that helps users track, reduce, and heal their carbon 
 4. Dashboard (/dashboard)
    - Overview of your total carbon footprint, karma points (balance), and recent activity.
 
-5. Karma Points & Rewards (/rewards)
-   - You earn Karma Points (KP) for logging eco-actions and activities on the platform.
-   - Spend KP in the Rewards section to unlock available rewards.
+5. Impact Points & Rewards (/rewards)
+   - You earn Impact Points (IP) for logging eco-actions and activities on the platform.
+   - Spend IP in the Rewards section to unlock available rewards.
    - The available rewards and their costs are shown on the /rewards page.
 
 6. Badges (/badges)
@@ -57,7 +57,7 @@ ReLief is an eco-platform that helps users track, reduce, and heal their carbon 
     - Health recommendations based on current AQI.
 
 11. Quiz (/quiz)
-    - Answer eco-awareness quizzes to earn Karma Points.
+    - Answer eco-awareness quizzes to earn Impact Points.
 
 12. Profile (/profile)
     - View and manage your account, notification preferences, login streak, and badges.
