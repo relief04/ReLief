@@ -206,6 +206,9 @@ export default function SignUpForm() {
 
                 {error && <div className={styles.errorAlert}>{error}</div>}
 
+                {/* Clerk Bot Protection CAPTCHA container */}
+                <div id="clerk-captcha" className={styles.captchaContainer}></div>
+
                 <Button type="submit" isLoading={loading} className={styles.submitButton}>
                     Continue
                     <ChevronRight size={18} />

@@ -258,3 +258,9 @@
         grid-template-columns: 1fr;
     }
 }
+
+.captchaContainer {
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+}
