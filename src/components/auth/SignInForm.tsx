@@ -7,11 +7,13 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import styles from "@/app/auth.module.css";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function SignInForm() {
     const { isLoaded, signIn, setActive } = useSignIn();
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
+    const [showPassword, setShowPassword] = React.useState(false);
     const [verifying, setVerifying] = React.useState(false);
     const [error, setError] = React.useState("");
     const router = useRouter();
@@ -82,13 +84,24 @@ export default function SignInForm() {
                     placeholder="name@example.com"
                     required
                 />
-                <Input
-                    label="Password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
+                <div style={{ position: 'relative' }}>
+                    <Input
+                        label="Password"
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••"
+                        required
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className={styles.passwordToggle}
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                </div>
 
                 {error && <div className={styles.errorAlert}>{error}</div>}
 
