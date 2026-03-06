@@ -331,11 +331,7 @@ export default function QuizPage() {
                             </Button>
                         </div>
                     ) : (
-                        <div className={styles.feedbackArea + (selectedOption !== currentQuestion.correct_answer ? ` ${styles.wrongFeedback}` : '')}>
-                            <div className={styles.resultTitle + (selectedOption === currentQuestion.correct_answer ? ` ${styles.successText}` : ` ${styles.dangerText}`)}>
-                                {selectedOption === currentQuestion.correct_answer ? '🎉 Correct!' : '❌ Incorrect'}
-                            </div>
-                            <p className={styles.explanation}>{currentQuestion.explanation}</p>
+                        <div className={styles.feedbackArea}>
                             <div className={styles.autoAdvance}>
                                 {currentQuestionIndex + 1 >= 10 ? 'Quiz finishing...' : 'Next question in 3s...'}
                             </div>
