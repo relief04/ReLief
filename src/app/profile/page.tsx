@@ -29,7 +29,10 @@ import {
     Volume2,
     Settings,
     LogOut,
-    Bell
+    Bell,
+    Trash2,
+    RefreshCw,
+    AlertTriangle
 } from 'lucide-react';
 import styles from './profile.module.css';
 import { useRouter } from 'next/navigation';
@@ -53,6 +56,9 @@ export default function ProfilePage() {
     const [loadingData, setLoadingData] = useState(true);
     const [isStreakModalOpen, setIsStreakModalOpen] = useState(false);
     const [isPointsModalOpen, setIsPointsModalOpen] = useState(false);
+    const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
     const [activeTab, setActiveTab] = useState<'overview' | 'notifications'>('overview');
 
     useEffect(() => {
@@ -96,6 +102,46 @@ export default function ProfilePage() {
     };
 
     const getLevel = (points: number) => Math.floor(points / 100) + 1;
+
+    const handleResetProgress = async () => {
+        setIsProcessing(true);
+        try {
+            const res = await fetch('/api/profile/reset', { method: 'POST' });
+            if (res.ok) {
+                alert('Your progress has been reset successfully.');
+                window.location.reload();
+            } else {
+                const data = await res.json();
+                alert(`Error resetting progress: ${data.error}`);
+            }
+        } catch (err) {
+            console.error(err);
+            alert('An unexpected error occurred.');
+        } finally {
+            setIsProcessing(false);
+            setIsResetModalOpen(false);
+        }
+    };
+
+    const handleDeleteAccount = async () => {
+        setIsProcessing(true);
+        try {
+            const res = await fetch('/api/profile', { method: 'DELETE' });
+            if (res.ok) {
+                alert('Your account has been deleted.');
+                signOut({ redirectUrl: '/' });
+            } else {
+                const data = await res.json();
+                alert(`Error deleting account: ${data.error}`);
+            }
+        } catch (err) {
+            console.error(err);
+            alert('An unexpected error occurred.');
+        } finally {
+            setIsProcessing(false);
+            setIsDeleteModalOpen(false);
+        }
+    };
 
     return (
         <div className={styles.container}>
@@ -248,6 +294,22 @@ export default function ProfilePage() {
                             ⚙️ Admin Dashboard
                         </button>
                     )}
+
+                    <button
+                        onClick={() => setIsResetModalOpen(true)}
+                        className={styles.btnReset}
+                    >
+                        <RefreshCw size={18} />
+                        Reset Progress
+                    </button>
+
+                    <button
+                        onClick={() => setIsDeleteModalOpen(true)}
+                        className={styles.btnDelete}
+                    >
+                        <Trash2 size={18} />
+                        Delete Account
+                    </button>
                 </div>
             </div>
 
@@ -437,6 +499,70 @@ export default function ProfilePage() {
                 onClose={() => setIsPointsModalOpen(false)}
                 userId={user.id}
             />
+
+            {/* Reset Progress Modal */}
+            <Modal
+                isOpen={isResetModalOpen}
+                onClose={() => !isProcessing && setIsResetModalOpen(false)}
+                title="Reset All Progress?"
+            >
+                <div className={styles.modalInner}>
+                    <div className={styles.modalIcon} style={{ color: '#eab308' }}>
+                        <AlertTriangle size={48} />
+                    </div>
+                    <p className={styles.modalText}>
+                        This will permanentely wipe your points, streaks, carbon stats, posts, and activities. This action cannot be undone.
+                    </p>
+                    <div className={styles.modalActions}>
+                        <button
+                            onClick={() => setIsResetModalOpen(false)}
+                            disabled={isProcessing}
+                            className={styles.btnCancel}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleResetProgress}
+                            disabled={isProcessing}
+                            className={styles.btnConfirmReset}
+                        >
+                            {isProcessing ? 'Resetting...' : 'Yes, Reset Everything'}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+
+            {/* Delete Account Modal */}
+            <Modal
+                isOpen={isDeleteModalOpen}
+                onClose={() => !isProcessing && setIsDeleteModalOpen(false)}
+                title="Delete Account Permanentely?"
+            >
+                <div className={styles.modalInner}>
+                    <div className={styles.modalIcon} style={{ color: '#ef4444' }}>
+                        <AlertTriangle size={48} />
+                    </div>
+                    <p className={styles.modalText}>
+                        Are you sure you want to delete your account? All your data will be permanentely removed. This action is irreversible.
+                    </p>
+                    <div className={styles.modalActions}>
+                        <button
+                            onClick={() => setIsDeleteModalOpen(false)}
+                            disabled={isProcessing}
+                            className={styles.btnCancel}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleDeleteAccount}
+                            disabled={isProcessing}
+                            className={styles.btnConfirmDelete}
+                        >
+                            {isProcessing ? 'Deleting...' : 'Delete My Account'}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 }

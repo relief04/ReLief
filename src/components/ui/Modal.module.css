@@ -90,15 +90,13 @@
 }
 
 /* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    .modal {
-        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-    }
+[data-theme='dark'] .modal {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+}
 
-    .header {
-        border-bottom-color: rgba(16, 185, 129, 0.2);
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
-    }
+[data-theme='dark'] .header {
+    border-bottom-color: rgba(16, 185, 129, 0.2);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
 }
 
 @media (max-width: 768px) {

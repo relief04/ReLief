@@ -498,3 +498,107 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* --- 6. Account Management Actions --- */
+.btnReset {
+    padding: 0.75rem 1.5rem;
+    background: rgba(234, 179, 8, 0.08);
+    /* Fainter in light mode */
+    color: #b45309;
+    /* Darker amber for light mode contrast */
+    border: 1px solid rgba(234, 179, 8, 0.15);
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+[data-theme='dark'] .btnReset {
+    background: rgba(234, 179, 8, 0.15);
+    color: #f59e0b;
+    /* Brighter amber for dark mode */
+}
+
+.btnReset:hover {
+    background: rgba(234, 179, 8, 0.2);
+    transform: translateY(-2px);
+}
+
+.btnDelete {
+    padding: 0.75rem 1.5rem;
+    background: rgba(239, 68, 68, 0.08);
+    color: #dc2626;
+    /* Darker red for light mode */
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+[data-theme='dark'] .btnDelete {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.btnDelete:hover {
+    background: rgba(239, 68, 68, 0.2);
+    transform: translateY(-2px);
+}
+
+.modalInner {
+    padding: 1rem;
+    text-align: center;
+}
+
+.modalIcon {
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+.modalText {
+    margin-bottom: 1.5rem;
+    color: var(--color-text-secondary);
+}
+
+.modalActions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btnCancel {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text);
+    cursor: pointer;
+}
+
+.btnConfirmReset {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    background: #eab308;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btnConfirmDelete {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    background: #ef4444;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
