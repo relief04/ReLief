@@ -35,6 +35,9 @@ export default function QuizPage() {
     const [questions, setQuestions] = useState<QuizQuestion[]>([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [progress, setProgress] = useState<UserQuizProgress | null>(null);
+    const [selectedOption, setSelectedOption] = useState<'A' | 'B' | 'C' | 'D' | null>(null);
+    const [showFeedback, setShowFeedback] = useState(false);
+    const [submittingAnswer, setSubmittingAnswer] = useState(false);
     const [loading, setLoading] = useState(true);
     const [certificateId, setCertificateId] = useState<string | null>(null);
 
@@ -77,6 +80,8 @@ export default function QuizPage() {
 
         setQuestions(quizQuestions);
         setCurrentQuestionIndex(0);
+        setSelectedOption(null);
+        setShowFeedback(false);
 
         // Start or resume progress
         let userProgress = await getUserLevelProgress(user.id, level.id);
@@ -89,31 +94,44 @@ export default function QuizPage() {
         setLoading(false);
     }
 
-    async function handleAnswer(selectedAnswer: 'A' | 'B' | 'C' | 'D') {
-        if (!user || !currentLevel || !progress || !questions[currentQuestionIndex]) return;
+    const handleSelectOption = (opt: 'A' | 'B' | 'C' | 'D') => {
+        if (showFeedback) return;
+        setSelectedOption(opt);
+    };
 
+    const handleCheckAnswer = async () => {
+        if (!user || !currentLevel || !progress || !questions[currentQuestionIndex] || !selectedOption || showFeedback) return;
+
+        setSubmittingAnswer(true);
         const currentQuestion = questions[currentQuestionIndex];
-        const isCorrect = selectedAnswer === currentQuestion.correct_answer;
+        const isCorrect = selectedOption === currentQuestion.correct_answer;
 
         // Submit answer and update progress
         const updatedProgress = await submitQuizAnswer(
             user.id,
             currentLevel.id,
             currentQuestion.id,
-            selectedAnswer,
+            selectedOption,
             isCorrect,
             progress
         );
 
         if (!updatedProgress) {
             toast('Error submitting answer. Please try again.', 'error');
+            setSubmittingAnswer(false);
             return;
         }
 
         setProgress(updatedProgress);
+        setShowFeedback(true);
+        setSubmittingAnswer(false);
+    };
 
-        // Check if quiz is complete (10 questions answered)
-        const totalAnswered = updatedProgress.correct_answers + updatedProgress.incorrect_answers;
+    const handleNextQuestion = () => {
+        if (!progress) return;
+
+        // Check if quiz is complete
+        const totalAnswered = progress.correct_answers + progress.incorrect_answers;
 
         if (totalAnswered >= 10) {
             // Quiz complete
@@ -121,18 +139,25 @@ export default function QuizPage() {
             triggerRefresh('quiz');
 
             // If passed all 3 levels and no certificate yet, generate one
-            if (updatedProgress.passed) {
-                const allCompleted = await getCompletedLevels(user.id);
-                if (allCompleted.length === 3 && !certificateId) {
-                    const certId = await generateCertificate(user.id, user.username || user.firstName || 'Eco Warrior');
-                    if (certId) {
-                        setCertificateId(certId);
-                    }
-                }
+            if (progress.passed) {
+                checkAndGenerateCertificate();
             }
         } else {
             // Move to next question
             setCurrentQuestionIndex(currentQuestionIndex + 1);
+            setSelectedOption(null);
+            setShowFeedback(false);
+        }
+    };
+
+    async function checkAndGenerateCertificate() {
+        if (!user) return;
+        const allCompleted = await getCompletedLevels(user.id);
+        if (allCompleted.length === 3 && !certificateId) {
+            const certId = await generateCertificate(user.id, user.username || user.firstName || 'Eco Warrior');
+            if (certId) {
+                setCertificateId(certId);
+            }
         }
     }
 
@@ -260,35 +285,61 @@ export default function QuizPage() {
                 <Card className={styles.questionCard}>
                     <h2 className={styles.questionText}>{currentQuestion.question}</h2>
                     <div className={styles.optionsGrid}>
-                        <button
-                            className={styles.optionBtn}
-                            onClick={() => handleAnswer('A')}
-                        >
-                            <span className={styles.optLabel}>A</span>
-                            {currentQuestion.option_a}
-                        </button>
-                        <button
-                            className={styles.optionBtn}
-                            onClick={() => handleAnswer('B')}
-                        >
-                            <span className={styles.optLabel}>B</span>
-                            {currentQuestion.option_b}
-                        </button>
-                        <button
-                            className={styles.optionBtn}
-                            onClick={() => handleAnswer('C')}
-                        >
-                            <span className={styles.optLabel}>C</span>
-                            {currentQuestion.option_c}
-                        </button>
-                        <button
-                            className={styles.optionBtn}
-                            onClick={() => handleAnswer('D')}
-                        >
-                            <span className={styles.optLabel}>D</span>
-                            {currentQuestion.option_d}
-                        </button>
+                        {['A', 'B', 'C', 'D'].map((opt) => {
+                            const optionKey = `option_${opt.toLowerCase()}` as keyof QuizQuestion;
+                            const optionText = currentQuestion[optionKey] as string;
+                            const isSelected = selectedOption === opt;
+                            const isCorrect = opt === currentQuestion.correct_answer;
+
+                            let btnClass = styles.optionBtn;
+                            if (showFeedback) {
+                                if (isCorrect) btnClass += ` ${styles.optionCorrect}`;
+                                else if (isSelected) btnClass += ` ${styles.optionWrong}`;
+                                else btnClass += ` ${styles.optionDimmed}`;
+                            } else if (isSelected) {
+                                btnClass += ` ${styles.optionSelected}`;
+                            }
+
+                            return (
+                                <button
+                                    key={opt}
+                                    className={btnClass}
+                                    onClick={() => handleSelectOption(opt as 'A' | 'B' | 'C' | 'D')}
+                                    disabled={showFeedback || submittingAnswer}
+                                >
+                                    <span className={styles.optLabel}>{opt}</span>
+                                    {optionText}
+                                </button>
+                            );
+                        })}
                     </div>
+
+                    {!showFeedback ? (
+                        <div style={{ marginTop: '2rem' }}>
+                            <Button
+                                onClick={handleCheckAnswer}
+                                disabled={selectedOption === null || submittingAnswer}
+                                variant="primary"
+                                style={{ width: '100%' }}
+                            >
+                                {submittingAnswer ? 'Checking...' : 'Continue'}
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className={styles.feedbackArea + (selectedOption !== currentQuestion.correct_answer ? ` ${styles.wrongFeedback}` : '')}>
+                            <div className={styles.resultTitle + (selectedOption === currentQuestion.correct_answer ? ` ${styles.successText}` : ` ${styles.dangerText}`)}>
+                                {selectedOption === currentQuestion.correct_answer ? '🎉 Correct!' : '❌ Incorrect'}
+                            </div>
+                            <p className={styles.explanation}>{currentQuestion.explanation}</p>
+                            <Button
+                                onClick={handleNextQuestion}
+                                variant="primary"
+                                style={{ width: '100%', marginTop: '1.5rem' }}
+                            >
+                                {currentQuestionIndex + 1 >= 10 ? 'Finish Quiz' : 'Next Question'}
+                            </Button>
+                        </div>
+                    )}
                 </Card>
             </div>
         );
