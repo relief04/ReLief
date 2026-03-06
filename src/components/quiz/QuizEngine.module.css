@@ -54,6 +54,11 @@
     background-color: rgba(231, 76, 60, 0.1);
 }
 
+.selected {
+    border-color: var(--color-primary);
+    background-color: var(--color-bg-200);
+}
+
 .dimmed {
     opacity: 0.5;
 }
@@ -66,10 +71,20 @@
 }
 
 .explanation {
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: var(--color-text-200);
     margin-bottom: 0.5rem;
     line-height: 1.5;
+}
+
+.successText {
+    color: var(--color-success);
+    font-weight: 700;
+}
+
+.dangerText {
+    color: var(--color-danger);
+    font-weight: 700;
 }
 
 @keyframes fadeIn {

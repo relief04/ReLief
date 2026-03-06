@@ -11,13 +11,14 @@ export async function DELETE() {
 
         const db = createAdminClient();
 
-        // 1. Delete related records
+        // 1. Delete related records (linked by user_id)
         const relatedTables = [
             'posts',
             'post_likes',
             'comments',
             'group_members',
             'group_posts',
+            'group_messages',
             'event_rsvps',
             'friendships',
             'notifications',
@@ -29,6 +30,7 @@ export async function DELETE() {
             'user_rewards',
             'user_badges',
             'carbon_budgets',
+            'carbon_logs',
             'user_quiz_progress',
             'user_quiz_answers',
             'certificates',
@@ -40,6 +42,20 @@ export async function DELETE() {
                 await db.from(table).delete().eq('user_id', userId);
             } catch (err: any) {
                 console.error(`Failed to delete from ${table}:`, err);
+            }
+        }
+
+        // 2. Delete entities created by the user (linked by created_by)
+        const createdEntities = [
+            'groups',
+            'events'
+        ];
+
+        for (const table of createdEntities) {
+            try {
+                await db.from(table).delete().eq('created_by', userId);
+            } catch (err: any) {
+                console.error(`Failed to delete created entity ${table}:`, err);
             }
         }
 

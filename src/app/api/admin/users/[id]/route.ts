@@ -26,6 +26,7 @@ export async function DELETE(
         'comments',
         'group_members',
         'group_posts',
+        'group_messages',
         'event_rsvps',
         'friendships',
         'notifications',
@@ -37,6 +38,7 @@ export async function DELETE(
         'user_rewards',
         'user_badges',
         'carbon_budgets',
+        'carbon_logs',
         'user_quiz_progress',
         'user_quiz_answers',
         'certificates',
@@ -47,6 +49,20 @@ export async function DELETE(
         try {
             await db.from(table).delete().eq('user_id', userId);
         } catch { }
+    }
+
+    // Delete entities created by the user (linked by created_by)
+    const createdEntities = [
+        'groups',
+        'events'
+    ];
+
+    for (const table of createdEntities) {
+        try {
+            await db.from(table).delete().eq('created_by', userId);
+        } catch (err: any) {
+            console.error(`Failed to delete created entity ${table}:`, err);
+        }
     }
 
     // Also clean friendships where user is the friend

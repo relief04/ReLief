@@ -22,8 +22,12 @@ export const QuizEngine: React.FC<QuizEngineProps> = ({ questions, onComplete })
     const handleOptionClick = (idx: number) => {
         if (isAnswered) return;
         setSelectedOpt(idx);
+    };
+
+    const handleCheck = () => {
+        if (selectedOpt === null) return;
         setIsAnswered(true);
-        if (idx === currentQ.correctAnswer) {
+        if (selectedOpt === currentQ.correctAnswer) {
             setScore(s => s + 10);
         }
     };
@@ -34,7 +38,7 @@ export const QuizEngine: React.FC<QuizEngineProps> = ({ questions, onComplete })
             setSelectedOpt(null);
             setIsAnswered(false);
         } else {
-            onComplete(score + (selectedOpt === currentQ.correctAnswer ? 10 : 0)); // Add last Q score if correct
+            onComplete(score);
         }
     };
 
@@ -68,13 +72,26 @@ export const QuizEngine: React.FC<QuizEngineProps> = ({ questions, onComplete })
                 })}
             </div>
 
-            {isAnswered && (
+            {!isAnswered ? (
+                <div style={{ marginTop: '2rem' }}>
+                    <Button
+                        onClick={handleCheck}
+                        disabled={selectedOpt === null}
+                        variant="primary"
+                        style={{ width: '100%' }}
+                    >
+                        Continue
+                    </Button>
+                </div>
+            ) : (
                 <div className={styles.feedback}>
-                    <p className={styles.explanation}>
-                        {selectedOpt === currentQ.correctAnswer ? '🎉 Correct!' : '❌ Oops!'} <br />
-                        {currentQ.explanation}
-                    </p>
-                    <Button onClick={handleNext} variant="primary" style={{ marginTop: '1rem' }}>
+                    <div className={styles.explanation}>
+                        <div className={selectedOpt === currentQ.correctAnswer ? styles.successText : styles.dangerText} style={{ fontSize: '1.4rem', marginBottom: '0.5rem' }}>
+                            {selectedOpt === currentQ.correctAnswer ? '🎉 Correct!' : '❌ Incorrect!'}
+                        </div>
+                        <p>{currentQ.explanation}</p>
+                    </div>
+                    <Button onClick={handleNext} variant="primary" style={{ marginTop: '1rem', width: '100%' }}>
                         {currentIdx + 1 === questions.length ? 'Finish Quiz' : 'Next Question'}
                     </Button>
                 </div>
