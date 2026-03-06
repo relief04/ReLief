@@ -125,6 +125,11 @@ export default function QuizPage() {
         setProgress(updatedProgress);
         setShowFeedback(true);
         setSubmittingAnswer(false);
+
+        // Automatically move to next question after 3 seconds
+        setTimeout(() => {
+            handleNextQuestion();
+        }, 3000);
     };
 
     const handleNextQuestion = () => {
@@ -331,13 +336,9 @@ export default function QuizPage() {
                                 {selectedOption === currentQuestion.correct_answer ? '🎉 Correct!' : '❌ Incorrect'}
                             </div>
                             <p className={styles.explanation}>{currentQuestion.explanation}</p>
-                            <Button
-                                onClick={handleNextQuestion}
-                                variant="primary"
-                                style={{ width: '100%', marginTop: '1.5rem' }}
-                            >
-                                {currentQuestionIndex + 1 >= 10 ? 'Finish Quiz' : 'Next Question'}
-                            </Button>
+                            <div className={styles.autoAdvance}>
+                                {currentQuestionIndex + 1 >= 10 ? 'Quiz finishing...' : 'Next question in 3s...'}
+                            </div>
                         </div>
                     )}
                 </Card>
