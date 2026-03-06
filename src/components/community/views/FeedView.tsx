@@ -10,6 +10,7 @@ import { useToast } from '@/context/ToastContext';
 import { checkAndAwardBadges } from '@/lib/badgesServer';
 import { useRefresh } from '@/context/RefreshContext';
 import styles from './FeedView.module.css';
+import { formatDate } from '@/lib/dateUtils';
 
 interface Post {
     id: number;
@@ -153,7 +154,7 @@ export function FeedView({ selectedHashtag, onHashtagClick }: FeedViewProps) {
                         hashtags: p.hashtags,
                         likes: likeCounts.get(p.id) || 0,
                         comments: p.comments_count || 0,
-                        timestamp: new Date(p.created_at).toLocaleDateString(),
+                        timestamp: formatDate(p.created_at),
                         liked_by_user: userLikes.includes(p.id),
                         user_id: p.user_id
                     };

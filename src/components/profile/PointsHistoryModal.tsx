@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { Modal } from '@/components/ui/Modal';
 import { Award, Loader2 } from 'lucide-react';
 import styles from './PointsHistoryModal.module.css';
+import { formatDateTime } from '@/lib/dateUtils';
 
 interface PointsHistoryModalProps {
     isOpen: boolean;
@@ -99,12 +100,7 @@ export function PointsHistoryModal({ isOpen, onClose, userId }: PointsHistoryMod
                                             <span className={styles.itemSource}>{entry.source}</span>
                                             <span className={styles.dot}>•</span>
                                             <span className={styles.itemDate}>
-                                                {new Date(entry.created_at).toLocaleDateString(undefined, {
-                                                    month: 'short',
-                                                    day: 'numeric',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
-                                                })}
+                                                {formatDateTime(entry.created_at)}
                                             </span>
                                         </div>
                                     </div>

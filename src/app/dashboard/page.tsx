@@ -14,6 +14,7 @@ import { ensureUserProfile } from '@/lib/userUtils';
 import { recordLogin } from '@/lib/streakUtils';
 import { TimelineChart, CategoryPieChart } from '@/components/charts/CarbonCharts';
 import { PointsHistoryModal } from '@/components/profile/PointsHistoryModal';
+import { formatDate } from '@/lib/dateUtils';
 
 interface DashboardData {
     username: string;
@@ -109,7 +110,7 @@ export default function DashboardPage() {
                         category: a.category,
                         desc: a.description,
                         impact: a.emissions,
-                        date: new Date(a.created_at).toLocaleDateString()
+                        date: formatDate(a.created_at)
                     }));
 
                     // Process Weekly Timeline (Last 7 days)

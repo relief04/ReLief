@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { formatDate } from './dateUtils';
 
 interface UserData {
     name: string;
@@ -69,7 +70,7 @@ export async function generateCarbonSummaryPDF(
 
     yPosition += 10;
     pdf.setFontSize(10);
-    pdf.text(`Report Date: ${new Date().toLocaleDateString()}`, 15, yPosition);
+    pdf.text(`Report Date: ${formatDate(new Date())}`, 15, yPosition);
 
     // Divider line
     yPosition += 7;
@@ -189,7 +190,7 @@ export async function generateCarbonSummaryPDF(
             rowShade = !rowShade;
 
             pdf.setTextColor(30, 30, 30);
-            const date = new Date(log.created_at).toLocaleDateString();
+            const date = formatDate(log.created_at);
             const category = log.category === 'calculator' ? 'Carbon Footprint'
                 : log.category === 'bill_upload' ? 'Bill Scan' : log.category;
             const desc = log.description?.slice(0, 55) ?? '';

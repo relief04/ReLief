@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, ShieldCheck, TreePine, Ticket, Award, Zap, Lock as LockIcon } from 'lucide-react';
 import { Reward } from '@/types/rewards';
+import { formatDate } from '@/lib/dateUtils';
 
 interface RewardWithStatus extends Reward {
     status?: string;
@@ -102,7 +103,7 @@ export default function RewardDetailsDrawer({ isOpen, onClose, reward, onAction,
                         {reward.earnedDate && (
                             <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
                                 <div className="text-xs text-gray-500 uppercase font-bold mb-1">Earned On</div>
-                                <div className="text-sm font-medium text-gray-900 dark:text-white">{new Date(reward.earnedDate).toLocaleDateString()}</div>
+                                <div className="text-sm font-medium text-gray-900 dark:text-white">{formatDate(reward.earnedDate)}</div>
                             </div>
                         )}
                     </div>

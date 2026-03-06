@@ -3,6 +3,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { isAdminEmail } from '@/lib/admin';
 import styles from './page.module.css';
+import { formatDate } from '@/lib/dateUtils';
 import { useToast } from '@/context/ToastContext';
 import { useRefresh } from '@/context/RefreshContext';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -480,7 +481,7 @@ export default function AdminPage() {
                                     <tr key={u.id}>
                                         <td title={u.username}>{u.username || 'N/A'}</td>
                                         <td title={u.email}>{u.email || '—'}</td>
-                                        <td>{new Date(u.created_at).toLocaleDateString()}</td>
+                                        <td>{formatDate(u.created_at)}</td>
                                         <td>{u.is_banned ? '🚫 Banned' : '✅ Active'}</td>
                                         <td>{u.is_admin ? '👑 Admin' : '👤 User'}</td>
                                         <td className={styles.actionsCell}>
@@ -649,7 +650,7 @@ export default function AdminPage() {
                                         <tbody>
                                             {events.map(event => (
                                                 <tr key={event.id}>
-                                                    <td>{new Date(event.event_date).toLocaleDateString()}</td>
+                                                    <td>{formatDate(event.event_date)}</td>
                                                     <td title={event.description}><b>{event.title}</b></td>
                                                     <td>{event.event_type}</td>
                                                     <td>

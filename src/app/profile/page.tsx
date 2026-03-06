@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import styles from './profile.module.css';
 import { useRouter } from 'next/navigation';
+import { formatDate } from '@/lib/dateUtils';
 
 // Mock Badges Data
 const ALL_BADGES = [
@@ -142,7 +143,7 @@ export default function ProfilePage() {
                     }}>
                         <div style={{ fontSize: '0.75rem', opacity: 0.7, marginBottom: '0.25rem' }}>Member Since</div>
                         <div style={{ fontSize: '1rem', fontWeight: 600 }}>
-                            {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
+                            {user.createdAt ? formatDate(user.createdAt) : 'N/A'}
                         </div>
                     </div>
                 </div>

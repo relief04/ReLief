@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { Download, Share2 } from 'lucide-react';
 import styles from './Certificate.module.css';
 import { Logo } from '@/components/ui/Logo';
+import { formatDate } from '@/lib/dateUtils';
 
 interface CertificateProps {
     recipientName: string;
@@ -15,7 +16,7 @@ export default function CertificateTemplate({
     recipientName,
     achievementTitle,
     description,
-    issueDate = new Date().toLocaleDateString(),
+    issueDate = formatDate(new Date()),
     certificateId = `CERT-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
 }: CertificateProps) {
 

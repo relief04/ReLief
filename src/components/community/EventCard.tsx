@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useToast } from '@/context/ToastContext';
 import styles from './EventCard.module.css';
+import { formatDate } from '@/lib/dateUtils';
 
 interface Participant {
     user_id: string;
@@ -93,7 +94,7 @@ export function EventCard({ event, onRSVP, onDelete, onEdit, onShowParticipants 
                 </div>
                 <div className={styles.detail}>
                     <span>📅</span>
-                    <span>{eventDate.toLocaleDateString()} at {eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span>{formatDate(eventDate)} at {eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
 
                 {/* Clickable participant facepile */}

@@ -11,6 +11,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { exportCarbonLogsToCSV } from '@/lib/csvExportUtils';
 import { generateCarbonSummaryPDF } from '@/lib/pdfExportUtils';
 import Link from 'next/link';
+import { formatDate } from '@/lib/dateUtils';
 
 interface LogItem {
     id: string | number;
@@ -203,7 +204,7 @@ export default function HistoryPage() {
                                 logs.map((log) => (
                                     <tr key={`${log.source}-${log.id}-${log.created_at}`}>
                                         <td className={styles.dateCol}>
-                                            {new Date(log.created_at).toLocaleDateString()}
+                                            {formatDate(log.created_at)}
                                         </td>
                                         <td className={styles.categoryCol}>
                                             {log.category === 'calculator' ? 'Carbon Footprint' :

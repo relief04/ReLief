@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { useToast } from '@/context/ToastContext';
 import { useRefresh } from '@/context/RefreshContext';
 import styles from './page.module.css';
+import { formatDate } from '@/lib/dateUtils';
 import {
     getQuizLevels,
     getRandomQuestionsForLevel,
@@ -447,13 +448,9 @@ export default function QuizPage() {
                         {/* Footer */}
                         <div className={styles.certFooter}>
                             <div className={styles.certInfo}>
-                                <div className={styles.certId}>
-                                    <small>Certificate ID</small>
-                                    <strong>{certificateId}</strong>
-                                </div>
                                 <div className={styles.certDate}>
                                     <small>Issue Date</small>
-                                    <strong>{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</strong>
+                                    <strong>{formatDate(new Date())}</strong>
                                 </div>
                             </div>
                             <div className={styles.certSeal}>
