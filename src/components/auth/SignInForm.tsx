@@ -50,6 +50,10 @@ export default function SignInForm() {
             strategy: "oauth_google",
             redirectUrl: "/sso-callback",
             redirectUrlComplete: "/dashboard",
+            // @ts-ignore - Some Clerk versions use different property names for OAuth params
+            additionalOAuthParameters: {
+                prompt: "select_account",
+            },
         });
     };
 

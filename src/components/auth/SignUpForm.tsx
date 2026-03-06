@@ -91,6 +91,10 @@ export default function SignUpForm() {
                 strategy: "oauth_google",
                 redirectUrl: "/sso-callback",
                 redirectUrlComplete: "/dashboard",
+                // @ts-ignore - Some Clerk versions use different property names for OAuth params
+                additionalOAuthParameters: {
+                    prompt: "select_account",
+                },
             });
         } catch (err: any) {
             console.error(JSON.stringify(err, null, 2));
