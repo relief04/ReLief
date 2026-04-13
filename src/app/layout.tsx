@@ -55,17 +55,6 @@ export default function RootLayout({
                     <Footer />
                   </div>
 
-                  {/* Mobile Blocker View */}
-                  <div className="mobile-blocker-wrapper">
-                    <div className="mobile-blocker-icon">💻</div>
-                    <h1 className="mobile-blocker-title">Desktop Only Experience</h1>
-                    <p className="mobile-blocker-text">
-                      ReLief is currently optimized for desktop viewing to provide the best possible experience with our advanced eco-dashboard.
-                      <br /><br />
-                      Please access this platform on a device with a larger screen (desktop or laptop).
-                    </p>
-                  </div>
-
                   <AIAssistant />
                   <Toaster position="bottom-right" toastOptions={{
                     style: {

@@ -1,0 +1,135 @@
+/* Floating Trigger */
+.triggerWrapper {
+    position: fixed;
+    bottom: 112px; /* 32px (launcher bottom) + 64px (launcher height) + 16px (gap) */
+    right: 32px;
+    z-index: 100;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fab {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: var(--color-accent); /* Amber */
+    color: #1a1a1a;
+    border: none;
+    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: transform 0.2s ease;
+}
+
+.fab:hover {
+    transform: scale(1.05);
+}
+
+.glowRing {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 2px solid var(--color-accent);
+    opacity: 0;
+    z-index: 1;
+    animation: amberPulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes amberPulse {
+    0% { transform: scale(0.8); opacity: 0.8; border-width: 4px; }
+    100% { transform: scale(1.4); opacity: 0; border-width: 0px; }
+}
+
+/* Modal Overlay */
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modalContent {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    padding: 2.5rem 2rem;
+    box-shadow: var(--shadow-xl);
+    animation: slideUpModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes slideUpModal {
+    from { opacity: 0; transform: translateY(40px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.closeBtn {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: transparent;
+    color: var(--color-text-300);
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.closeBtn:hover {
+    background: rgba(255,255,255,0.05);
+    color: var(--color-text-100);
+}
+
+.modalHeader {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.modalHeader h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--color-text-100);
+    margin: 0 0 0.5rem;
+}
+
+.modalHeader p {
+    color: var(--color-text-200);
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.scannerBoundary {
+    /* Contain the BillScanner naturally */
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .triggerWrapper {
+        display: none !important;
+    }
+}

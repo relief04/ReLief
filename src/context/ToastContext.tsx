@@ -32,7 +32,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     const toast = useCallback((message: string, type: ToastType = 'success') => {
         const id = ++idRef.current;
         setToasts(prev => [...prev, { id, message, type }]);
-        setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3500);
+        // Strict 4000ms auto-dismiss requested in specs
+        setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
     }, []);
 
     const confirm = useCallback((options: ConfirmOptions): Promise<boolean> => {
@@ -54,34 +55,37 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     };
 
     const colors: Record<ToastType, string> = {
-        success: '#10b981',
-        error: '#ef4444',
-        warning: '#f59e0b',
-        info: '#3b82f6',
+        success: '#059669', // Emerald
+        error: '#ef4444',   // Red
+        warning: '#fbbf24', // Amber
+        info: '#0891b2',    // Teal
     };
 
     return (
         <ToastContext.Provider value={{ toast, confirm }}>
             {children}
 
-            {/* Toast Container */}
+            {/* Toast Container - Top Right Slider */}
             <div style={{
-                position: 'fixed', bottom: '1.5rem', right: '1.5rem',
+                position: 'fixed', top: '1.5rem', right: '1.5rem',
                 display: 'flex', flexDirection: 'column', gap: '0.75rem',
                 zIndex: 99999, pointerEvents: 'none',
             }}>
                 {toasts.map(t => (
                     <div key={t.id} style={{
                         display: 'flex', alignItems: 'center', gap: '0.75rem',
-                        background: 'var(--color-bg-100)', color: 'var(--color-text-100)',
+                        background: 'var(--glass-bg, rgba(255, 255, 255, 0.8))', color: 'var(--color-text-100)',
+                        backdropFilter: 'blur(20px) saturate(180%)',
                         padding: '0.875rem 1.25rem',
                         borderRadius: '12px',
                         borderLeft: `4px solid ${colors[t.type]}`,
-                        border: '1px solid var(--color-border)',
+                        borderTop: '1px solid var(--glass-border)',
+                        borderRight: '1px solid var(--glass-border)',
+                        borderBottom: '1px solid var(--glass-border)',
                         boxShadow: 'var(--shadow-lg)',
                         fontSize: '0.95rem', fontFamily: 'inherit',
                         minWidth: '280px', maxWidth: '420px',
-                        animation: 'toastIn 0.3s cubic-bezier(0.16,1,0.3,1)',
+                        animation: 'toastSlideIn 0.3s cubic-bezier(0.16,1,0.3,1)',
                         pointerEvents: 'auto',
                     }}>
                         <span style={{
@@ -90,7 +94,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: '0.8rem', fontWeight: 700, flexShrink: 0,
                         }}>{icons[t.type]}</span>
-                        <span style={{ flex: 1, lineHeight: 1.4 }}>{t.message}</span>
+                        <span style={{ flex: 1, lineHeight: 1.4, fontWeight: 500 }}>{t.message}</span>
                     </div>
                 ))}
             </div>
@@ -105,15 +109,16 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                     zIndex: 99999,
                 }}>
                     <div style={{
-                        background: 'var(--color-bg-100)', borderRadius: '16px',
+                        background: 'var(--glass-bg)', borderRadius: '16px',
+                        backdropFilter: 'blur(20px) saturate(180%)',
                         padding: '2rem', width: '100%', maxWidth: '400px',
-                        border: '1px solid var(--color-border)',
+                        border: '1px solid var(--glass-border)',
                         boxShadow: 'var(--shadow-lg)',
                         animation: 'toastIn 0.25s cubic-bezier(0.16,1,0.3,1)',
                         fontFamily: 'inherit',
                     }}>
                         {confirmState.title && (
-                            <h3 style={{ margin: '0 0 0.75rem', fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text-100)' }}>
+                            <h3 style={{ margin: '0 0 0.75rem', fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-text-100)' }}>
                                 {confirmState.title}
                             </h3>
                         )}
@@ -123,20 +128,20 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                         <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
                             <button onClick={() => handleConfirm(false)} style={{
                                 padding: '0.6rem 1.25rem', borderRadius: '8px',
-                                border: '1px solid var(--color-border)',
+                                border: '1.5px solid var(--glass-border)',
                                 background: 'transparent', color: 'var(--color-text-200)',
-                                cursor: 'pointer', fontSize: '0.9rem', fontFamily: 'inherit', fontWeight: 500,
+                                cursor: 'pointer', fontSize: '0.9rem', fontFamily: 'inherit', fontWeight: 600,
                             }}>
                                 {confirmState.cancelLabel ?? 'Cancel'}
                             </button>
                             <button onClick={() => handleConfirm(true)} style={{
                                 padding: '0.6rem 1.25rem', borderRadius: '8px', border: 'none',
-                                background: confirmState.danger ? '#ef4444' : '#10b981',
+                                background: confirmState.danger ? '#ef4444' : '#059669',
                                 color: '#fff', cursor: 'pointer', fontWeight: 700,
                                 fontSize: '0.9rem', fontFamily: 'inherit',
                                 boxShadow: confirmState.danger
                                     ? '0 4px 12px rgba(239,68,68,0.35)'
-                                    : '0 4px 12px rgba(16,185,129,0.35)',
+                                    : '0 4px 12px rgba(5,150,105,0.35)',
                             }}>
                                 {confirmState.confirmLabel ?? 'Confirm'}
                             </button>
@@ -146,6 +151,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             )}
 
             <style>{`
+                @keyframes toastSlideIn {
+                    from { opacity: 0; transform: translateX(100%); }
+                    to   { opacity: 1; transform: translateX(0); }
+                }
                 @keyframes toastIn {
                     from { opacity:0; transform:translateY(12px) scale(0.97); }
                     to   { opacity:1; transform:translateY(0) scale(1); }

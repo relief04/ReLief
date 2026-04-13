@@ -298,8 +298,8 @@ export default function QuizPage() {
 
                             let btnClass = styles.optionBtn;
                             if (showFeedback) {
-                                if (isCorrect) btnClass += ` ${styles.optionCorrect}`;
-                                else if (isSelected) btnClass += ` ${styles.optionWrong}`;
+                                if (isCorrect) btnClass += ` ${styles.optionCorrect} motion-quiz-correct`;
+                                else if (isSelected) btnClass += ` ${styles.optionWrong} motion-quiz-error`;
                                 else btnClass += ` ${styles.optionDimmed}`;
                             } else if (isSelected) {
                                 btnClass += ` ${styles.optionSelected}`;

@@ -1,0 +1,42 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 1.5rem;
+    width: 100%;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-filter);
+    -webkit-backdrop-filter: var(--glass-filter);
+    border-radius: var(--radius-xl);
+    border: 1px dashed var(--glass-border);
+}
+
+.iconWrapper {
+    margin-bottom: 1.5rem;
+}
+
+.defaultIcon {
+    color: var(--color-text-300);
+    opacity: 0.5;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-100);
+    margin: 0 0 0.5rem;
+}
+
+.description {
+    font-size: 0.95rem;
+    color: var(--color-text-200);
+    max-width: 400px;
+    margin: 0 0 1.5rem;
+    line-height: 1.5;
+}
+
+.actionWrapper {
+    margin-top: 0.5rem;
+}

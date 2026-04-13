@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { useRefresh } from '@/context/RefreshContext';
-import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useToast } from '@/context/ToastContext';
 import styles from './page.module.css';
@@ -15,6 +14,13 @@ import { recordLogin } from '@/lib/streakUtils';
 import { TimelineChart, CategoryPieChart } from '@/components/charts/CarbonCharts';
 import { PointsHistoryModal } from '@/components/profile/PointsHistoryModal';
 import { formatDate } from '@/lib/dateUtils';
+
+// Premium Hybrid Elements
+import { FloatingAIScanner } from '@/components/dashboard/FloatingAIScanner';
+import { TierBadge } from '@/components/badges/TierBadge';
+import { KarmaDisplay } from '@/components/rewards/KarmaDisplay';
+import { AQIStatus } from '@/components/aqi/AQIStatus';
+import { getAQIDataByCoords, AQIData } from '@/lib/aqi';
 
 interface DashboardData {
     username: string;
@@ -72,6 +78,24 @@ export default function DashboardPage() {
     const [isEditingBudget, setIsEditingBudget] = useState(false);
     const [newBudgetValue, setNewBudgetValue] = useState<string>('');
     const [isPointsModalOpen, setIsPointsModalOpen] = useState(false);
+    const [liveAqi, setLiveAqi] = useState<AQIData | null>(null);
+
+    // Fetch Geo-located Live AQI Non-Blocking
+    useEffect(() => {
+        if (typeof navigator !== 'undefined' && navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    try {
+                        const data = await getAQIDataByCoords(position.coords.latitude, position.coords.longitude);
+                        setLiveAqi(data);
+                    } catch (error) {
+                        console.error('Failed to fetch local AQI:', error);
+                    }
+                },
+                (error) => console.warn('Geolocation denied or failed:', error)
+            );
+        }
+    }, []);
 
     useEffect(() => {
         async function fetchDashboardData() {
@@ -104,7 +128,7 @@ export default function DashboardPage() {
                     const budget = budgetRes.data?.monthly_limit || 500;
 
                     // Process Recent Activity
-                    const recentActivity = activities.slice(0, 6).map((a) => ({
+                    const recentActivity = activities.slice(0, 5).map((a) => ({
                         id: a.id || Math.random().toString(),
                         source: a.source,
                         category: a.category,
@@ -155,6 +179,13 @@ export default function DashboardPage() {
                         .filter((a) => new Date(a.created_at) >= thisMonthStart)
                         .reduce((sum: number, a) => sum + Number(a.emissions), 0);
 
+                    // Dynamic Tier Logic
+                    const totalEmissions = profile.carbon_total;
+                    let calculatedTier: 'starter' | 'seedling' | 'guardian' | 'champion' = 'starter';
+                    if (totalEmissions > 5000) calculatedTier = 'champion';
+                    else if (totalEmissions > 1000) calculatedTier = 'guardian';
+                    else if (totalEmissions > 200) calculatedTier = 'seedling';
+
                     setData({
                         username: profile.username || user.fullName || 'Eco Hero',
                         carbonTotal: profile.carbon_total,
@@ -166,20 +197,16 @@ export default function DashboardPage() {
                         recentActivity,
                         weeklyEmissions,
                         categoryEmissions,
-                        onboardingCompleted: profile.onboarding_completed ?? false
+                        onboardingCompleted: profile.onboarding_completed ?? false,
+                        // @ts-ignore dynamic runtime injection
+                        computedTier: calculatedTier
                     });
 
                     // --- Redirection Logic ---
-                    // If onboarding is NOT incomplete
                     if (profile.onboarding_completed !== true) {
                         const createdAt = new Date(profile.created_at);
                         const now = new Date();
-                        const isNewUser = (now.getTime() - createdAt.getTime()) < 24 * 60 * 60 * 1000; // 24 hours
-
-                        // If user is NEW (< 24h) and hasn't done onboarding, force redirect
-                        // Existing users (> 24h) will just see the CTA card (logic below)
-                        if (isNewUser) {
-                            // Double check we aren't already there (middleware handles this but good to be safe)
+                        if ((now.getTime() - createdAt.getTime()) < 24 * 60 * 60 * 1000) {
                             router.push('/onboarding');
                             return;
                         }
@@ -210,10 +237,7 @@ export default function DashboardPage() {
         try {
             const { error } = await supabase
                 .from('carbon_budgets')
-                .upsert({
-                    user_id: user.id,
-                    monthly_limit: val
-                }, { onConflict: 'user_id' });
+                .upsert({ user_id: user.id, monthly_limit: val }, { onConflict: 'user_id' });
 
             if (error) throw error;
 
@@ -238,9 +262,23 @@ export default function DashboardPage() {
     return (
         <div className={styles.dashboardContainer}>
             <header className={styles.header}>
-                <div className={styles.greeting}>
-                    <h1>Welcome back, <span className={styles.userName}>{user?.username || 'Eco Hero'}</span></h1>
-                    <p>Your carbon footprint analysis is ready.</p>
+                <div className={styles.greetingWrapper}>
+                    <div className={styles.greeting}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+                            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                            </span>
+                            <AQIStatus aqi={liveAqi ? liveAqi.aqi : 42} city={liveAqi ? liveAqi.city : "Mumbai"} variant="pill" />
+                        </div>
+                        <h1 style={{ marginTop: 0 }}>Welcome back, <span className={styles.userName}>{user?.username || 'Eco Hero'}</span></h1>
+                        <p style={{ marginTop: '0.2rem' }}>Your carbon footprint analysis is ready.</p>
+                    </div>
+                    {/* HYBRID INJECTION: 3D Tilt Tier Badge directly beside username header */}
+                    {/* @ts-ignore */}
+                    <div className={styles.tierBadgeWrapper}>
+                        {/* @ts-ignore */}
+                        <TierBadge tier={data.computedTier || 'seedling'} />
+                    </div>
                 </div>
                 <div className={styles.headerActions}>
                     <Link href="/calculator">
@@ -249,174 +287,179 @@ export default function DashboardPage() {
                 </div>
             </header>
 
-            {
-                !data.onboardingCompleted && !loading && (
-                    <div className={styles.onboardingCta}>
-                        <div className={styles.onboardingContent}>
-                            <h2>✨ Personalize Your Experience</h2>
-                            <p>Complete the 1-minute onboarding quiz to get a tailored carbon budget and insights.</p>
-                        </div>
-                        <Link href="/onboarding">
-                            <Button variant="primary" size="lg">Start Onboarding</Button>
-                        </Link>
+            {!data.onboardingCompleted && !loading && (
+                <div className={styles.onboardingCta}>
+                    <div className={styles.onboardingContent}>
+                        <h2>✨ Personalize Your Experience</h2>
+                        <p>Complete the 1-minute onboarding quiz to get a tailored carbon budget and insights.</p>
                     </div>
-                )
-            }
+                    <Link href="/onboarding">
+                        <Button variant="primary">Start Onboarding</Button>
+                    </Link>
+                </div>
+            )}
 
-            {/* Premium Stats Bar */}
-            <section className={styles.statsBar}>
-                <div className={`${styles.miniStat} ${styles.statTotal}`}>
+            {/* Premium Stats Bento Grid */}
+            <section className="bento-grid stagger-container">
+                {/* Top Metrics Row */}
+                <div className={`bento-card col-span-4 ${styles.statTotal} ${styles.interactiveGridCard}`}>
                     <span className={styles.miniLabel}>Total Footprint</span>
                     <span className={styles.miniVal}>{data.carbonTotal.toFixed(2)} <small>kg</small></span>
                 </div>
-                <div className={`${styles.miniStat} ${styles.statBudget}`}>
+                <div className={`bento-card col-span-4 ${styles.statBudget} ${styles.interactiveGridCard}`}>
                     <span className={styles.miniLabel}>Monthly Balance</span>
-                    <span className={styles.miniVal}>{data.monthlyEmissionsTotal.toFixed(1)} / {data.carbonBudget}</span>
+                    <span className={styles.miniVal}>{data.monthlyEmissionsTotal.toFixed(1)} <small>/ {data.carbonBudget}kg</small></span>
                 </div>
-                <div className={`${styles.miniStat} ${styles.statSaved}`}>
+                <div className={`bento-card col-span-4 ${styles.statSaved} ${styles.interactiveGridCard}`}>
                     <span className={styles.miniLabel}>Carbon Saved</span>
-                    <span className={styles.miniVal} style={{ color: '#4caf50' }}>{data.carbonSavings.toFixed(1)} <small>kg</small></span>
+                    <span className={styles.miniVal} style={{ color: 'var(--color-success)' }}>{data.carbonSavings.toFixed(1)} <small>kg</small></span>
                 </div>
+
+                {/* Second Row: Timeline vs Activity */}
+                <div className={`bento-card col-span-8 ${styles.interactiveGridCard}`} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div className={styles.timelineHeader}>
+                        <div className={styles.timelineTitle}>
+                            <h3>Carbon Timeline</h3>
+                            <p>Daily emissions over the last 7 days</p>
+                        </div>
+                        <div className={styles.budgetControls}>
+                            {isEditingBudget ? (
+                                <div className={styles.budgetEditForm}>
+                                    <input
+                                        type="number"
+                                        className={styles.budgetInputSmall}
+                                        value={newBudgetValue}
+                                        onChange={(e) => setNewBudgetValue(e.target.value)}
+                                        autoFocus
+                                        placeholder="Budget"
+                                    />
+                                    <div className={styles.budgetEditActions}>
+                                        <button className={styles.saveButtonSmall} onClick={handleBudgetUpdate}>Save</button>
+                                        <button className={styles.cancelButtonSmall} onClick={() => setIsEditingBudget(false)}>✕</button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className={styles.budgetDisplay}>
+                                    <div className={styles.budgetLabel}>
+                                        <span>Limit: </span>
+                                        <strong>{data.carbonBudget}kg</strong>
+                                    </div>
+                                    <button onClick={() => { setIsEditingBudget(true); setNewBudgetValue(data.carbonBudget.toString()); }} className={styles.editBudgetBtn}>EditLimit</button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    {/* Budget Progress Bar */}
+                    <div className={styles.budgetProgressBarContainer}>
+                        <div className={styles.budgetProgressLabels}>
+                            <span>{Math.round(budgetProgress)}% used</span>
+                            <span>{data.monthlyEmissionsTotal.toFixed(0)} / {data.carbonBudget} kg</span>
+                        </div>
+                        <div className={styles.budgetProgressBarBg}>
+                            <div
+                                className={`${styles.budgetProgressBarFill} ${isBudgetExceeded ? styles.progressDanger : ''}`}
+                                style={{ width: `${budgetProgress}%` }}
+                            ></div>
+                        </div>
+                    </div>
+
+                    {/* 2x2 Quick Log Habit Grid Mobile */}
+                    <div className={`col-span-12 ${styles.mobileQuickLogContainer}`}>
+                        <div className={styles.historyHeader} style={{ marginBottom: '1rem' }}>
+                            <h3 style={{ fontSize: '1.25rem' }}>Quick-Log Habits</h3>
+                        </div>
+                        <div className={styles.quickLogGrid}>
+                            <Link href="/calculator?tab=transport" className={styles.quickLogBtn}>
+                                <span className={styles.quickLogIcon}>🚗</span> Transport
+                            </Link>
+                            <Link href="/calculator?tab=energy" className={styles.quickLogBtn}>
+                                <span className={styles.quickLogIcon}>⚡</span> Energy
+                            </Link>
+                            <Link href="/calculator?tab=food" className={styles.quickLogBtn}>
+                                <span className={styles.quickLogIcon}>🥗</span> Food
+                            </Link>
+                            <Link href="/calculator?tab=shopping" className={styles.quickLogBtn}>
+                                <span className={styles.quickLogIcon}>🛍️</span> Shopping
+                            </Link>
+                        </div>
+                    </div>
+
+                    <div className={styles.chartWrapper}>
+                        <TimelineChart data={data.weeklyEmissions} budget={data.carbonBudget / 30} />
+                    </div>
+                </div>
+
+                <div className={`bento-card col-span-4 ${styles.interactiveGridCard}`} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div className={styles.historyHeader}>
+                        <h3>Recent Impact</h3>
+                        <Link href="/history">View All</Link>
+                    </div>
+                    <div className={styles.activityList}>
+                        {data.recentActivity.length > 0 ? (
+                            data.recentActivity.map((activity) => (
+                                <div key={activity.id} className={styles.activityItem}>
+                                    <div className={styles.activityIcon}>
+                                        {activity.source === 'bill' ? '📄' : '🌱'}
+                                    </div>
+                                    <div className={styles.activityMeta}>
+                                        <h4>{activity.desc}</h4>
+                                        <span>{activity.category}</span>
+                                    </div>
+                                    <div className={styles.activityImpact}>
+                                        {activity.impact}<small>kg</small>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p className={styles.empty}>No recent sessions tracked.</p>
+                        )}
+                    </div>
+                </div>
+
+                {/* Bottom Row: Pie, merged Impact/Streak components */}
+                <div className={`bento-card col-span-6 ${styles.interactiveGridCard}`} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div className={styles.timelineHeader}>
+                        <div className={styles.timelineTitle}>
+                            <h3>Emissions by Category</h3>
+                            <p>Global breakdown of your footprint</p>
+                        </div>
+                    </div>
+                    <div className={styles.chartWrapper}>
+                        <CategoryPieChart data={data.categoryEmissions} />
+                    </div>
+                </div>
+
+                {/* HYBRID INJECTION: Impact KarmaDisplay Widget (3 cols) */}
                 <div
-                    className={`${styles.miniStat} ${styles.statImpact} cursor-pointer hover:border-yellow-400 hover:shadow-lg transition-all`}
+                    className={`bento-card col-span-3 ${styles.interactiveGridCard}`}
                     onClick={() => setIsPointsModalOpen(true)}
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => e.key === 'Enter' && setIsPointsModalOpen(true)}
+                    style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly', padding: '1.5rem 0' }}
                 >
-                    <span className={styles.miniLabel}>Impact Balance</span>
-                    <span className={styles.miniVal} style={{ color: '#ffc107' }}>{data.balance} <small>IP</small></span>
+                    <span className={styles.miniLabel} style={{ marginBottom: '0.5rem', fontSize: '0.95rem' }}>Impact Balance</span>
+                    <div style={{ transform: 'scale(1.3)', margin: '1rem 0' }}>
+                        <KarmaDisplay points={data.balance} maxPoints={20000} />
+                    </div>
+                    <span className={styles.helperText} style={{ marginTop: '0.5rem' }}>Click to view history</span>
                 </div>
-                <div className={`${styles.miniStat} ${styles.statStreak}`}>
-                    <span className={styles.miniLabel}>Daily Streak</span>
-                    <span className={`${styles.miniVal} ${styles.streakVal}`}>
-                        <span className={styles.flameIcon}>🔥</span>
-                        {data.streak} <small>days</small>
+
+                {/* HYBRID INJECTION: Activity Streak Widget (3 cols) */}
+                 <div className={`bento-card col-span-3 ${styles.interactiveGridCard}`} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', textAlign: 'center' }}>
+                    <span className={styles.miniLabel} style={{ fontSize: '0.95rem' }}>Daily Streak</span>
+                    <span className={`${styles.miniVal} ${styles.streakVal}`} style={{ fontSize: '4.5rem', margin: '0.5rem 0' }}>
+                        <span className={styles.flameIcon} style={{ fontSize: '3.5rem', filter: 'drop-shadow(0 0 15px rgba(251, 191, 36, 0.6))' }}>🔥</span>
+                        {data.streak} <small style={{ fontSize: '1.5rem', alignSelf: 'flex-end', marginBottom: '0.8rem' }}>days</small>
                     </span>
+                    <span className={styles.helperText}>Keep it up!</span>
                 </div>
             </section>
 
-            <div className={styles.mainGrid}>
-                {/* Left Column: Analytics */}
-                <div className={styles.leftCol}>
-                    <Card className={styles.chartCard}>
-                        <div className={styles.timelineHeader}>
-                            <div className={styles.timelineTitle}>
-                                <h3>Carbon Timeline</h3>
-                                <p>Daily emissions over the last 7 days</p>
-                            </div>
+            <PointsHistoryModal isOpen={isPointsModalOpen} onClose={() => setIsPointsModalOpen(false)} userId={user?.id || ''} />
 
-                            <div className={styles.budgetControls}>
-                                {isEditingBudget ? (
-                                    <div className={styles.budgetEditForm}>
-                                        <input
-                                            type="number"
-                                            className={styles.budgetInputSmall}
-                                            value={newBudgetValue}
-                                            onChange={(e) => setNewBudgetValue(e.target.value)}
-                                            autoFocus
-                                            placeholder="Budget"
-                                        />
-                                        <div className={styles.budgetEditActions}>
-                                            <button className={styles.saveButtonSmall} onClick={handleBudgetUpdate}>Save</button>
-                                            <button className={styles.cancelButtonSmall} onClick={() => setIsEditingBudget(false)}>✕</button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className={styles.budgetDisplay}>
-                                        <div className={styles.budgetLabel}>
-                                            <span>Monthly Budget</span>
-                                            <strong>{data.carbonBudget} kg</strong>
-                                        </div>
-                                        <button
-                                            onClick={() => {
-                                                setIsEditingBudget(true);
-                                                setNewBudgetValue(data.carbonBudget.toString());
-                                            }}
-                                            className={styles.editBudgetBtn}
-                                        >
-                                            Edit Limit
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Budget Progress Bar */}
-                        <div className={styles.budgetProgressBarContainer}>
-                            <div className={styles.budgetProgressLabels}>
-                                <span>{Math.round(budgetProgress)}% used</span>
-                                <span>{data.monthlyEmissionsTotal.toFixed(0)} / {data.carbonBudget} kg</span>
-                            </div>
-                            <div className={styles.budgetProgressBarBg}>
-                                <div
-                                    className={`${styles.budgetProgressBarFill} ${isBudgetExceeded ? styles.progressDanger : ''}`}
-                                    style={{ width: `${budgetProgress}%` }}
-                                ></div>
-                            </div>
-                        </div>
-
-                        <div className={styles.chartWrapper}>
-                            <TimelineChart
-                                data={data.weeklyEmissions}
-                                budget={data.carbonBudget / 30}
-                            />
-                        </div>
-                    </Card>
-
-                    <Card className={styles.chartCard} style={{ marginTop: '0' }}>
-                        <div className={styles.timelineHeader}>
-                            <div className={styles.timelineTitle}>
-                                <h3>Emissions by Category</h3>
-                                <p>Global breakdown of your footprint</p>
-                            </div>
-                        </div>
-                        <div className={styles.chartWrapper}>
-                            <CategoryPieChart data={data.categoryEmissions} />
-                        </div>
-                    </Card>
-
-
-                </div>
-
-                {/* Right Column: History & Insights */}
-                <aside className={styles.rightCol}>
-                    <Card className={styles.historyCard}>
-                        <div className={styles.historyHeader}>
-                            <h3>Recent Activity</h3>
-                            <Link href="/history">View All</Link>
-                        </div>
-                        <div className={styles.activityList}>
-                            {data.recentActivity.length > 0 ? (
-                                data.recentActivity.map((activity) => (
-                                    <div key={activity.id} className={styles.activityItem}>
-                                        <div className={styles.activityIcon}>
-                                            {activity.source === 'bill' ? '📄' : '🌱'}
-                                        </div>
-                                        <div className={styles.activityMeta}>
-                                            <h4>{activity.desc}</h4>
-                                            <span>{activity.category} • {activity.date}</span>
-                                        </div>
-                                        <div className={styles.activityImpact}>
-                                            {activity.impact} <small>kg</small>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <p className={styles.empty}>No recent sessions tracked.</p>
-                            )}
-                        </div>
-                    </Card>
-
-                </aside>
-            </div>
-
-            {/* Points History Modal */}
-            <PointsHistoryModal
-                isOpen={isPointsModalOpen}
-                onClose={() => setIsPointsModalOpen(false)}
-                userId={user?.id || ''}
-            />
+            {/* HYBRID INJECTION: Universal Floating Platform AI Context */}
+            <FloatingAIScanner />
         </div>
     );
 }

@@ -1,8 +1,8 @@
 import React from 'react';
 import styles from './Button.module.css';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: 'primary' | 'secondary' | 'accent' | 'outline' | 'ghost';
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    variant?: 'primary' | 'secondary' | 'action' | 'ai' | 'danger' | 'icon';
     size?: 'sm' | 'md' | 'lg';
     isLoading?: boolean;
 }
@@ -30,7 +30,14 @@ export const Button: React.FC<ButtonProps> = ({
             disabled={disabled || isLoading}
             {...props}
         >
-            {isLoading ? <span className={styles.spinner} /> : children}
+            <span className={styles.content}>
+                {children}
+            </span>
+            {isLoading && (
+                <span className={styles.spinnerContainer}>
+                    <span className={styles.spinner} />
+                </span>
+            )}
         </button>
     );
 };

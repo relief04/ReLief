@@ -1,0 +1,145 @@
+/* Base / Glassmorphism */
+.glassmorphism {
+    background-color: var(--glass-bg);
+    backdrop-filter: var(--glass-filter);
+    -webkit-backdrop-filter: var(--glass-filter);
+    border: 1px solid var(--glass-border);
+}
+
+/* Colors & Thresholds */
+.green { background-color: #22c55e; color: #22c55e; }
+.yellow { background-color: #eab308; color: #eab308; }
+.orange { background-color: #f97316; color: #f97316; }
+.red { background-color: #ef4444; color: #ef4444; }
+
+/* Pulse Animation for Warning/Danger */
+.pulse {
+    box-shadow: 0 0 0 0 rgba(currentColor, 0.7);
+    animation: aqiPulse 2s infinite;
+}
+
+@keyframes aqiPulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 currentColor; opacity: 0.7; }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 0, 0, 0); opacity: 1; }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); opacity: 0.7; }
+}
+
+/* --- Pill Variant --- */
+.pillContainer {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-sm);
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.pillAqi {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-text-100);
+}
+
+.pillCity {
+    font-size: 0.8rem;
+    color: var(--color-text-300);
+}
+
+/* --- Card Variant --- */
+.cardContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    /* Note: Base bento-card properties inherited externally */
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.cardTitle {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text-200);
+    margin: 0;
+}
+
+.cardCity {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    background: rgba(5, 150, 105, 0.1);
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-pill);
+}
+
+.cardBody {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.aqiReadout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.largeDot {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--color-bg-100);
+}
+
+.largeAqiValue {
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--color-text-100);
+    letter-spacing: -2px;
+}
+
+.cardInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.categoryLabel {
+    font-weight: 800;
+    font-size: 1.1rem;
+    background: transparent; /* Reset from global */
+}
+
+.recommendation {
+    font-size: 0.85rem;
+    color: var(--color-text-300);
+    line-height: 1.4;
+    margin: 0;
+}
+
+.attribution {
+    font-size: 12px;
+    color: var(--color-text-300);
+    opacity: 0.6;
+    text-align: right;
+    margin-top: auto;
+    font-style: italic;
+}

@@ -10,7 +10,6 @@ import { recordLogin } from '@/lib/streakUtils';
 import { useRefresh } from '@/context/RefreshContext';
 import { isAdminEmail } from '@/lib/admin';
 import { Card } from '@/components/ui/Card';
-import { StreakCalendar } from '@/components/ui/StreakCalendar';
 import { Modal } from '@/components/ui/Modal';
 import { PointsHistoryModal } from '@/components/profile/PointsHistoryModal';
 import { EmailPreferences } from '@/components/settings/EmailPreferences';
@@ -54,7 +53,6 @@ export default function ProfilePage() {
     const { refreshKey } = useRefresh();
     const [profileData, setProfileData] = useState<any>(null);
     const [loadingData, setLoadingData] = useState(true);
-    const [isStreakModalOpen, setIsStreakModalOpen] = useState(false);
     const [isPointsModalOpen, setIsPointsModalOpen] = useState(false);
     const [isResetModalOpen, setIsResetModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -378,19 +376,13 @@ export default function ProfilePage() {
 
 
 
-                        <div
-                            className={`${styles.statCard} cursor-pointer hover:border-orange-300 hover:shadow-lg transition-all`}
-                            onClick={() => setIsStreakModalOpen(true)}
-                            role="button"
-                            tabIndex={0}
-                            onKeyDown={(e) => e.key === 'Enter' && setIsStreakModalOpen(true)}
-                        >
+                        <div className={styles.statCard}>
                             <div className={styles.statHeader}>
                                 <div className={`${styles.statIcon} ${styles.iconOrange}`}><Flame size={20} /></div>
                                 Streak
                             </div>
                             <div className={`${styles.statValue} ${styles.textYellow}`}>{profileData?.streak || 0} Days</div>
-                            <div style={{ fontSize: '0.75rem', opacity: 0.7, marginTop: '0.5rem' }}>Click to view calendar</div>
+                            <div style={{ fontSize: '0.75rem', opacity: 0.7, marginTop: '0.5rem' }}>Keep it up!</div>
                         </div>
 
                         <div
@@ -480,18 +472,7 @@ export default function ProfilePage() {
                 </Card>
             )}
 
-            {/* Streak Calendar Modal */}
-            <Modal
-                isOpen={isStreakModalOpen}
-                onClose={() => setIsStreakModalOpen(false)}
-                title="🔥 Your Login Streak"
-            >
-                <StreakCalendar
-                    userId={user.id}
-                    currentStreak={profileData?.streak || 0}
-                    longestStreak={profileData?.longest_streak || 0}
-                />
-            </Modal>
+
 
             {/* Points History Modal */}
             <PointsHistoryModal

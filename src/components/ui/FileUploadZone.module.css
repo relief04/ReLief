@@ -1,0 +1,56 @@
+.container {
+    width: 100%;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    border: 3px dashed var(--glass-border);
+    border-radius: var(--radius-xl);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-filter);
+    transition: all 0.2s ease-out;
+    cursor: pointer;
+    text-align: center;
+}
+
+.iconWrapper {
+    color: var(--color-text-200);
+    margin-bottom: 1rem;
+    pointer-events: none;
+}
+
+.label {
+    margin: 0;
+    color: var(--color-text-200);
+    font-weight: 500;
+    pointer-events: none;
+}
+
+/* Interaction States */
+.container:hover:not(.disabled) {
+    border-color: rgba(5, 150, 105, 0.4);
+    background: rgba(5, 150, 105, 0.02);
+}
+
+.dragging {
+    border-style: solid !important;
+    border-color: var(--color-primary) !important;
+    background: rgba(5, 150, 105, 0.05) !important;
+}
+
+.dragging .iconWrapper, .dragging .label {
+    color: var(--color-primary);
+}
+
+.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--color-bg-200);
+    border-color: transparent;
+}
+
+.hiddenInput {
+    display: none;
+}

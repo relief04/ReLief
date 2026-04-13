@@ -1,37 +1,85 @@
 .card {
-    background-color: var(--color-card-background);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--color-border);
-    transition: all 0.3s ease;
+    background-color: var(--glass-bg);
+    backdrop-filter: var(--glass-filter);
+    -webkit-backdrop-filter: var(--glass-filter);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--glass-shadow);
+    border: 1px solid var(--glass-border);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
     overflow: hidden;
 }
 
-.hover:hover {
-    box-shadow: var(--shadow-lg);
+/* Action Variant */
+.action {
+    cursor: pointer;
+}
+
+.action:hover {
     transform: translateY(-4px);
+    box-shadow: var(--shadow-glow-primary);
     border-color: var(--color-primary);
 }
 
-/* Padding variants */
-.none {
-    padding: 0;
+.actionArrow {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.sm {
-    padding: 1rem;
+.action:hover .actionArrow {
+    opacity: 1;
+    transform: translateX(0);
 }
 
-.md {
-    padding: 1.5rem;
+/* Badge Card Variant */
+.badge {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
-.lg {
-    padding: 2.5rem;
+.badge:hover {
+    box-shadow: 0 0 0 2px var(--color-primary), var(--shadow-glow-primary);
 }
 
-/* Dark mode adjustments */
-:global([data-theme='dark']) .card {
+/* Leaderboard Row Variant */
+.leaderboard {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto auto auto;
+    align-items: center;
+    gap: 1rem;
+    border-radius: var(--radius-md); /* Flatter for rows */
+}
+
+.leaderboard:hover {
     background-color: var(--color-bg-200);
-    border-color: var(--color-bg-300);
 }
+
+/* Event Variant */
+.event {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Stat Variant */
+.stat {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+
+/* Padding variants */
+.none { padding: 0; }
+.sm { padding: 1rem; }
+.md { padding: 1.5rem; }
+.lg { padding: 2.5rem; }

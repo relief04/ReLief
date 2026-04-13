@@ -1,0 +1,200 @@
+.container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: background-color 0.4s ease;
+}
+
+/* Background Flashes */
+.correctFlash {
+    animation: flashGreen 0.6s ease;
+}
+
+.wrongFlash {
+    animation: flashRed 0.6s ease;
+}
+
+@keyframes flashGreen {
+    0% { background-color: rgba(5, 150, 105, 0.2); }
+    100% { background-color: var(--glass-bg); }
+}
+
+@keyframes flashRed {
+    0% { background-color: rgba(239, 68, 68, 0.2); }
+    100% { background-color: var(--glass-bg); }
+}
+
+/* Karma PopUp Animation */
+.karmaPopup {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--color-bg-100);
+    border: 1px solid var(--color-border);
+    color: var(--color-primary);
+    font-weight: 800;
+    font-size: 1.25rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-pill);
+    box-shadow: 0 4px 20px rgba(5, 150, 105, 0.4);
+    pointer-events: none;
+    z-index: 10;
+    animation: floatUp 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes floatUp {
+    0% { opacity: 0; transform: translate(-50%, 20px) scale(0.8); }
+    20% { opacity: 1; transform: translate(-50%, 0px) scale(1.1); }
+    80% { opacity: 1; transform: translate(-50%, -30px) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -40px) scale(1); }
+}
+
+/* Header Elements */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.6rem;
+    background: rgba(8, 145, 178, 0.1); /* Teal */
+    color: var(--color-text-100);
+    border: 1px solid rgba(8, 145, 178, 0.3);
+    border-radius: var(--radius-pill);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.badge svg {
+    color: #0891b2; /* Teal Icon */
+}
+
+.progressText {
+    font-size: 0.75rem;
+    color: var(--color-text-300);
+    font-weight: 600;
+}
+
+.progressTrack {
+    height: 4px;
+    background: var(--color-bg-300);
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: var(--gradient-emerald);
+    border-radius: 2px;
+}
+
+.questionText {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text-100);
+    margin: 0 0 1.5rem;
+    line-height: 1.4;
+}
+
+/* Options Grid */
+.optionsGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.optionBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--color-bg-100);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.optionBtn:hover:not(:disabled) {
+    background: var(--color-bg-200);
+    border-color: rgba(5, 150, 105, 0.4);
+}
+
+.optLetter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: var(--color-bg-300);
+    color: var(--color-text-200);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.optText {
+    flex: 1;
+    font-size: 0.9rem;
+    color: var(--color-text-100);
+    font-weight: 500;
+}
+
+/* Answer States */
+.optionSuccess {
+    background: rgba(5, 150, 105, 0.1) !important;
+    border-color: var(--color-primary) !important;
+}
+
+.optionError {
+    background: rgba(239, 68, 68, 0.1) !important;
+    border-color: var(--color-danger) !important;
+}
+
+.optionFaded {
+    opacity: 0.5;
+}
+
+.iconSuccess { color: var(--color-primary); }
+.iconError { color: var(--color-danger); }
+
+/* Explanation Tooltips */
+.explanationBox, .explanationBoxSuccess {
+    margin-top: 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    animation: slideDownFade 0.3s ease-out;
+}
+
+.explanationBox {
+    background: rgba(239, 68, 68, 0.1);
+    border-left: 3px solid var(--color-danger);
+    color: var(--color-text-200);
+}
+
+.explanationBoxSuccess {
+    background: rgba(5, 150, 105, 0.1);
+    border-left: 3px solid var(--color-primary);
+    color: var(--color-text-200);
+}
+
+.explanationBox strong { color: var(--color-danger); }
+.explanationBoxSuccess strong { color: var(--color-primary); }
+
+@keyframes slideDownFade {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

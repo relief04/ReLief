@@ -1,0 +1,25 @@
+.skeleton {
+    display: block;
+    background: var(--color-bg-200); /* Base background */
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    /* 5% emerald tint shimmer requested in spec */
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(5, 150, 105, 0.05),
+        transparent
+    );
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}

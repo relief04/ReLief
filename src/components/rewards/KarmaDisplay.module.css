@@ -1,0 +1,127 @@
+.container {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+}
+
+.ringWrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Optional glowing backing for depth */
+    background: radial-gradient(circle, rgba(5, 150, 105, 0.05) 40%, transparent 60%);
+    border-radius: 50%;
+}
+
+.svgRing {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.circleBg {
+    stroke: rgba(255, 255, 255, 0.1);
+}
+
+:global([data-theme='light']) .circleBg {
+    stroke: rgba(0, 0, 0, 0.05);
+}
+
+.circleProgress {
+    stroke: var(--color-primary);
+    transition: stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+    filter: drop-shadow(0 0 6px rgba(5, 150, 105, 0.5));
+}
+
+.centerContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.pointsValue {
+    font-size: 2.25rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--color-text-100);
+    letter-spacing: -1px;
+}
+
+.pointsLabel {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+/* Floating Increment Animation */
+.incrementFloat {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--color-accent);
+    text-shadow: 0 0 10px rgba(251, 191, 36, 0.6);
+    pointer-events: none;
+    z-index: 10;
+    animation: floatUpAndFade 1000ms ease-out forwards;
+}
+
+@keyframes floatUpAndFade {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, 0) scale(0.8);
+    }
+    10% {
+        opacity: 1;
+        transform: translate(-50%, -5px) scale(1.1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -30px) scale(1);
+    }
+}
+
+/* Streak Flame Element */
+.streakContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-filter);
+    -webkit-backdrop-filter: var(--glass-filter);
+    border: 1px solid var(--glass-border);
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-sm);
+}
+
+.flameIcon {
+    color: var(--color-accent); /* Amber */
+    animation: pulseFlame 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.streakValue {
+    font-size: 0.85rem;
+    font-weight: 700;
+    background: linear-gradient(to right, #fbbf24, #f59e0b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+@keyframes pulseFlame {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px transparent); }
+    50% { transform: scale(1.15); filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.6)); }
+}

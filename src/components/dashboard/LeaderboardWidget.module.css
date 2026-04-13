@@ -1,0 +1,215 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-100);
+    margin: 0;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    background: var(--color-bg-200);
+    padding: 0.25rem;
+    border-radius: var(--radius-md);
+}
+
+.tabBtn {
+    flex: 1;
+    padding: 0.5rem 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text-300);
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tabBtn:hover {
+    color: var(--color-text-200);
+}
+
+.activeTab {
+    background: var(--color-bg-100);
+    color: var(--color-text-100);
+    box-shadow: var(--shadow-sm);
+}
+
+/* List / Rows */
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    background: var(--color-bg-100);
+    border: 1px solid var(--glass-border);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.row:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Rank 1 Shimmer */
+.rankOneRow {
+    position: relative;
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(251, 191, 36, 0.02));
+    border-color: rgba(251, 191, 36, 0.4);
+    overflow: hidden;
+}
+
+.rankOneRow::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 50%; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(251, 191, 36, 0.2), transparent);
+    animation: sweep 3s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes sweep {
+    0% { left: -100%; }
+    20% { left: 200%; }
+    100% { left: 200%; }
+}
+
+/* Current User Highlight */
+.currentUserRow {
+    background: rgba(5, 150, 105, 0.1);
+    border-color: var(--color-primary);
+}
+
+.youBadge {
+    font-size: 0.75rem;
+    color: var(--color-primary);
+    font-weight: 800;
+    margin-left: 0.3rem;
+}
+
+/* Rank Icons */
+.rankCol {
+    width: 32px;
+    display: flex;
+    justify-content: center;
+}
+
+.rankBadge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    color: #1a1a1a;
+}
+
+.gold { background: linear-gradient(135deg, #fcd34d, #f59e0b); box-shadow: 0 2px 8px rgba(251,191,36,0.4); }
+.silver { background: linear-gradient(135deg, #e5e7eb, #9ca3af); box-shadow: 0 2px 8px rgba(156,163,175,0.4); }
+.bronze { background: linear-gradient(135deg, #fed7aa, #ea580c); box-shadow: 0 2px 8px rgba(234,88,12,0.4); }
+
+.rankText {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-text-300);
+}
+
+/* Avatar */
+.avatarCol {
+    margin: 0 1rem;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-bg-300);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--color-text-200);
+}
+
+/* Info */
+.infoCol {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text-100);
+}
+
+.location {
+    font-size: 0.75rem;
+    color: var(--color-text-300);
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.locIcon {
+    opacity: 0.7;
+}
+
+/* Karma */
+.karmaCol {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.karmaAmt {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--color-accent); /* Amber points */
+}
+
+.karmaLabel {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--color-text-300);
+}
+
+.viewAllBtn {
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    background: transparent;
+    border: none;
+    text-align: center;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.viewAllBtn:hover {
+    opacity: 0.8;
+}

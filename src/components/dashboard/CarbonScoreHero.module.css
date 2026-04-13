@@ -1,0 +1,111 @@
+.heroContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem 1rem;
+    height: 100%;
+}
+
+.ringWrapper {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.circleBg {
+    stroke: rgba(255, 255, 255, 0.05); /* Very subtle gray inside glassmorphism */
+}
+
+.circleProgress {
+    transition: stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.5s ease;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+}
+
+.ringEmerald {
+    stroke: var(--color-primary);
+    filter: drop-shadow(0 0 10px rgba(5, 150, 105, 0.5));
+}
+
+.ringAmber {
+    stroke: var(--color-accent);
+    filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));
+}
+
+.ringRed {
+    stroke: var(--color-danger);
+    filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.5));
+}
+
+.centerContent {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.scoreValue {
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--color-text-100);
+}
+
+.scoreLabel {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text-300);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.2rem;
+}
+
+.infoBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.subtitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-100);
+    margin: 0;
+}
+
+.budgetLimitText {
+    font-size: 0.9rem;
+    color: var(--color-text-200);
+    margin: 0 0 0.5rem;
+}
+
+.deltaBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+/* Decreased footprint = Good (Emerald) */
+.deltaGood {
+    background: rgba(5, 150, 105, 0.1);
+    color: var(--color-primary);
+    border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+/* Increased footprint = Bad (Red) */
+.deltaBad {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
