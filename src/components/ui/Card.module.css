@@ -21,6 +21,12 @@
     border-color: var(--color-primary);
 }
 
+.hoverEffect:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-glow-primary);
+    border-color: var(--color-primary);
+}
+
 .actionArrow {
     position: absolute;
     bottom: 1.5rem;

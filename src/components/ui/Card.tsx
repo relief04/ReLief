@@ -6,6 +6,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
     className?: string;
     variant?: 'base' | 'stat' | 'action' | 'event' | 'leaderboard' | 'badge';
     padding?: 'none' | 'sm' | 'md' | 'lg';
+    hoverEffect?: boolean;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -13,12 +14,14 @@ export const Card: React.FC<CardProps> = ({
     className,
     variant = 'base',
     padding = 'md',
+    hoverEffect,
     ...props
 }) => {
     const rootClassName = `
     ${styles.card} 
     ${styles[variant]} 
     ${styles[padding]} 
+    ${hoverEffect ? styles.hoverEffect : ''}
     ${className || ''}
   `;
 
