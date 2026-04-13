@@ -92,66 +92,81 @@ export async function scanBillWithGemini(
 
     const imagePart = await fileToGenerativePart(fileBuffer, mimeType);
 
-    // 2. Loop through keys until success or exhaustion
+    // Models to try in order of preference (most available first)
+    const MODELS = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-1.5-flash"];
+
+    // 2. Loop through keys and models until success or exhaustion
     let lastError: any = null;
 
     for (let i = 0; i < keys.length; i++) {
         const currentKey = keys[i];
-        console.log(`[AI-Scanner] Attempting scan with Gemini Key ${i + 1}/${keys.length}`);
 
-        try {
-            const genAI = new GoogleGenerativeAI(currentKey);
-            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-            const result = await model.generateContent([prompt, imagePart]);
-            const response = await result.response;
-            const text = response.text().trim();
-
-            // Clean up potential markdown code blocks
-            let jsonText = text;
-            if (jsonText.startsWith("```json")) {
-                jsonText = jsonText.replace(/^```json/, "");
-            }
-            if (jsonText.startsWith("```")) {
-                jsonText = jsonText.replace(/^```/, "");
-            }
-            if (jsonText.endsWith("```")) {
-                jsonText = jsonText.replace(/```$/, "");
-            }
+        for (let m = 0; m < MODELS.length; m++) {
+            const modelName = MODELS[m];
+            console.log(`[AI-Scanner] Attempting scan with Key ${i + 1}/${keys.length}, Model: ${modelName}`);
 
             try {
-                const data = JSON.parse(jsonText.trim());
-                return {
-                    success: true,
-                    bill_type: data.bill_type || billTypeHint || "unknown",
-                    fields: data,
-                    confidence: data.confidence || 0.9,
-                    message: "Successfully extracted data using Gemini."
-                };
-            } catch (parseError) {
-                console.error("Failed to parse Gemini response as JSON:", text);
-                return {
-                    success: false,
-                    bill_type: "unknown",
-                    fields: {},
-                    confidence: 0,
-                    message: "Failed to parse AI response. The document might be unclear."
-                };
+                const genAI = new GoogleGenerativeAI(currentKey);
+                const model = genAI.getGenerativeModel({ model: modelName });
+
+                const result = await model.generateContent([prompt, imagePart]);
+                const response = await result.response;
+                const text = response.text().trim();
+
+                // Clean up potential markdown code blocks
+                let jsonText = text;
+                if (jsonText.startsWith("```json")) {
+                    jsonText = jsonText.replace(/^```json/, "");
+                }
+                if (jsonText.startsWith("```")) {
+                    jsonText = jsonText.replace(/^```/, "");
+                }
+                if (jsonText.endsWith("```")) {
+                    jsonText = jsonText.replace(/```$/, "");
+                }
+
+                try {
+                    const data = JSON.parse(jsonText.trim());
+                    return {
+                        success: true,
+                        bill_type: data.bill_type || billTypeHint || "unknown",
+                        fields: data,
+                        confidence: data.confidence || 0.9,
+                        message: `Successfully extracted data using Gemini (${modelName}).`
+                    };
+                } catch (parseError) {
+                    console.error("Failed to parse Gemini response as JSON:", text);
+                    return {
+                        success: false,
+                        bill_type: "unknown",
+                        fields: {},
+                        confidence: 0,
+                        message: "Failed to parse AI response. The document might be unclear."
+                    };
+                }
+            } catch (error) {
+                console.error(`Gemini Scan Error (Key ${i + 1}, Model ${modelName}):`, error);
+                lastError = error;
+
+                const errorString = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
+
+                // If it's a quota/rate limit or service unavailable error, try next model/key
+                if (
+                    errorString.includes("429") ||
+                    errorString.includes("503") ||
+                    errorString.includes("service unavailable") ||
+                    errorString.includes("high demand") ||
+                    errorString.includes("quota exceeded") ||
+                    errorString.includes("too many requests") ||
+                    errorString.includes("overloaded")
+                ) {
+                    console.warn(`[AI-Scanner] Model ${modelName} unavailable (Key ${i + 1}). Trying next...`);
+                    continue;
+                }
+
+                // If it's another type of error (e.g. invalid image), break model loop since other models will likely fail too
+                break;
             }
-        } catch (error) {
-            console.error(`Gemini Scan Error (Key ${i + 1}):`, error);
-            lastError = error;
-
-            const errorString = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
-
-            // If it's a quota/rate limit error, continue to the next key
-            if (errorString.includes("429") || errorString.includes("quota exceeded") || errorString.includes("too many requests")) {
-                console.warn(`[AI-Scanner] Quota exceeded on key ${i + 1}. Moving to next key...`);
-                continue;
-            }
-
-            // If it's another type of error (e.g. invalid image), break since other keys will likely fail too
-            break;
         }
     }
 
