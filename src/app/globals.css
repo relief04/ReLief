@@ -53,7 +53,8 @@
   --glass-bg: rgba(255, 255, 255, 0.6);
   --glass-border: rgba(255, 255, 255, 0.2);
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
-  --glass-filter: blur(20px) saturate(180%);
+  /* Reduced blur for perf: blur(20px) is 4x more expensive than blur(8px) */
+  --glass-filter: blur(8px) saturate(140%);
 
   /* Animation Easing Tokens */
   --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -90,10 +91,11 @@
   --gradient-emerald: linear-gradient(135deg, #34d399 0%, #10b981 100%);
   --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
 
-  /* Theme-aware Glassmorphism Rulesets */
   --glass-bg: rgba(15, 23, 42, 0.65);
   --glass-border: rgba(255, 255, 255, 0.15);
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  /* Keep dark mode blur lighter too */
+  --glass-filter: blur(8px) saturate(130%);
 }
 
 * {
@@ -172,7 +174,11 @@ a {
   border: 1px solid var(--color-border);
   padding: 24px;
   box-shadow: var(--glass-shadow);
-  transition: transform 0.3s var(--ease-elastic), box-shadow 0.3s var(--ease-elastic), border-color 0.3s ease;
+  /* Use ease-out (not elastic) for snappy feel without overshoot lag */
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border-color 0.2s ease;
+  /* GPU compositing layer hint */
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -222,23 +228,24 @@ a {
   clip: rect(0, 0, 0, 0);
 }
 
-/* Staggered Scroll-Reveal System */
+/* Staggered Scroll-Reveal System — fast, GPU-only (opacity+transform) */
 .stagger-container > * {
   opacity: 0;
-  transform: translateY(20px);
-  animation: scrollRevealFade 600ms cubic-bezier(0, 0, 0.2, 1) forwards;
+  animation: scrollRevealFade 300ms ease-out forwards;
+  /* Promote to own compositing layer */
+  will-change: opacity, transform;
 }
 
-.stagger-container > *:nth-child(1) { animation-delay: 80ms; }
-.stagger-container > *:nth-child(2) { animation-delay: 160ms; }
-.stagger-container > *:nth-child(3) { animation-delay: 240ms; }
-.stagger-container > *:nth-child(4) { animation-delay: 320ms; }
-.stagger-container > *:nth-child(5) { animation-delay: 400ms; }
-.stagger-container > *:nth-child(6) { animation-delay: 480ms; }
-.stagger-container > *:nth-child(7) { animation-delay: 560ms; }
+.stagger-container > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-container > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-container > *:nth-child(3) { animation-delay: 100ms; }
+.stagger-container > *:nth-child(4) { animation-delay: 150ms; }
+.stagger-container > *:nth-child(5) { animation-delay: 200ms; }
+.stagger-container > *:nth-child(6) { animation-delay: 250ms; }
+.stagger-container > *:nth-child(7) { animation-delay: 300ms; }
 
 @keyframes scrollRevealFade {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 

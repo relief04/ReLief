@@ -367,3 +367,61 @@
         margin-bottom: 0.5rem;
     }
 }
+
+/* Impact Balance & Daily Streak Cards Enhancements */
+.impactCard {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.85) 0%, rgba(16, 185, 129, 0.08) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.25) !important;
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.08) inset, 0 4px 24px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
+    /* GPU layer — no repaints */
+    transform: translateZ(0);
+    will-change: box-shadow;
+    animation: impactGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes impactGlow {
+    from { box-shadow: 0 0 20px rgba(16, 185, 129, 0.06) inset, 0 4px 24px rgba(0,0,0,0.4); }
+    to { box-shadow: 0 0 40px rgba(16, 185, 129, 0.18) inset, 0 4px 24px rgba(0,0,0,0.4); }
+}
+
+.streakCard {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.85) 0%, rgba(245, 158, 11, 0.08) 100%);
+    border: 1px solid rgba(245, 158, 11, 0.25) !important;
+    box-shadow: 0 0 30px rgba(245, 158, 11, 0.08) inset, 0 4px 24px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(0);
+    will-change: box-shadow;
+    animation: streakGlow 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes streakGlow {
+    from { box-shadow: 0 0 20px rgba(245, 158, 11, 0.06) inset, 0 4px 24px rgba(0,0,0,0.4); }
+    to { box-shadow: 0 0 40px rgba(245, 158, 11, 0.2) inset, 0 4px 24px rgba(0,0,0,0.4); }
+}
+
+.glowTextEmerald {
+    text-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+    color: #10b981;
+}
+
+.glowTextAmber {
+    text-shadow: 0 0 25px rgba(245, 158, 11, 0.8);
+    background: linear-gradient(to bottom, #fcd34d, #d97706);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.animatedFlame {
+    animation: flamePulse 2s ease-in-out infinite alternate;
+    display: inline-block;
+}
+
+@keyframes flamePulse {
+    0% { transform: scale(1) translateY(0); filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.5)); }
+    100% { transform: scale(1.1) translateY(-4px); filter: drop-shadow(0 0 25px rgba(245, 158, 11, 0.9)); }
+}

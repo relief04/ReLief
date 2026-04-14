@@ -41,12 +41,13 @@ export function PointsHistoryModal({ isOpen, onClose, userId }: PointsHistoryMod
                     setTotalPoints(profile.balance || 0);
                 }
 
-                // Fetch history
+                // Fetch history optimized constraint
                 const { data, error } = await supabase
                     .from('points_history')
                     .select('*')
                     .eq('user_id', userId)
-                    .order('created_at', { ascending: false });
+                    .order('created_at', { ascending: false })
+                    .limit(50);
 
                 if (error) {
                     // Suppress error if table doesn't exist yet while running tests locally
@@ -92,8 +93,8 @@ export function PointsHistoryModal({ isOpen, onClose, userId }: PointsHistoryMod
                         </div>
                     ) : (
                         <div className={styles.historyList}>
-                            {history.map((entry) => (
-                                <div key={entry.id} className={styles.historyItem}>
+                            {history.map((entry, index) => (
+                                <div key={entry.id} className={styles.historyItem} style={{ animationDelay: `${index * 50}ms` }}>
                                     <div className={styles.itemDetails}>
                                         <div className={styles.itemAction}>{entry.action}</div>
                                         <div className={styles.itemMeta}>

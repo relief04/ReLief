@@ -17,43 +17,20 @@ export const Footer: React.FC = () => {
     return (
         <footer className={styles.footer}>
             <div className={`container ${styles.container}`}>
-                <div className={styles.grid}>
-                    {/* Column 1: Brand & Socials */}
-                    <div className={styles.column}>
+                <div className={styles.compactGrid}>
+                    <div className={styles.brandSide}>
                         <Logo size="md" className={styles.logo} />
                         <p className={styles.description}>
-                            Empowering communities to track their carbon footprint and make real-world environmental impact through collective action.
+                            Empowering communities to track their carbon footprint and make environmental impact through collective action.
                         </p>
                     </div>
 
-                    {/* Column 2: Core Platform */}
-                    <div className={styles.column}>
-                        <h4 className={styles.title}>Core Platform</h4>
-                        <nav className={styles.nav}>
-                            <Link href="/dashboard">Dashboard</Link>
-                            <Link href="/dashboard">Emission Insights</Link>
-                            <Link href="/feed">Community Hub</Link>
-                            <Link href="/leaderboard">Leaderboard</Link>
-                        </nav>
-                    </div>
-
-                    {/* Column 3: Features & Support */}
-                    <div className={styles.column}>
-                        <h4 className={styles.title}>Features & Support</h4>
-                        <div className={styles.dualNav}>
-                            <nav className={styles.nav}>
-                                <Link href="/calculator">Calculator</Link>
-                                <Link href="/scanner">AI Scanner</Link>
-                                <Link href="/quiz">Eco-Quiz</Link>
-                            </nav>
-                            <nav className={styles.nav}>
-                                <Link href="/about">About Us</Link>
-                                <Link href="/contact">Contact</Link>
-                                <Link href="/privacy">Privacy</Link>
-                                <Link href="/terms">Terms</Link>
-                            </nav>
-                        </div>
-                    </div>
+                    <nav className={styles.horizontalNav}>
+                        <Link href="/about">About Us</Link>
+                        <Link href="/contact">Contact</Link>
+                        <Link href="/privacy">Privacy</Link>
+                        <Link href="/terms">Terms</Link>
+                    </nav>
                 </div>
 
                 {/* Bottom Bar */}

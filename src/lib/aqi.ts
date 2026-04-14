@@ -236,7 +236,25 @@ export const getAQIData = async (city: string): Promise<AQIData> => {
 
 export const getAQIDataByCoords = async (latitude: number, longitude: number): Promise<AQIData> => {
     try {
-        return await fetchWAQIData(`https://api.waqi.info/feed/geo:${latitude};${longitude}`);
+        const rawData = await fetchWAQIData(`https://api.waqi.info/feed/geo:${latitude};${longitude}`);
+        
+        // Reverse Geocode for actual precise user locality instead of generic Station logic
+        try {
+            const geoRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
+            if (geoRes.ok) {
+                const geoJson = await geoRes.json();
+                const addressArr = [geoJson.locality, geoJson.city, geoJson.principalSubdivision].filter(Boolean);
+                // Unique filtering to avoid duplicates like "Mumbai, Mumbai"
+                const uniqueAddress = Array.from(new Set(addressArr)).join(', ');
+                if (uniqueAddress) {
+                    rawData.city = uniqueAddress;
+                }
+            }
+        } catch (geoError) {
+            console.warn("Reverse geocode failed, falling back to station name.", geoError);
+        }
+
+        return rawData;
     } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError') {
             console.error("Error fetching data by coords:", error);

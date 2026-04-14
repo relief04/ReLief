@@ -273,12 +273,6 @@ export default function DashboardPage() {
                         <h1 style={{ marginTop: 0 }}>Welcome back, <span className={styles.userName}>{user?.username || 'Eco Hero'}</span></h1>
                         <p style={{ marginTop: '0.2rem' }}>Your carbon footprint analysis is ready.</p>
                     </div>
-                    {/* HYBRID INJECTION: 3D Tilt Tier Badge directly beside username header */}
-                    {/* @ts-ignore */}
-                    <div className={styles.tierBadgeWrapper}>
-                        {/* @ts-ignore */}
-                        <TierBadge tier={data.computedTier || 'seedling'} />
-                    </div>
                 </div>
                 <div className={styles.headerActions}>
                     <Link href="/calculator">
@@ -431,14 +425,14 @@ export default function DashboardPage() {
 
                 {/* HYBRID INJECTION: Impact KarmaDisplay Widget (3 cols) */}
                 <div
-                    className={`bento-card col-span-3 ${styles.interactiveGridCard}`}
+                    className={`bento-card col-span-3 ${styles.interactiveGridCard} ${styles.impactCard}`}
                     onClick={() => setIsPointsModalOpen(true)}
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => e.key === 'Enter' && setIsPointsModalOpen(true)}
                     style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly', padding: '1.5rem 0' }}
                 >
-                    <span className={styles.miniLabel} style={{ marginBottom: '0.5rem', fontSize: '0.95rem' }}>Impact Balance</span>
+                    <span className={styles.miniLabel} style={{ marginBottom: '0.5rem', fontSize: '0.95rem', color: '#10b981' }}>Impact Balance</span>
                     <div style={{ transform: 'scale(1.3)', margin: '1rem 0' }}>
                         <KarmaDisplay points={data.balance} maxPoints={20000} />
                     </div>
@@ -446,13 +440,16 @@ export default function DashboardPage() {
                 </div>
 
                 {/* HYBRID INJECTION: Activity Streak Widget (3 cols) */}
-                 <div className={`bento-card col-span-3 ${styles.interactiveGridCard}`} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', textAlign: 'center' }}>
-                    <span className={styles.miniLabel} style={{ fontSize: '0.95rem' }}>Daily Streak</span>
-                    <span className={`${styles.miniVal} ${styles.streakVal}`} style={{ fontSize: '4.5rem', margin: '0.5rem 0' }}>
-                        <span className={styles.flameIcon} style={{ fontSize: '3.5rem', filter: 'drop-shadow(0 0 15px rgba(251, 191, 36, 0.6))' }}>🔥</span>
-                        {data.streak} <small style={{ fontSize: '1.5rem', alignSelf: 'flex-end', marginBottom: '0.8rem' }}>days</small>
-                    </span>
-                    <span className={styles.helperText}>Keep it up!</span>
+                 <div className={`bento-card col-span-3 ${styles.interactiveGridCard} ${styles.streakCard}`} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', textAlign: 'center' }}>
+                    <span className={styles.miniLabel} style={{ fontSize: '0.95rem', color: '#fcd34d' }}>Daily Streak</span>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', width: '100%', margin: '0.5rem 0' }}>
+                        <span className={`${styles.flameIcon} ${styles.animatedFlame}`} style={{ fontSize: '4.5rem' }}>🔥</span>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                            <span className={styles.glowTextAmber} style={{ fontSize: '4.5rem', fontWeight: 800, lineHeight: 1 }}>{data.streak}</span>
+                            <span style={{ fontSize: '1.1rem', color: '#fcd34d', fontWeight: 700, marginTop: '-0.2rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Days</span>
+                        </div>
+                    </div>
+                    <span className={styles.helperText} style={{ opacity: 0.8, fontWeight: 500 }}>Keep it up!</span>
                 </div>
             </section>
 

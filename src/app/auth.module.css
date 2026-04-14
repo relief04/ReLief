@@ -121,9 +121,8 @@
     z-index: 2;
 }
 
-:global([data-theme='dark']) .dividerText {
-    background-color: var(--color-bg-200);
-    /* Match card bg in dark mode more closely if needed */
+[data-theme='dark'] .dividerText {
+    background-color: #0f172a; /* Slate 900 - matches card base deeper dark */
 }
 
 .errorAlert {
@@ -287,7 +286,7 @@
 .passwordToggle {
     position: absolute;
     right: 12px;
-    top: 38px;
+    bottom: 12px;
     background: none;
     border: none;
     color: var(--color-text-300);

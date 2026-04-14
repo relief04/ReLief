@@ -25,7 +25,7 @@ export const AQIStatus: React.FC<AQIStatusProps> = ({ aqi, city, variant = 'pill
                 <div className={`${styles.dot} ${details.colorClass} ${requiresPulse ? styles.pulse : ''}`} />
                 <span className={styles.pillAqi}>{aqi} AQI</span>
                 <span className={styles.pillCity} title={city}>
-                    • {city.length > 10 ? city.substring(0, 10) + '...' : city}
+                    • {city}
                 </span>
             </div>
         );
