@@ -9,7 +9,7 @@ const getApiKey = () => process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_
 const MODEL_FALLBACK_CHAIN = [
     'gemini-2.0-flash',
     'gemini-2.5-flash',
-    'gemini-1.5-flash',
+    'gemini-1.5-flash-latest',
 ];
 
 const isRetryableError = (error: unknown): boolean => {
@@ -113,7 +113,7 @@ Instructions:
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const ai = new GoogleGenAI({
             apiKey: getApiKey(),
-            httpOptions: { fetch: globalThis.fetch } as any,
+            httpOptions: { fetch: globalThis.fetch, apiVersion: 'v1' } as any,
         });
         let lastError: any = null;
 

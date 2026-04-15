@@ -93,7 +93,7 @@ export async function scanBillWithGemini(
     const imagePart = fileToInlinePart(fileBuffer, mimeType);
 
     // Models to try in order of preference (most available first)
-    const MODELS = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-1.5-flash"];
+    const MODELS = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-1.5-flash-latest"];
 
     // 2. Loop through keys and models until success or exhaustion
     let lastError: any = null;
@@ -109,7 +109,7 @@ export async function scanBillWithGemini(
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const genAI = new GoogleGenAI({
                     apiKey: currentKey,
-                    httpOptions: { fetch: globalThis.fetch } as any,
+                    httpOptions: { fetch: globalThis.fetch, apiVersion: 'v1' } as any,
                 });
 
                 const result = await genAI.models.generateContent({

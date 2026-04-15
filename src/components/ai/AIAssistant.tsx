@@ -80,7 +80,7 @@ export function AIAssistant() {
                 const botMsg: Message = { role: 'model', content: data.reply };
                 setMessages(prev => [...prev, botMsg]);
             } else {
-                throw new Error(data.error || 'Failed to get response');
+                throw new Error(data.error?.message || data.error || 'Failed to get response');
             }
         } catch (error) {
             console.error('Chat error:', error);
