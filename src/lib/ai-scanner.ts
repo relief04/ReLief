@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 
 // We will fetch keys dynamically in the function
 // Add multiple keys in .env.local: GEMINI_API_KEY_1, GEMINI_API_KEY_2, etc.
@@ -25,9 +25,9 @@ export interface ScanResponse {
 }
 
 /**
- * Converts a File or Buffer to a Google Generative AI part (base64)
+ * Converts a Uint8Array to a Google GenAI inline data part (base64)
  */
-async function fileToGenerativePart(file: Uint8Array, mimeType: string) {
+function fileToInlinePart(file: Uint8Array, mimeType: string) {
     return {
         inlineData: {
             data: Buffer.from(file).toString("base64"),
@@ -90,7 +90,7 @@ export async function scanBillWithGemini(
       {"bill_type":"electricity","units_consumed":120,"bill_date":"2024-01-15","bill_number":"EL123","amount":960,"provider":"MSEB","confidence":0.95}
     `;
 
-    const imagePart = await fileToGenerativePart(fileBuffer, mimeType);
+    const imagePart = fileToInlinePart(fileBuffer, mimeType);
 
     // Models to try in order of preference (most available first)
     const MODELS = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-1.5-flash"];
@@ -106,12 +106,15 @@ export async function scanBillWithGemini(
             console.log(`[AI-Scanner] Attempting scan with Key ${i + 1}/${keys.length}, Model: ${modelName}`);
 
             try {
-                const genAI = new GoogleGenerativeAI(currentKey);
-                const model = genAI.getGenerativeModel({ model: modelName });
+                const genAI = new GoogleGenAI({ apiKey: currentKey });
 
-                const result = await model.generateContent([prompt, imagePart]);
-                const response = await result.response;
-                const text = response.text().trim();
+                const result = await genAI.models.generateContent({
+                    model: modelName,
+                    contents: [
+                        { role: 'user', parts: [{ text: prompt }, imagePart] },
+                    ],
+                });
+                const text = (result.text ?? '').trim();
 
                 // Clean up potential markdown code blocks
                 let jsonText = text;

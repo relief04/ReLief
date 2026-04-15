@@ -1,5 +1,5 @@
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import { NextResponse } from 'next/server';
 
 // Initialize Gemini
@@ -7,9 +7,9 @@ const getApiKey = () => process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_
 
 // Fallback chain: try models in order if one is unavailable
 const MODEL_FALLBACK_CHAIN = [
-    'gemini-1.5-flash', // Most stable
     'gemini-2.0-flash',
     'gemini-2.5-flash',
+    'gemini-1.5-flash',
 ];
 
 const isRetryableError = (error: unknown): boolean => {
@@ -106,16 +106,17 @@ Instructions:
 - Never mention your technical limitations (like missing embeddings). Simply provide the best answer possible.
 `;
 
-        const genAI = new GoogleGenerativeAI(getApiKey());
+        const ai = new GoogleGenAI({ apiKey: getApiKey() });
         let lastError: any = null;
 
         for (const modelName of MODEL_FALLBACK_CHAIN) {
             try {
-                const model = genAI.getGenerativeModel({ model: modelName });
-                const chat = model.startChat({
+                const chat = ai.chats.create({
+                    model: modelName,
+                    config: {
+                        systemInstruction: systemPrompt,
+                    },
                     history: [
-                        { role: 'user', parts: [{ text: systemPrompt }] },
-                        { role: 'model', parts: [{ text: 'I am the ReLief AI Assistant. I am ready to guide users through the platform and provide sustainability expertise.' }] },
                         ...(previousMessages || []).map((msg: any) => ({
                             role: msg.role === 'user' ? 'user' : 'model',
                             parts: [{ text: msg.content }],
@@ -123,8 +124,8 @@ Instructions:
                     ],
                 });
 
-                const result = await chat.sendMessage(message);
-                return NextResponse.json({ reply: result.response.text() });
+                const response = await chat.sendMessage({ message });
+                return NextResponse.json({ reply: response.text });
             } catch (error) {
                 lastError = error;
                 console.error(`Error with model ${modelName}:`, error);
