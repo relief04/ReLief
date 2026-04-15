@@ -58,7 +58,7 @@
 .champion:not(.locked):hover {
     box-shadow: var(--shadow-glow-accent);
 }
-.iconChampion { color: var(--color-accent); font-filter: drop-shadow(0 0 4px rgba(251,191,36,0.6)); }
+.iconChampion { color: var(--color-accent); filter: drop-shadow(0 0 4px rgba(251,191,36,0.6)); }
 
 /* Gold Shimmer Animation */
 .championShimmer::before {

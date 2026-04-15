@@ -4,8 +4,25 @@ import { NextResponse } from 'next/server';
 
 // Initialize Gemini
 const getApiKey = () => process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || '';
-const genAI = new GoogleGenerativeAI(getApiKey());
-const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+// Fallback chain: try models in order if one is unavailable
+const MODEL_FALLBACK_CHAIN = [
+    'gemini-2.5-flash',
+    'gemini-2.0-flash',
+    'gemini-1.5-flash',
+];
+
+const isRetryableError = (error: unknown): boolean => {
+    const msg = error instanceof Error ? error.message : String(error);
+    return (
+        msg.includes('503') ||
+        msg.includes('Service Unavailable') ||
+        msg.includes('high demand') ||
+        msg.includes('429') ||
+        msg.includes('quota exceeded') ||
+        msg.includes('Too Many Requests')
+    );
+};
 
 const KNOWLEDGE_BASE = `
 ReLief is an eco-platform that helps users track, reduce, and heal their carbon footprint.
@@ -87,19 +104,38 @@ Instructions:
 - Never mention your technical limitations (like missing embeddings). Simply provide the best answer possible.
 `;
 
-        const chat = model.startChat({
-            history: [
-                { role: 'user', parts: [{ text: systemPrompt }] },
-                { role: 'model', parts: [{ text: 'I am the ReLief AI Assistant. I am ready to guide users through the platform and provide sustainability expertise.' }] },
-                ...(previousMessages || []).map((msg: any) => ({
-                    role: msg.role === 'user' ? 'user' : 'model',
-                    parts: [{ text: msg.content }],
-                }))
-            ],
-        });
+        const genAI = new GoogleGenerativeAI(getApiKey());
+        let lastError: any = null;
 
-        const result = await chat.sendMessage(message);
-        return NextResponse.json({ reply: result.response.text() });
+        for (const modelName of MODEL_FALLBACK_CHAIN) {
+            try {
+                const model = genAI.getGenerativeModel({ model: modelName });
+                const chat = model.startChat({
+                    history: [
+                        { role: 'user', parts: [{ text: systemPrompt }] },
+                        { role: 'model', parts: [{ text: 'I am the ReLief AI Assistant. I am ready to guide users through the platform and provide sustainability expertise.' }] },
+                        ...(previousMessages || []).map((msg: any) => ({
+                            role: msg.role === 'user' ? 'user' : 'model',
+                            parts: [{ text: msg.content }],
+                        }))
+                    ],
+                });
+
+                const result = await chat.sendMessage(message);
+                return NextResponse.json({ reply: result.response.text() });
+            } catch (error) {
+                lastError = error;
+                console.error(`Error with model ${modelName}:`, error);
+                
+                // If the error is not retryable, or it's the last model, break and throw
+                if (!isRetryableError(error)) {
+                    break;
+                }
+                // Otherwise, the loop continues to the next model
+            }
+        }
+
+        throw lastError;
 
     } catch (error) {
         console.error("Error in chat route:", error);
