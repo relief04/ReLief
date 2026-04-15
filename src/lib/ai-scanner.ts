@@ -106,9 +106,10 @@ export async function scanBillWithGemini(
             console.log(`[AI-Scanner] Attempting scan with Key ${i + 1}/${keys.length}, Model: ${modelName}`);
 
             try {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const genAI = new GoogleGenAI({
                     apiKey: currentKey,
-                    httpOptions: { fetch: globalThis.fetch },
+                    httpOptions: { fetch: globalThis.fetch } as any,
                 });
 
                 const result = await genAI.models.generateContent({

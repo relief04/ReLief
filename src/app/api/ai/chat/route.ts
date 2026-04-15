@@ -106,9 +106,14 @@ Instructions:
 - Never mention your technical limitations (like missing embeddings). Simply provide the best answer possible.
 `;
 
+        // Casting httpOptions to `any` because the TypeScript type doesn't
+        // expose `fetch`, but the SDK runtime honours it. This forces the SDK
+        // to use Node's global fetch instead of its bundled undici instance,
+        // which fails DNS resolution in this environment.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const ai = new GoogleGenAI({
             apiKey: getApiKey(),
-            httpOptions: { fetch: globalThis.fetch },
+            httpOptions: { fetch: globalThis.fetch } as any,
         });
         let lastError: any = null;
 
