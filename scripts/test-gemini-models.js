@@ -1,5 +1,5 @@
 
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { GoogleGenAI } = require("@google/genai");
 require('dotenv').config({ path: '.env.local' });
 
 async function listModels() {
@@ -8,30 +8,22 @@ async function listModels() {
         console.error("No API KEY found!");
         return;
     }
-    const genAI = new GoogleGenerativeAI(key);
+    const ai = new GoogleGenAI({ apiKey: key, httpOptions: { fetch: globalThis.fetch } });
 
-    // Test gemini-pro (should work for everyone)
-    console.log("\nTesting gemini-pro...");
-    try {
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-        const result = await model.generateContent("Hello");
-        console.log(`SUCCESS: gemini-pro works!`);
-    } catch (error) {
-        console.error(`FAILED: gemini-pro - ${error.message}`);
+    const models = ['gemini-2.0-flash', 'gemini-2.5-flash'];
+
+    for (const modelName of models) {
+        console.log(`\nTesting ${modelName}...`);
+        try {
+            const result = await ai.models.generateContent({
+                model: modelName,
+                contents: 'Hello',
+            });
+            console.log(`SUCCESS: ${modelName} works! Response: ${result.text?.slice(0, 80)}`);
+        } catch (error) {
+            console.error(`FAILED: ${modelName} - ${error.message}`);
+        }
     }
-
-    // Test gemini-1.5-flash-001 (specific version)
-    console.log("\nTesting gemini-1.5-flash-001...");
-    try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-001" });
-        const result = await model.generateContent("Hello");
-        console.log(`SUCCESS: gemini-1.5-flash-001 works!`);
-    } catch (error) {
-        console.error(`FAILED: gemini-1.5-flash-001 - ${error.message}`);
-    }
-
-    // Test gemini-pro-vision (legacy multimodal)
-    // We can't easily test it without an image, but if gemini-pro works, this likely exists.
 }
 
 listModels();

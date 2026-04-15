@@ -1,6 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
@@ -24,8 +24,8 @@ if (!supabaseUrl || !supabaseKey || !geminiKey) {
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
-const genAI = new GoogleGenerativeAI(geminiKey);
-const model = genAI.getGenerativeModel({ model: "embedding-001" });
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ai = new GoogleGenAI({ apiKey: geminiKey, httpOptions: { fetch: globalThis.fetch } as any });
 
 const KNOWLEDGE_BASE = [
     {
@@ -101,8 +101,11 @@ async function seed() {
             log(`Processing: ${item.category}`);
 
             // 2. Generate Embedding
-            const result = await model.embedContent(item.content);
-            const embedding = result.embedding.values;
+            const result = await ai.models.embedContent({
+                model: 'text-embedding-004',
+                contents: item.content,
+            });
+            const embedding = result.embeddings?.[0]?.values ?? [];
             log(`Generated embedding for ${item.category}, length: ${embedding.length}`);
 
             // 3. Insert into DB

@@ -1,5 +1,5 @@
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 
@@ -13,6 +13,9 @@ if (!geminiKey) {
     process.exit(1);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ai = new GoogleGenAI({ apiKey: geminiKey!, httpOptions: { fetch: globalThis.fetch } as any });
+
 async function test() {
     console.log('--- Testing REST API (v1) ---');
     try {
@@ -22,19 +25,20 @@ async function test() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ content: { parts: [{ text: "test" }] } })
         });
-        const data = await resp.json();
+        const data = await resp.json() as any;
         if (data.embedding) console.log('v1 SUCCESS!');
         else console.log('v1 FAILED:', JSON.stringify(data));
     } catch (e: any) {
         console.log('v1 ERROR:', e.message);
     }
 
-    console.log('\n--- Testing Library (@google/generative-ai) ---');
-    const genAI = new GoogleGenerativeAI(geminiKey!);
+    console.log('\n--- Testing Library (@google/genai) ---');
     try {
-        const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
-        const res = await model.embedContent("test");
-        console.log('Library SUCCESS!');
+        const result = await ai.models.embedContent({
+            model: 'text-embedding-004',
+            contents: 'test',
+        });
+        console.log('Library SUCCESS! Embedding length:', result.embeddings?.[0]?.values?.length);
     } catch (e: any) {
         console.log('Library FAILED:', e.message);
     }

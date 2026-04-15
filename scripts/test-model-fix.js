@@ -1,5 +1,5 @@
 
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { GoogleGenAI } = require("@google/genai");
 require('dotenv').config({ path: '.env.local' });
 
 async function checkModels() {
@@ -9,16 +9,18 @@ async function checkModels() {
         return;
     }
 
-    const genAI = new GoogleGenerativeAI(key);
+    const ai = new GoogleGenAI({ apiKey: key, httpOptions: { fetch: globalThis.fetch } });
     const modelName = "gemini-2.5-flash";
 
     console.log(`Testing ${modelName}...`);
 
     try {
-        const model = genAI.getGenerativeModel({ model: modelName });
-        const result = await model.generateContent("Hello, are you online?");
+        const result = await ai.models.generateContent({
+            model: modelName,
+            contents: 'Hello, are you online?',
+        });
         console.log(`SUCCESS: ${modelName} works!`);
-        console.log(`Response: ${result.response.text()}`);
+        console.log(`Response: ${result.text}`);
     } catch (err) {
         console.error(`FAILED: ${modelName} - ${err.message}`);
     }
