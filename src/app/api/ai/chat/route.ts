@@ -7,9 +7,9 @@ const getApiKey = () => process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_
 
 // Fallback chain: try models in order if one is unavailable
 const MODEL_FALLBACK_CHAIN = [
-    'gemini-2.5-flash',
+    'gemini-1.5-flash', // Most stable
     'gemini-2.0-flash',
-    'gemini-1.5-flash',
+    'gemini-2.5-flash',
 ];
 
 const isRetryableError = (error: unknown): boolean => {
@@ -20,7 +20,9 @@ const isRetryableError = (error: unknown): boolean => {
         msg.includes('high demand') ||
         msg.includes('429') ||
         msg.includes('quota exceeded') ||
-        msg.includes('Too Many Requests')
+        msg.includes('Too Many Requests') ||
+        msg.includes('overloaded') ||
+        msg.includes('deadline exceeded')
     );
 };
 
@@ -147,6 +149,9 @@ Instructions:
         if (errorString.includes("429") || errorString.includes("quota exceeded") || errorString.includes("too many requests")) {
             errorMessage = "AI chat quota exceeded. Please try again later.";
             statusCode = 429;
+        } else if (errorString.includes("503") || errorString.includes("service unavailable") || errorString.includes("high demand") || errorString.includes("overloaded")) {
+            errorMessage = "The AI is currently under high load and busy. Please wait a moment and try again.";
+            statusCode = 503;
         } else if (error instanceof Error) {
             errorMessage = error.message;
         }
