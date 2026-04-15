@@ -106,7 +106,10 @@ export async function scanBillWithGemini(
             console.log(`[AI-Scanner] Attempting scan with Key ${i + 1}/${keys.length}, Model: ${modelName}`);
 
             try {
-                const genAI = new GoogleGenAI({ apiKey: currentKey });
+                const genAI = new GoogleGenAI({
+                    apiKey: currentKey,
+                    httpOptions: { fetch: globalThis.fetch },
+                });
 
                 const result = await genAI.models.generateContent({
                     model: modelName,

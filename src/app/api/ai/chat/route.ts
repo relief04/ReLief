@@ -106,7 +106,10 @@ Instructions:
 - Never mention your technical limitations (like missing embeddings). Simply provide the best answer possible.
 `;
 
-        const ai = new GoogleGenAI({ apiKey: getApiKey() });
+        const ai = new GoogleGenAI({
+            apiKey: getApiKey(),
+            httpOptions: { fetch: globalThis.fetch },
+        });
         let lastError: any = null;
 
         for (const modelName of MODEL_FALLBACK_CHAIN) {
