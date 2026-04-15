@@ -113,7 +113,7 @@ Instructions:
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const ai = new GoogleGenAI({
             apiKey: getApiKey(),
-            httpOptions: { fetch: globalThis.fetch, apiVersion: 'v1' } as any,
+            httpOptions: { fetch: globalThis.fetch } as any,
         });
         let lastError: any = null;
 
